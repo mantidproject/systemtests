@@ -1,0 +1,48 @@
+MASK/CLEAR
+MASK/CLEAR/TIME
+DET/FRONT
+GRAVITY/ON
+L/WAV 4.6 12.85 0.125/LIN
+FIT/TRANS/LOG 4.6 12.85
+L/Q .0018, .0003, .01, -.06, 0.1, 0.006, 0.15
+L/QXY 0 0.04 .002/lin
+!BACK/MON/TIMES 80800 98000
+mask h0
+mask h190>h191
+mask v0
+mask v191
+! try this box mask for the streak below beam stop
+mask h58>h64+v125>v130
+!
+!mask/time 14876 17124
+!mask/time 5000 19200
+!
+L/R 41 -1 3
+!L/SP 1 36864
+!MON/LENGTH=17.937 2
+MON/DIRECT=DIRECT_RUN524.dat
+!MON/FLAT=LOQ$DISK0:[LOQMGR.EFFIC]FLAT_CELL.061
+!
+! this centre found RKH 28/11/09 11m front at -100, why is x centre so different ???
+!  run 2403 gave -308 -228.5 but anisotropic ??  gdw20 run 2407 -310.5 -220.5
+!  run 2459 seems more isotropic gave -308.7 -225.2
+! 9/4/10 try again, with gravity, run 2459  -308.5, -198.8
+set centre -308.7 -198.8 5.1 5.1
+!
+! 29/11/09 INTERIM fit 2448  4.6-12.85, 11m, A1=12, A2=5  (need detail overlap check yet)
+! still need a good centre 
+set scales 0.2514 1.0 1.0 1.0 1.0
+!
+! correction to actual sample position, 81-47 for steam header, zero corr is 81mm before safety shutter
+SAMPLE/OFFSET 34.0
+! Correction to SANS2D encoders in mm 
+DET/CORR REAR X -16.0
+DET/CORR REAR Z 58.0
+DET/CORR FRONT X -44.0
+DET/CORR FRONT Y -20.0
+DET/CORR FRONT Z 47.0
+DET/CORR FRONT ROT 0.0
+!
+!! 29/11/09  Bouchard, front det only, at 11m,   A2=5mm runs, det moved 25mm
+!! scale from fit to .0098 to .334, 6% log bin data, using 1/data wts as errors too large
+!! beware front det will need its own mask 

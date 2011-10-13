@@ -1,0 +1,77 @@
+2009-08-06T03:33:13 BEGIN run 808
+2009-08-06T03:33:13 Run started in software period 1
+2009-08-06T03:33:13 Setting up DAE
+2009-08-06T03:33:13 Highest dae, detector card, crate number used = 0, 3, 3
+2009-08-06T03:33:13 Number of time regimes = 1
+2009-08-06T03:33:13 DAE memory used = 43 Mb
+2009-08-06T03:33:13 Number of periods (daq, total) = (1, 1)
+2009-08-06T03:33:13 Resetting DAE - ignore veto counter values as not yet cleared
+2009-08-06T03:33:13 SMP vetoed frames = 5107
+Externally vetoed frames = 0
+FIFO vetoed frames = 0
+
+2009-08-06T03:33:13 Starting clear of DAE memory
+2009-08-06T03:33:15 Finished clear of DAE memory
+2009-08-06T03:33:15 Programming Time channels
+2009-08-06T03:33:15 Global Frame sync delay = 4 us
+2009-08-06T03:33:15 Electronics delay = 7 clock pulses
+2009-08-06T03:33:15 Setting 152 time channels from 0.781250 to 99995.781250 us
+2009-08-06T03:33:15 Setting FS delay on DC 1 to 0 us
+2009-08-06T03:33:15 Setting FS delay on DC 2 to 0 us
+2009-08-06T03:33:15 Setting FS delay on DC 3 to 0 us
+2009-08-06T03:33:15 Programming POSLUT
+2009-08-06T03:33:15 Card: 1 DAE2 Highest: 8 DAE1 low: 1 DAE1 high: 8 NPOS: 8
+MPOS: 0 to 0
+MODN: 0 to 7
+
+2009-08-06T03:33:15 
+2009-08-06T03:33:15 Card: 2 DAE2 Highest: 36864 DAE1 low: 9 DAE1 high: 36872 NPOS: 36864
+MPOS: 0 to 4095
+MODN: 0 to 11
+
+2009-08-06T03:33:15 
+2009-08-06T03:33:15 Card: 3 DAE2 Highest: 36864 DAE1 low: 36873 DAE1 high: 73736 NPOS: 36864
+MPOS: 0 to 4095
+MODN: 0 to 11
+
+2009-08-06T03:33:15 
+2009-08-06T03:33:15 Software periods enabled
+2009-08-06T03:33:15 (setting period card, if present, to 1 hardware period of 15000 frames)
+2009-08-06T03:33:15 No period card present
+2009-08-06T03:33:15 Setting vetos
+2009-08-06T03:33:15 Enabling FIFO veto
+2009-08-06T03:33:15 Enabling SMP veto
+2009-08-06T03:33:15 Enabling EXTERNAL veto 0
+2009-08-06T03:33:15 Disabling EXTERNAL veto 1
+2009-08-06T03:33:15 Disabling EXTERNAL veto 2
+2009-08-06T03:33:15 Disabling EXTERNAL veto 3
+2009-08-06T03:33:15 Disabling Fermi Chopper veto
+2009-08-06T03:33:15 Disabling TS2 Pulse veto
+2009-08-06T03:33:15 Disabling ISIS 50Hz veto
+2009-08-06T03:33:15 Clearing frames, vetos and PPP counters
+2009-08-06T03:33:15     Elapsed real time for BEGIN = 1.59 seconds
+
+2009-08-06T05:31:12 ENDing run 808
+2009-08-06T05:31:12 SMP vetoed frames = 5263
+Externally vetoed frames = 0
+FIFO vetoed frames = 0
+
+2009-08-06T05:31:12 Run stopped in period 1 (DAQ 1), sequence 0
+2009-08-06T05:31:12     Elapsed real time for stopDataCollection() = 0.1 seconds
+2009-08-06T05:31:12 1 DAQ periods of size 11281761 words
+2009-08-06T05:31:20 Average DAE transfer rate = 5917 KByte / s
+2009-08-06T05:31:26     Elapsed real time for writeISISNeXus(counts) = 6.365 seconds
+2009-08-06T05:31:26     Elapsed real time for writeISISNeXus(detector) = 6.564 seconds
+2009-08-06T05:31:26 Found 44 seblocks
+2009-08-06T05:31:26     Elapsed real time for writeISISNeXus(selogs) = 0.103 seconds
+2009-08-06T05:31:26     Elapsed real time for writeISISNeXus(runlogs) = 0.023 seconds
+2009-08-06T05:31:27     Elapsed real time for writeISISNeXus(vms) = 0.252 seconds
+2009-08-06T05:31:27     Elapsed real time for writeISISNeXus = 7.051 seconds
+2009-08-06T05:31:27 Writing data file c:\data\SANS2D00000808.nxs
+2009-08-06T05:31:27 Writing data file c:\data\SANS2D00000808.raw
+2009-08-06T05:31:27     Elapsed real time for lockCRPT() = 0 seconds
+    Elapsed real time for stopDataCollection() = 0.102 seconds
+    Elapsed real time for readHistogramMemory() = 7.626 seconds
+    Elapsed real time for File Write = 7.089 seconds
+    Elapsed real time for END = 14.818 seconds
+

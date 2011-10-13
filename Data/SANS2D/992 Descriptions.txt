@@ -1,0 +1,4 @@
+Scatter:        Transmission:     Direct:
+
+Sample: 992     Sample: 988       Sample: 987
+Can: 993        Can: 989

@@ -1,0 +1,3 @@
+sample_sans,992,output_as,992_sans_nocan
+sample_sans,992,sample_trans,988,sample_direct_beam,987,output_as,992_sans
+sample_sans,992,sample_trans,988,sample_direct_beam,987,can_sans,993,can_trans,989,can_direct_beam,987,output_as,992_full

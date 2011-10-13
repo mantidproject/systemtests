@@ -1,0 +1,46 @@
+!MASK.094A wil R & Qmin pushed out
+SPY ON
+READ
+MASK/CLEAR
+MASK/CLEAR/TIME
+L/WAV 2.2 10.0 .035/LOG
+L/Q .01 .30 .002/lin
+L/QXY 0 0.1 .002/lin
+FIT/MONITOR 19900 20500
+FIT/CENTRE 19900 20500
+FIT/TRANS/YLOG 2.2 10.0
+FIT/MID/FILE=LOQ$DISK0:[LOQ]FIND_CENTRE128SC.COM
+FIT/MID/HAB/FILE=LOQ$DISK0:[LOQ]FIND_CENTRE_HAB2.COM
+BACK/MON/TIMES 31000 39000
+mask h126>h127
+MASK/T 19711.5 21228.5
+MASK/T 39354.5 41348.5
+L/R 41 419 3
+L/SP 3 17784
+!  mask out two hab spectra which get double counts
+MASK S16641
+MASK S17341
+MON/DIRECT=LOQ$DISK0:[LOQMGR.EFFIC]DIRECT.041
+MON/HAB=LOQ$DISK0:[LOQMGR.EFFIC]DIRECTHAB.983
+MON/FLAT=LOQ$DISK0:[LOQMGR.EFFIC]FLAT_CELL.061
+set/notab/xc=LOQ$DISK0:[LOQMGR.EFFIC]xcorr.021
+set/yc=LOQ$DISK0:[LOQMGR.EFFIC]ycorr.021
+! 10/7/3 move box masks down to here, so 2nd @mask give same results
+mask 0 40 0 40
+mask 600 650 0 40
+mask 0 40 600 650
+mask 600 650 600 650
+! theoretical coords are (114, -246) so beam centre is (3.69,2.59) [was (3,5)]
+! checked with rotaing dSDS 11/7/2
+! 14/01/04 checked HAB banks correct order ( 1 swapped 2 OK)
+set/notab bank 307 11.588   0.  111.42 -251.18
+set/notab bank 305 11.588  90.  243.42  108.82
+set/notab bank 304 11.588 180. -116.58  240.82
+set/notab bank 306 11.588 270. -248.58 -119.18
+set centre 324.64 327.92 5.00 5.00
+set scales 1.495 1.179 1.233 1.244 1.216
+! mask h119>h125
+MON/HABEFF=0.2
+MON/HABPATH/ON
+!! 11/11/09 54431.RAW 8mm MASK.094A Team LOQ
+!! need sort HAB scales !
