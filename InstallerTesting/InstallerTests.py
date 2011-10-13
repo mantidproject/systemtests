@@ -41,10 +41,9 @@ parentDir = os.path.abspath('..').replace('\\','/')
 saveDir = os.path.join(parentDir, "logs/").replace('\\','/')
 dataDirs = [os.path.join(parentDir, "SystemTests"),
         os.path.join(parentDir, "SystemTests/AnalysisTests/ReferenceResults"),
-        os.path.join(parentDir, "AutoTestData"),
-        os.path.join(parentDir, "Data/SystemTests"),
-        os.path.join(parentDir, "Data/SystemTests/LOQ"),
-        os.path.join(parentDir, "Data/SystemTests/SANS2D"),
+        os.path.join(parentDir, "Data"),
+        os.path.join(parentDir, "Data/LOQ"),
+        os.path.join(parentDir, "Data/SANS2D"),
         saveDir
 ]
 
