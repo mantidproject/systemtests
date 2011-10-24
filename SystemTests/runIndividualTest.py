@@ -30,6 +30,8 @@ tests_dir = os.path.join(locateSourceDir(), 'AnalysisTests')
 
 # Find these first
 sys.path.insert(0,tests_dir)
+if os.path.isdir("../StressTestFramework"):
+    sys.path.insert(0,"../StressTestFramework")
 # Ensure we pick up the correct version of the Framework (Works around a Mac issue at the moment)
 sys.path.insert(0, os.environ['MANTIDPATH'])
 from MantidFramework import *
