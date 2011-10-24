@@ -11,7 +11,7 @@ VERSION = "1.1"
 import optparse
 import os
 import sys
-from systemtestlib import *
+from systemtestlib import setMantidPath, setDataDirs
 
 # set up command line parser
 parser = optparse.OptionParser("Usage: %prog [options] filename[.testName]", None,
@@ -22,18 +22,11 @@ parser.add_option("-m", "--mantidpath", dest="mantidpath",
 
 # add the correct paths
 try:
-    setMantidPath(options.mantidpath)
+    setMantidPath(options.mantidpath) # set up the python paths
 except RuntimeError, e:
     parser.error(e)
 
-tests_dir = os.path.join(locateSourceDir(), 'AnalysisTests')
-
-# Find these first
-sys.path.insert(0,tests_dir)
-if os.path.isdir("../StressTestFramework"):
-    sys.path.insert(0,"../StressTestFramework")
 # Ensure we pick up the correct version of the Framework (Works around a Mac issue at the moment)
-sys.path.insert(0, os.environ['MANTIDPATH'])
 from MantidFramework import *
 mtd.initialise()
 from stresstesting import MantidStressTest

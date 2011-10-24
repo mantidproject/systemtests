@@ -11,9 +11,14 @@ def setMantidPath(directory = None):
         raise RuntimeError("MANTIDPATH not found.")
     else:
         sys.path.append(directory)
+
     # add location of stress tests
     stressmodule_dir = locateStressTestFramework()
     sys.path.append(stressmodule_dir)
+
+    # add location of the analysis tests
+    tests_dir = os.path.join(locateSourceDir(), 'AnalysisTests')
+    sys.path.insert(0,tests_dir)
 
 def locateSourceDir():
     loc = os.path.abspath(__file__)
@@ -23,11 +28,14 @@ def locateStressTestFramework():
     loc = locateSourceDir()
     (parent, curdir) = os.path.split(loc)
     if curdir == "SystemTests":
-        loc = os.path.join(loc, "../../Code/Tools/StressTestFramework")
+        loc = os.path.join(loc, "../StressTestFramework")
     else:
         raise RuntimeError("Failed to find scripts directory from '%s'" % loc)
     loc = os.path.abspath(loc)
-    return loc
+    if os.path.isdir(loc):
+        return loc
+    else:
+        raise RuntimeError("'%s' is not a directory" % loc)
 
 def setDataDirs(mtd):
     # get the file of the python script
