@@ -567,8 +567,8 @@ class TestManager(object):
         '''
         tests = []
         pyfile = open(filename, 'r')
-        regex = re.compile('^class\s(.*)\(.*\)')
-        #regex = re.compile('^class\s(.*)\(.*MantidStressTest\)')
+        #regex = re.compile('^class\s(.*)\(.*\)')
+        regex = re.compile('^class\s(.*)\(.*MantidStressTest\)')
         modname = os.path.basename(filename)
         modname = modname.split('.py')[0]
         for line in pyfile:
