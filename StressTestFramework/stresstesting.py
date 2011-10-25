@@ -468,6 +468,10 @@ class TestSuite(object):
         self._result.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self._result.addItem(['test_date',self._result.date])
         retcode, output, err = runner.start(pycode)
+        print output
+        print err
+        print "\n\n"
+        
         if retcode == 0:
             status = 'success'
         elif retcode == 1:
@@ -493,7 +497,7 @@ class TestSuite(object):
         for line in all_lines:
             entries = line.split(MantidStressTest.DELIMITER)
             if len(entries) == 3 and entries[0] == MantidStressTest.PREFIX:
-                self._result.addItem([entries[1], entries[2]])
+                _result.addItem([entries[1], entries[2]])
                 
     def reportResults(self, reporters):
         for r in reporters:
