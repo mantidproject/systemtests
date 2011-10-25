@@ -463,10 +463,15 @@ class TestSuite(object):
                  + self._fullname + '().execute()\n'\
                  + 'retcode = '+self._fullname + '().returnValidationCode('+str(PythonTestRunner.VALIDATION_FAIL_CODE)+')\n'\
                  + 'sys.exit(retcode)'
+        print pycode
         # Start the new process
         self._result.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self._result.addItem(['test_date',self._result.date])
         retcode, output, err = runner.start(pycode)
+        print output
+        print err
+        print print
+        
         if retcode == 0:
             status = 'success'
         elif retcode == 1:
