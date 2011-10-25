@@ -458,7 +458,7 @@ class TestSuite(object):
     def execute(self, runner):
         pycode = 'import ' + self._modname + '\n'\
                  + "from stresstesting import MantidStressTest\n"\
-                 + "if not hasattr(" + self._fullname + ", 'execute') or not issubclass(" + self._fullname + ",MantidStressTest): sys.exit("+str(PythonTestRunner.NOT_A_TEST)+")\n"\
+                 + "#if not hasattr(" + self._fullname + ", 'execute') or not issubclass(" + self._fullname + ",MantidStressTest): sys.exit("+str(PythonTestRunner.NOT_A_TEST)+")\n"\
                  + "print time.strftime('%a, %d %b %Y %H:%M:%S', time.localtime()) + ': Executing " + self._fullname + "'\n"\
                  + self._fullname + '().execute()\n'\
                  + 'retcode = '+self._fullname + '().returnValidationCode('+str(PythonTestRunner.VALIDATION_FAIL_CODE)+')\n'\
@@ -470,7 +470,7 @@ class TestSuite(object):
         retcode, output, err = runner.start(pycode)
         print output
         print err
-        print print
+        print "\n\n"
         
         if retcode == 0:
             status = 'success'
@@ -497,7 +497,7 @@ class TestSuite(object):
         for line in all_lines:
             entries = line.split(MantidStressTest.DELIMITER)
             if len(entries) == 3 and entries[0] == MantidStressTest.PREFIX:
-                self._result.addItem([entries[1], entries[2]])
+                _result.addItem([entries[1], entries[2]])
                 
     def reportResults(self, reporters):
         for r in reporters:
