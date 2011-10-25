@@ -459,10 +459,13 @@ class TestSuite(object):
         pycode = 'import ' + self._modname + '\n'\
                  + "from stresstesting import MantidStressTest\n"\
                  + "#if not hasattr(" + self._fullname + ", 'execute') or not issubclass(" + self._fullname + ",MantidStressTest): sys.exit("+str(PythonTestRunner.NOT_A_TEST)+")\n"\
-                 + "print time.strftime('%a, %d %b %Y %H:%M:%S', time.localtime()) + ': Executing " + self._fullname + "'\n"\
-                 + self._fullname + '().execute()\n'\
+                 + "try:\n"\
+                 + "   " + self._fullname + '().execute()\n'\
+                 + "except:\n"\
+                 + "   mtd.sendLogMessage(sys.exc_value)\n"\
                  + 'retcode = '+self._fullname + '().returnValidationCode('+str(PythonTestRunner.VALIDATION_FAIL_CODE)+')\n'\
                  + 'sys.exit(retcode)'
+        print time.strftime('%a, %d %b %Y %H:%M:%S', time.localtime()) + ': Executing ' + self._fullname
         print pycode
         # Start the new process
         self._result.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
