@@ -337,12 +337,12 @@ class PythonTestRunner(object):
         else:
             esc = ''
 
-        self._code_prefix = 'import sys, time\n'
-        self._code_prefix += 'sys.path.insert(0, ' + esc + '"' + self._mtdpy_header + esc + '")\n' + \
-        'sys.path.append(' + esc + '"' + self._framework_path + esc + '")\n' + \
-        'sys.path.append(' + esc + '"' + self._test_dir + esc + '")\n' + \
-        'from MantidFramework import *\n' + \
-        'mtd.initialise()\n'
+        self._code_prefix = 'import sys;'
+        self._code_prefix += 'sys.path.insert(0, ' + esc + '"' + self._mtdpy_header + esc + '");' + \
+        'sys.path.append(' + esc + '"' + self._framework_path + esc + '");' + \
+        'sys.path.append(' + esc + '"' + self._test_dir + esc + '");' + \
+        'from MantidFramework import *;' + \
+        'mtd.initialise();'
         
     def getCodePrefix(self):
         '''
@@ -456,24 +456,16 @@ class TestSuite(object):
         return env
 
     def execute(self, runner):
-        pycode = 'import ' + self._modname + '\n'\
-                 + "from stresstesting import MantidStressTest\n"\
-                 + "#if not hasattr(" + self._fullname + ", 'execute') or not issubclass(" + self._fullname + ",MantidStressTest): sys.exit("+str(PythonTestRunner.NOT_A_TEST)+")\n"\
-                 + "try:\n"\
-                 + "   " + self._fullname + '().execute()\n'\
-                 + "except:\n"\
-                 + "   mtd.sendLogMessage(sys.exc_value)\n"\
-                 + 'retcode = '+self._fullname + '().returnValidationCode('+str(PythonTestRunner.VALIDATION_FAIL_CODE)+')\n'\
+        print time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime()) + ': Executing ' + self._fullname
+        pycode = 'import ' + self._modname + ';'\
+                 + "if not hasattr(" + self._fullname + ", 'execute') or not issubclass(" + self._fullname + ",MantidStressTest): sys.exit("+str(PythonTestRunner.NOT_A_TEST)+");"\
+                 + self._fullname + '().execute();'\
+                 + 'retcode = '+self._fullname + '().returnValidationCode('+str(PythonTestRunner.VALIDATION_FAIL_CODE)+');'\
                  + 'sys.exit(retcode)'
-        print time.strftime('%a, %d %b %Y %H:%M:%S', time.localtime()) + ': Executing ' + self._fullname
-        print pycode
         # Start the new process
         self._result.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self._result.addItem(['test_date',self._result.date])
         retcode, output, err = runner.start(pycode)
-        print output
-        print err
-        print "\n\n"
         
         if retcode == 0:
             status = 'success'
@@ -500,7 +492,7 @@ class TestSuite(object):
         for line in all_lines:
             entries = line.split(MantidStressTest.DELIMITER)
             if len(entries) == 3 and entries[0] == MantidStressTest.PREFIX:
-                _result.addItem([entries[1], entries[2]])
+                self._result.addItem([entries[1], entries[2]])
                 
     def reportResults(self, reporters):
         for r in reporters:
