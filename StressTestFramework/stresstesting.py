@@ -457,9 +457,9 @@ class TestSuite(object):
 
     def execute(self, runner):
         print time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime()) + ': Executing ' + self._fullname
+        #         + 'from stresstesting import MantidStressTest\n'\
+        #         + "if not issubclass(" + self._fullname + ", MantidStressTest): sys.exit("+str(PythonTestRunner.NOT_A_TEST)+")\n"\
         pycode = 'import ' + self._modname + ';'\
-                 + 'import stresstesting\n'\
-                 + "if not hasattr(" + self._fullname + ", 'execute') or not issubclass(" + self._fullname + ", stresstesting.MantidStressTest): sys.exit("+str(PythonTestRunner.NOT_A_TEST)+")\n"\
                  + self._fullname + '().execute();'\
                  + 'retcode = '+self._fullname + '().returnValidationCode('+str(PythonTestRunner.VALIDATION_FAIL_CODE)+');'\
                  + 'sys.exit(retcode)'
