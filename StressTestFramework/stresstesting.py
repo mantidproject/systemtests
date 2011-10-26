@@ -598,3 +598,130 @@ class TestManager(object):
           tests.append(TestSuite(modname, test_name, filename))
 
         return tests
+
+#########################################################################
+# Class to handle the environment
+#########################################################################
+class MantidFrameworkConfig:
+
+    def __init__(self, mantidDir=None, sourceDir=None):
+        # force the environment variable
+        if mantidDir is not None:
+            os.environ['MANTIDPATH'] = mantidDir
+
+        # add it to the python path
+        directory = os.getenv("MANTIDPATH")
+        if directory is None:
+            raise RuntimeError("MANTIDPATH not found.")
+        if not os.path.isfile(os.path.join(directory, "MantidPlot")):
+            raise RuntimeError("Did not find MantidPlot in %s" % directory)
+        else:
+            sys.path.append(directory)
+
+        self.__sourceDir = self.__locateSourceDir(sourceDir)
+
+        # add location of stress tests
+        #stressmodule_dir = locateStressTestFramework()
+        #sys.path.append(stressmodule_dir)
+
+        # add location of the analysis tests
+        sys.path.insert(0,self.__locateTestsDir())
+
+        # setup the rest of the magic directories
+        parentDir = os.path.split(self.__sourceDir)[0]
+        self.__saveDir = os.path.join(parentDir, "logs/").replace('\\','/')
+        self.__dataDirs = [os.path.join(parentDir, "SystemTests"),
+                os.path.join(parentDir, "SystemTests/AnalysisTests/ReferenceResults"),
+                os.path.join(parentDir, "Data"),
+                os.path.join(parentDir, "Data/LOQ"),
+                os.path.join(parentDir, "Data/SANS2D"),
+                self.__saveDir
+                ]
+
+    def __locateSourceDir(self, suggestion):
+        if suggestion is None:
+            loc = os.path.abspath(__file__)
+            suggestion = os.path.split(loc)[0] # get the directory
+        loc = os.path.abspath(suggestion)
+        loc = os.path.normpath(loc)
+
+        if os.path.isdir(loc):
+            return loc
+        else:
+            raise RuntimeError("Failed to find source directory")
+
+    def __locateTestsDir(self):
+        loc = os.path.join(self.__sourceDir, '../SystemTests/AnalysisTests')
+        loc = os.path.abspath(loc)
+        if os.path.isdir(loc):
+            return loc
+        else:
+            raise RuntimeError("'%s' is not a directory (AnalysisTests)" % loc)
+
+    def __getDataDirs(self):
+        # get the file of the python script
+        testDir = os.path.split(self.__sourceDir)[0]
+
+        # add things to the data search path
+        dirs =[]
+        dirs.append(os.path.join(testDir, "Data"))
+        dirs.append(os.path.join(testDir, "Data/LOQ"))
+        dirs.append(os.path.join(testDir, "Data/SANS2D"))
+        dirs.append(os.path.join(testDir, "SystemTests"))
+        dirs.append(os.path.join(testDir, \
+                                 "SystemTests/AnalysisTests/ReferenceResults"))
+        dirs.append(os.path.abspath(os.getenv("MANTIDPATH")))
+
+        dirs = [os.path.normpath(item) for item in dirs]
+
+        return dirs
+
+    def __moveFile(self, src, dst):
+        if os.path.exists(src):
+            import shutil
+            shutil.move(src, dst)
+
+    saveDir = property(lambda self: self.__saveDir)
+
+    def config(self):
+        if not os.path.exists(self.__saveDir):
+            print "Making directory %s to save results" % self.__saveDir
+            os.mkdir(self.__saveDir)
+        else:
+            if not os.path.isdir(self.__saveDir):
+                raise RuntimeError("%s is not a directory" % self.__saveDir)
+
+        from MantidFramework import *
+        mtd.initialise()
+
+        # backup the existing user properties so we can step all over it
+        self.__userPropsFile = mtd.settings.getUserFilename()
+        self.__userPropsFileBackup  = self.__userPropsFile + ".bak"
+        self.__userPropsFileSystest = self.__userPropsFile + ".systest"
+        self.__moveFile(self.__userPropsFile, self.__userPropsFileBackup)
+
+        # Up the log level so that failures can give useful information                                                        
+        mtd.settings['logging.loggers.root.level'] = 'information'
+        # Set the correct search path                                                                                          
+        data_path = ''
+        for dir in self.__dataDirs:
+            if not os.path.exists(dir):
+                raise RuntimeError('Directory ' + dir + ' was not found.')
+            search_dir = dir.replace('\\','/')
+            if not search_dir.endswith('/'):
+                search_dir += '/'
+                data_path += search_dir + ';'
+        mtd.settings['datasearch.directories'] = data_path
+
+        # Save path                                                                                                            
+        mtd.settings['defaultsave.directory'] = self.__saveDir
+
+        # set the data directories
+        #for direc in self.__dataDirs:
+        #    mtd.settings.appendDataSearchDir(direc)
+
+        mtd.settings.saveConfig(self.__userPropsFile)
+
+    def restoreconfig(self):
+        self.__moveFile(self.__userPropsFile, self.__userPropsFileSystest)
+        self.__moveFile(self.__userPropsFileBackup, self.__userPropsFile)
