@@ -337,12 +337,12 @@ class PythonTestRunner(object):
         else:
             esc = ''
 
-        self._code_prefix = 'import sys, time\n'
-        self._code_prefix += 'sys.path.insert(0, ' + esc + '"' + self._mtdpy_header + esc + '")\n' + \
-        'sys.path.append(' + esc + '"' + self._framework_path + esc + '")\n' + \
-        'sys.path.append(' + esc + '"' + self._test_dir + esc + '")\n' + \
-        'from MantidFramework import *\n' + \
-        'mtd.initialise()\n'
+        self._code_prefix = 'import sys;'
+        self._code_prefix += 'sys.path.insert(0, ' + esc + '"' + self._mtdpy_header + esc + '");' + \
+        'sys.path.append(' + esc + '"' + self._framework_path + esc + '");' + \
+        'sys.path.append(' + esc + '"' + self._test_dir + esc + '");' + \
+        'from MantidFramework import *;' + \
+        'mtd.initialise();'
         
     def getCodePrefix(self):
         '''
@@ -456,17 +456,18 @@ class TestSuite(object):
         return env
 
     def execute(self, runner):
-        pycode = 'import ' + self._modname + '\n'\
-                 + "from stresstesting import MantidStressTest\n"\
-                 + "if not hasattr(" + self._fullname + ", 'execute') or not issubclass(" + self._fullname + ",MantidStressTest): sys.exit("+str(PythonTestRunner.NOT_A_TEST)+")\n"\
-                 + "print time.strftime('%a, %d %b %Y %H:%M:%S', time.localtime()) + ': Executing " + self._fullname + "'\n"\
-                 + self._fullname + '().execute()\n'\
-                 + 'retcode = '+self._fullname + '().returnValidationCode('+str(PythonTestRunner.VALIDATION_FAIL_CODE)+')\n'\
+        print time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime()) + ': Executing ' + self._fullname
+        #         + 'from stresstesting import MantidStressTest\n'\
+        #         + "if not issubclass(" + self._fullname + ", MantidStressTest): sys.exit("+str(PythonTestRunner.NOT_A_TEST)+")\n"\
+        pycode = 'import ' + self._modname + ';'\
+                 + self._fullname + '().execute();'\
+                 + 'retcode = '+self._fullname + '().returnValidationCode('+str(PythonTestRunner.VALIDATION_FAIL_CODE)+');'\
                  + 'sys.exit(retcode)'
         # Start the new process
         self._result.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self._result.addItem(['test_date',self._result.date])
         retcode, output, err = runner.start(pycode)
+        
         if retcode == 0:
             status = 'success'
         elif retcode == 1:
@@ -567,8 +568,8 @@ class TestManager(object):
         '''
         tests = []
         pyfile = open(filename, 'r')
-        regex = re.compile('^class\s(.*)\(.*\)')
-        #regex = re.compile('^class\s(.*)\(.*MantidStressTest\)')
+        #regex = re.compile('^class\s(.*)\(.*\)')
+        regex = re.compile('^class\s(.*)\(.*MantidStressTest\)')
         modname = os.path.basename(filename)
         modname = modname.split('.py')[0]
         for line in pyfile:
