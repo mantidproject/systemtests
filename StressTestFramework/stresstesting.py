@@ -302,6 +302,8 @@ class PythonTestRunner(object):
     A base class to serve as a wrapper to actually run the tests in a specific 
     environment, i.e. console, gui
     '''
+    SUCCESS_CODE = 0
+    GENERIC_FAIL_CODE = 1
     SEGFAULT_CODE = 139
     VALIDATION_FAIL_CODE = 99
     NOT_A_TEST = 98
@@ -331,18 +333,23 @@ class PythonTestRunner(object):
     def setTestDir(self, test_dir):
         self._test_dir = os.path.abspath(test_dir).replace('\\','/')
 
-    def createCodePrefix(self):
+    def createCodePrefix(self, dataDirs):
         if self._using_escape == True:
             esc = '\\'
         else:
             esc = ''
 
-        self._code_prefix = 'import sys;'
-        self._code_prefix += 'sys.path.insert(0, ' + esc + '"' + self._mtdpy_header + esc + '");' + \
-        'sys.path.append(' + esc + '"' + self._framework_path + esc + '");' + \
-        'sys.path.append(' + esc + '"' + self._test_dir + esc + '");' + \
-        'from MantidFramework import *;' + \
-        'mtd.initialise();'
+        self._code_prefix = 'import sys, time\n'
+        self._code_prefix += 'sys.path.insert(0, ' + esc + '"' + self._mtdpy_header + esc + '")\n' + \
+        'sys.path.append(' + esc + '"' + self._framework_path + esc + '")\n' + \
+        'sys.path.append(' + esc + '"' + self._test_dir + esc + '")\n' + \
+        'from MantidFramework import *\n' + \
+        'mtd.initialise()\n'
+
+        if len(dataDirs) > 0:
+            for direc in dataDirs:
+                self._code_prefix += 'mtd.settings.appendDataSearchDir(' + esc + '"' \
+                    + str(direc) + esc + '")\n'
         
     def getCodePrefix(self):
         '''
@@ -468,9 +475,9 @@ class TestSuite(object):
         self._result.addItem(['test_date',self._result.date])
         retcode, output, err = runner.start(pycode)
         
-        if retcode == 0:
+        if retcode == PythonTestRunner.SUCCESS_CODE:
             status = 'success'
-        elif retcode == 1:
+        elif retcode == PythonTestRunner.GENERIC_FAIL_CODE:
             # This is most likely an algorithm failure, but it's not certain
             status = 'algorithm failure'
         elif retcode == PythonTestRunner.VALIDATION_FAIL_CODE:
@@ -507,7 +514,8 @@ class TestManager(object):
     This is the main interaction point for the framework.
     '''
 
-    def __init__(self, test_loc, runner = PythonConsoleRunner(), output = [TextResultReporter()]):
+    def __init__(self, test_loc, runner = PythonConsoleRunner(), output = [TextResultReporter()],
+                 dataDirs = []):
         '''Initialize a class instance'''
 
         # Check whether the MANTIDPATH variable is set
@@ -543,7 +551,7 @@ class TestManager(object):
             exit(2)
 
         # Create a prefix to use when executing the code
-        runner.createCodePrefix()
+        runner.createCodePrefix(dataDirs)
 
     def executeTests(self):
         # Get the defined tests
