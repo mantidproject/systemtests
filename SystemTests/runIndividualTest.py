@@ -14,8 +14,8 @@ import sys
 from systemtestlib import setMantidPath, setDataDirs
 
 # set up command line parser
-parser = optparse.OptionParser("Usage: %prog [options] filename[.testName]", None,
-                      optparse.Option, VERSION, 'error', info)
+parser = optparse.OptionParser("Usage: %prog [options] filename[.testName]",
+                               None, optparse.Option, VERSION, 'error', info)
 parser.add_option("-m", "--mantidpath", dest="mantidpath",
                   help="Location of mantid build")
 (options, args) = parser.parse_args()

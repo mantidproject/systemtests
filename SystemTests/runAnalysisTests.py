@@ -1,26 +1,43 @@
 #!/usr/bin/env python
 
-# quick bit of help information
-import sys
-if len(sys.argv) > 1 and (sys.argv[1] == '--help' or sys.argv[1] == '-h'):
-  print "Usage: %s [OPTIONS]" % sys.argv[0]
-  print
-  print "Valid options are:"
-  print "       -h,--help print this information"
-  print "       --email   send an email with test status."
-  sys.exit(0)
+from systemtestlib import *
 
-# Define some necessary paths
-stressmodule_dir = '../../Code/Tools/StressTestFramework'
-tests_dir = 'AnalysisTests'
+# quick bit of help information
+VERSION = "1.1"
+import optparse
+parser = optparse.OptionParser("Usage: %prog [options]", None,
+                               optparse.Option, VERSION, 'error', "")
+parser.add_option("-m", "--mantidpath", dest="mantidpath",
+                  help="Location of mantid build")
+parser.add_option("", "--email", action="store_true",
+                  help="send an email with test status.")
+parser.add_option("", "--runtimeDataDir", action="store_true",
+                  help="Detect and declare DataDirectory for the mantid framework at runtime. Default = False")
+(options, args) = parser.parse_args()
+
+# add the correct paths
+try:
+  setMantidPath(options.mantidpath)
+except RuntimeError, e:
+  parser.error(e)
+
+# initialise the mantid framework
+from MantidFramework import *
+mtd.initialise()
+setDataDirs(mtd)
 
 # Import the stress manager definition
-sys.path.append(stressmodule_dir)
 import stresstesting
 import EmailResultReporter as em
 
+if options.runtimeDataDir:
+  dataDirs = getDataDirs()
+else:
+  dataDirs = []
+
 email_reporter = em.EmailResultReporter()
-mgr = stresstesting.TestManager(tests_dir, output = [email_reporter])
+mgr = stresstesting.TestManager(locateTestsDir(), output = [email_reporter],
+                                dataDirs=dataDirs)
 mgr.executeTests()
 
 success = True

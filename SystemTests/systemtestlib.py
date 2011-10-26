@@ -17,7 +17,7 @@ def setMantidPath(directory = None):
     sys.path.append(stressmodule_dir)
 
     # add location of the analysis tests
-    tests_dir = os.path.join(locateSourceDir(), 'AnalysisTests')
+    tests_dir = locateTestsDir()
     sys.path.insert(0,tests_dir)
 
 def locateSourceDir():
@@ -35,18 +35,37 @@ def locateStressTestFramework():
     if os.path.isdir(loc):
         return loc
     else:
-        raise RuntimeError("'%s' is not a directory" % loc)
+        raise RuntimeError("'%s' is not a directory (StressTestFramework)" \
+                               % loc)
+
+def locateTestsDir():
+    loc = os.path.join(locateSourceDir(), 'AnalysisTests')
+    loc = os.path.abspath(loc)
+    if os.path.isdir(loc):
+        return loc
+    else:
+        raise RuntimeError("'%s' is not a directory (AnalysisTests)" % loc)
+
 
 def setDataDirs(mtd):
+    for direc in getDataDirs():
+        mtd.settings.appendDataSearchDir(direc)
+
+def getDataDirs():
     # get the file of the python script
     sourceDir = locateSourceDir()
     testDir = os.path.split(sourceDir)[0]
 
     # add things to the data search path
-    mtd.settings.appendDataSearchDir(os.path.join(testDir, "Data"))
-    mtd.settings.appendDataSearchDir(os.path.join(testDir,
+    dirs =[]
+    dirs.append(os.path.join(testDir, "Data"))
+    dirs.append(os.path.join(testDir, "Data/LOQ"))
+    dirs.append(os.path.join(testDir, "Data/SANS2D"))
+    dirs.append(os.path.join(testDir, "SystemTests")
+    dirs.append(os.path.join(testDir,
                              "SystemTests/AnalysisTests/ReferenceResults"))
-    mtd.settings.appendDataSearchDir(os.path.join(testDir, "Data/LOQ"))
-    mtd.settings.appendDataSearchDir(os.path.join(testDir, "Data/SANS2D"))
-    mtd.settings.appendDataSearchDir(os.path.join(testDir, "Data/Polref Scan"))
-    mtd.settings.appendDataSearchDir(os.path.abspath(os.getenv("MANTIDPATH")))
+    dirs.append(os.path.abspath(os.getenv("MANTIDPATH")))
+
+    dirs = [os.path.normpath(item) for item in dirs]
+
+    return dirs
