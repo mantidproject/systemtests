@@ -65,7 +65,6 @@ passed = []
 failed = []
 for name in attributes:
     attr = getattr(module, name)
-    print attr
     if hasattr(attr, 'execute') and issubclass(attr,MantidStressTest):
         if test_to_run is not None and name != test_to_run:
             continue
