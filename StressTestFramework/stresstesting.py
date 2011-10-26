@@ -343,7 +343,7 @@ class PythonTestRunner(object):
     def setTestDir(self, test_dir):
         self._test_dir = os.path.abspath(test_dir).replace('\\','/')
 
-    def createCodePrefix(self, dataDirs):
+    def createCodePrefix(self):
         if self._using_escape == True:
             esc = '\\'
         else:
@@ -356,11 +356,6 @@ class PythonTestRunner(object):
         'from MantidFramework import *\n' + \
         'mtd.initialise()\n'
 
-        if len(dataDirs) > 0:
-            for direc in dataDirs:
-                self._code_prefix += 'mtd.settings.appendDataSearchDir(' + esc + '"' \
-                    + str(direc) + esc + '")\n'
-        
     def getCodePrefix(self):
         '''
         Return a prefix to the code that will be executed
@@ -524,8 +519,7 @@ class TestManager(object):
     This is the main interaction point for the framework.
     '''
 
-    def __init__(self, test_loc, runner = PythonConsoleRunner(), output = [TextResultReporter()],
-                 dataDirs = []):
+    def __init__(self, test_loc, runner = PythonConsoleRunner(), output = [TextResultReporter()]):
         '''Initialize a class instance'''
 
         # Check whether the MANTIDPATH variable is set
@@ -561,7 +555,9 @@ class TestManager(object):
             exit(2)
 
         # Create a prefix to use when executing the code
-        runner.createCodePrefix(dataDirs)
+        runner.createCodePrefix()
+
+    totalTests = property(lambda self: len(self._tests))
 
     def executeTests(self):
         # Get the defined tests
@@ -621,8 +617,7 @@ class MantidFrameworkConfig:
         self.__sourceDir = self.__locateSourceDir(sourceDir)
 
         # add location of stress tests
-        #stressmodule_dir = locateStressTestFramework()
-        #sys.path.append(stressmodule_dir)
+        self.__testDir = self.__locateTestsDir()
 
         # add location of the analysis tests
         sys.path.insert(0,self.__locateTestsDir())
@@ -682,6 +677,7 @@ class MantidFrameworkConfig:
             shutil.move(src, dst)
 
     saveDir = property(lambda self: self.__saveDir)
+    testDir = property(lambda self: self.__testDir)
 
     def config(self):
         if not os.path.exists(self.__saveDir):

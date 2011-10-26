@@ -26,29 +26,25 @@ import stresstesting
 mtdconf = stresstesting.MantidFrameworkConfig(options.mantidpath)
 mtdconf.config()
 
-# Import the stress manager definition
-#import systemtestlib 
-
-
-# Define some necessary paths
-tests_dir = '../SystemTests/AnalysisTests'
-#tests_dir = '../DummyTests'
-
+# run the tests
 reporter = stresstesting.XmlResultReporter()
-mgr = stresstesting.TestManager(tests_dir, output = [reporter])
+mgr = stresstesting.TestManager(mtdconf.testDir, output = [reporter])
 try:
   mgr.executeTests()
 except KeyboardInterrupt:
   pass
 
+# report the errors
 success = reporter.reportStatus()
-
 xml_report = open(os.path.join(mtdconf.saveDir, "SystemTestsReport.xml"),'w')
 xml_report.write(reporter.getResults())
 xml_report.close()
 
+# put the configuratoin back to its original state
 mtdconf.restoreconfig()
 
+print
+print 'Attempted %d tests' % mgr.totalTests
 print 'All tests passed? ' + str(success)
 if success==False:
 	sys.exit(1)
