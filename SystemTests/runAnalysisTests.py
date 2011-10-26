@@ -28,14 +28,13 @@ setDataDirs(mtd)
 
 # Import the stress manager definition
 import stresstesting
-import EmailResultReporter as em
 
 if options.runtimeDataDir:
   dataDirs = getDataDirs()
 else:
   dataDirs = []
 
-email_reporter = em.EmailResultReporter()
+email_reporter = stresstesting.EmailResultReporter()
 mgr = stresstesting.TestManager(locateTestsDir(), output = [email_reporter],
                                 dataDirs=dataDirs)
 mgr.executeTests()

@@ -295,6 +295,16 @@ class TextResultReporter(ResultReporter):
         print '*' * nstars
 
 #########################################################################
+# A class to report results as junit xml
+#########################################################################
+from xmlreporter import XmlResultReporter
+
+#########################################################################
+# A class to report results via email
+#########################################################################
+from emailreporter import EmailResultReporter
+
+#########################################################################
 # A base class for a TestRunner
 #########################################################################
 class PythonTestRunner(object):
@@ -521,7 +531,7 @@ class TestManager(object):
         # Check whether the MANTIDPATH variable is set
         mtdheader_dir = os.getenv("MANTIDPATH")
         if mtdheader_dir is None:
-            sys.exit('MANTIDPATH variable not be found. Please ensure Mantid is installed correctly.')
+            raise RuntimeError('MANTIDPATH variable not be found. Please ensure Mantid is installed correctly.')
 
         # Runners and reporters    
         self._runner = runner
