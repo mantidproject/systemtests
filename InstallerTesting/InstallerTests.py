@@ -211,7 +211,7 @@ except Exception, err:
 log("Running system tests. Log files are: logs/testsRun.log and logs/testsRun.err")
 try:
     if out2stdout:
-        p = subprocess.Popen('python runSystemTests.py',shell=True) # no PIPE: print on screen for debugging
+        p = subprocess.Popen('python runSystemTests.py --disablepropmake',shell=True) # no PIPE: print on screen for debugging
         p.wait()
     else:
         p = subprocess.Popen('python runSystemTests.py',stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
