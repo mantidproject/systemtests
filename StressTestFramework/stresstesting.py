@@ -455,6 +455,9 @@ class TestSuite(object):
         sysinfo = platform.uname()
         self._result.addItem(['host_name', sysinfo[1]])
         self._result.addItem(['environment', self.envAsString()])
+        self._result.status = 'skipped' # the test has been skipped until it has been executed
+
+    status = property(lambda self: self._result.status)
 
     def envAsString(self):
         if os.name == 'nt':
@@ -480,6 +483,7 @@ class TestSuite(object):
         self._result.addItem(['test_date',self._result.date])
         retcode, output, err = runner.start(pycode)
         
+
         if retcode == PythonTestRunner.SUCCESS_CODE:
             status = 'success'
         elif retcode == PythonTestRunner.GENERIC_FAIL_CODE:
@@ -507,6 +511,10 @@ class TestSuite(object):
             if len(entries) == 3 and entries[0] == MantidStressTest.PREFIX:
                 self._result.addItem([entries[1], entries[2]])
                 
+    def setOutputMsg(self, msg=None):
+        if msg is not None:
+            self._result.output = msg
+
     def reportResults(self, reporters):
         for r in reporters:
             r.dispatchResults(self._result)
@@ -554,16 +562,36 @@ class TestManager(object):
             print 'No tests defined in ' + test_dir + '. Please ensure all test classes sub class stresstesting.MantidStressTest.'
             exit(2)
 
+        self._passedTests = 0
+        self._skippedTests = 0
+        self._failedTests = 0
+        self._lastTestRun = 0
+
         # Create a prefix to use when executing the code
         runner.createCodePrefix()
 
     totalTests = property(lambda self: len(self._tests))
+    skippedTests = property(lambda self: (self.totalTests - self._passedTests - self._failedTests))
+    passedTests = property(lambda self: self._passedTests)
+    failedTests = property(lambda self: self._failedTests)
 
     def executeTests(self):
         # Get the defined tests
         for suite in self._tests:
             suite.execute(self._runner)
+	    if suite.status == "passed":
+                self._passedTests += 1
+	    elif suite.status == "skipped":
+                self._skippedTests += 1
+            else:
+                self._failedTests += 1
             suite.reportResults(self._reporters)
+            self._lastTestRun += 1
+
+    def markSkipped(self, reason=None):
+        for suite in self._tests[self._lastTestRun:]:
+            suite.setOutputMsg(reason)
+            suite.reportResults(self._reporters) # just let people know you were skipped
          
     def loadTestsFromDir(self, test_dir):
         ''' Load all of the tests defined in the given directory'''
@@ -687,7 +715,7 @@ class MantidFrameworkConfig:
             if not os.path.isdir(self.__saveDir):
                 raise RuntimeError("%s is not a directory" % self.__saveDir)
 
-        from MantidFramework import *
+        from MantidFramework import mtd
         mtd.initialise()
 
         # backup the existing user properties so we can step all over it

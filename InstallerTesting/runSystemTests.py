@@ -10,8 +10,6 @@ parser.add_option("-m", "--mantidpath", dest="mantidpath",
                   help="Location of mantid build")
 parser.add_option("", "--email", action="store_true",
                   help="send an email with test status.")
-parser.add_option("", "--runtimeDataDir", action="store_true",
-                  help="Detect and declare DataDirectory for the mantid framework at runtime. Default = False")
 parser.add_option("", "--frameworkLoc",
 		  help="location of the stress test framework (default=%s)" % DEFAULT_FRAMEWORK_LOC)
 parser.set_defaults(frameworkLoc=DEFAULT_FRAMEWORK_LOC, mantidpath=None)
@@ -32,7 +30,7 @@ mgr = stresstesting.TestManager(mtdconf.testDir, output = [reporter])
 try:
   mgr.executeTests()
 except KeyboardInterrupt:
-  pass
+  mgr.markSkipped("KeyboardInterrupt")
 
 # report the errors
 success = reporter.reportStatus()
@@ -44,7 +42,10 @@ xml_report.close()
 mtdconf.restoreconfig()
 
 print
-print 'Attempted %d tests' % mgr.totalTests
+percent = 1.-float(mgr.failedTests)/float(mgr.totalTests)
+percent = int(100. * percent)
+print "%d%s tests passed, %d tests failed out of %d (%d skipped)" % \
+          (percent, '%', mgr.failedTests, mgr.totalTests, mgr.skippedTests)
 print 'All tests passed? ' + str(success)
 if success==False:
 	sys.exit(1)
