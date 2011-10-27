@@ -14,9 +14,8 @@ parser.add_option("", "--frameworkLoc",
 		  help="location of the stress test framework (default=%s)" % DEFAULT_FRAMEWORK_LOC)
 parser.add_option("", "--disablepropmake", action="store_false", dest="makeprop",
                   help="By default this will move your properties file out of the way and create a new one. This option turns off this behavior.")
-parser.set_defaults(frameworkLoc=DEFAULT_FRAMEWORK_LOC, mantidpath=None)
+parser.set_defaults(frameworkLoc=DEFAULT_FRAMEWORK_LOC, mantidpath=None, makeprop=True)
 (options, args) = parser.parse_args()
-
 
 # import the stress testing framework
 import sys
