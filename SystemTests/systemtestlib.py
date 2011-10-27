@@ -61,7 +61,7 @@ def getDataDirs():
     dirs.append(os.path.join(testDir, "Data"))
     dirs.append(os.path.join(testDir, "Data/LOQ"))
     dirs.append(os.path.join(testDir, "Data/SANS2D"))
-    dirs.append(os.path.join(testDir, "SystemTests")
+    dirs.append(os.path.join(testDir, "SystemTests"))
     dirs.append(os.path.join(testDir,
                              "SystemTests/AnalysisTests/ReferenceResults"))
     dirs.append(os.path.abspath(os.getenv("MANTIDPATH")))
