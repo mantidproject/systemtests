@@ -582,7 +582,7 @@ class TestManager(object):
         # Get the defined tests
         for suite in self._tests:
             suite.execute(self._runner)
-	    if suite.status == "passed":
+	    if suite.status == "success":
                 self._passedTests += 1
 	    elif suite.status == "skipped":
                 self._skippedTests += 1
