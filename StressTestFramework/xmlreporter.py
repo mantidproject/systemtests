@@ -42,7 +42,11 @@ class XmlResultReporter(stresstesting.ResultReporter):
 			self._skipped += 1
 			skipEl = self._doc.createElement('skipped')
 			if len(result.output) > 0:
-				skipEl.setAttribute('message', result.output)
+				if "Missing required file" in result.output:
+					skipEl.setAttribute('message', "MissingRequiredFile")
+					skipEl.appendChild(self._doc.createTextNode(result.output))
+				else:
+					skipEl.setAttribute('message', result.output)
 			elem.appendChild(skipEl)
 		elif result.status != 'success':
 			self._failures += 1

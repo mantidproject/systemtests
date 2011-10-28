@@ -69,6 +69,9 @@ class MantidStressTest(object):
         return None
 
     def requiredFiles(self):
+        '''
+        Override this method if you want to require files for the test.
+        '''
         return []
 
     def validateMethod(self):
@@ -88,10 +91,22 @@ class MantidStressTest(object):
         '''
         print self.PREFIX + self.DELIMITER + name + self.DELIMITER + str(value) + '\n',
         
+    def __verifyRequiredFiles(self):
+        foundAll = True
+        for filename in self.requiredFiles():
+            #print "Missing required file: '%s'" % filename
+            #foundAll = False
+            pass
+
+        if not foundAll:
+            sys.exit(PythonTestRunner.SKIP_TEST)
+
     def execute(self):
         '''
         Run the defined number of iterations of this test
         '''
+        self.__verifyRequiredFiles()
+
         # Start timer
         start = time.time()
         countmax = self.maxIterations() + 1
@@ -320,6 +335,7 @@ class PythonTestRunner(object):
     SEGFAULT_CODE = 139
     VALIDATION_FAIL_CODE = 99
     NOT_A_TEST = 98
+    SKIP_TEST = 97
 
     def __init__(self, need_escaping = False):
         self._mtdpy_header = ''
@@ -484,6 +500,9 @@ class TestSuite(object):
         # Start the new process
         self._result.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self._result.addItem(['test_date',self._result.date])
+        print ">>>>>>>>>>"
+        print pycode
+        print "<<<<<<<<<<"
         retcode, output, err = runner.start(pycode)
         
 
@@ -496,6 +515,8 @@ class TestSuite(object):
             status = 'failed validation'
         elif retcode == PythonTestRunner.SEGFAULT_CODE:
             status = 'crashed'
+        elif retcode == PythonTestRunner.SKIP_TEST:
+            status = 'skipped'
         elif retcode < 0:
             status = 'hung'
         else:
