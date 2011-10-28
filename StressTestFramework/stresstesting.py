@@ -68,6 +68,9 @@ class MantidStressTest(object):
         '''
         return None
 
+    def requiredFiles(self):
+        return []
+
     def validateMethod(self):
         '''
         Override this to specify which validation method to use. Look at the validate* methods to 
@@ -637,10 +640,14 @@ class MantidFrameworkConfig:
         directory = os.getenv("MANTIDPATH")
         if directory is None:
             raise RuntimeError("MANTIDPATH not found.")
-        if not os.path.isfile(os.path.join(directory, "MantidPlot")):
-            raise RuntimeError("Did not find MantidPlot in %s" % directory)
         else:
             sys.path.append(directory)
+        if sys.platform == 'win32':
+            if not os.path.isfile(os.path.join(directory, "MantidPlot.exe")):
+                raise RuntimeError("Did not find MantidPlot.exe in %s" % directory)
+        else:
+            if not os.path.isfile(os.path.join(directory, "MantidPlot")):
+                raise RuntimeError("Did not find MantidPlot in %s" % directory)
 
         self.__sourceDir = self.__locateSourceDir(sourceDir)
 
