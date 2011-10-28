@@ -94,8 +94,9 @@ class MantidStressTest(object):
     def __verifyRequiredFiles(self):
         foundAll = True
         for filename in self.requiredFiles():
-            #print "Missing required file: '%s'" % filename
-            #foundAll = False
+            #if not os.path.isfile(filename):
+            #    print "Missing required file: '%s'" % filename
+            #    foundAll = False
             pass
 
         if not foundAll:
@@ -476,6 +477,7 @@ class TestSuite(object):
         self._result.addItem(['environment', self.envAsString()])
         self._result.status = 'skipped' # the test has been skipped until it has been executed
 
+    name = property(lambda self: self._fullname)
     status = property(lambda self: self._result.status)
 
     def envAsString(self):
@@ -489,6 +491,10 @@ class TestSuite(object):
             env = platform.dist()[0]
         return env
 
+    def markAsSkipped(self, reason):
+        self.setOutputMsg(reason)
+        self._result.status = 'skipped'
+
     def execute(self, runner):
         print time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime()) + ': Executing ' + self._fullname
         #         + 'from stresstesting import MantidStressTest\n'\
@@ -500,9 +506,6 @@ class TestSuite(object):
         # Start the new process
         self._result.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self._result.addItem(['test_date',self._result.date])
-        print ">>>>>>>>>>"
-        print pycode
-        print "<<<<<<<<<<"
         retcode, output, err = runner.start(pycode)
         
 
@@ -551,7 +554,8 @@ class TestManager(object):
     This is the main interaction point for the framework.
     '''
 
-    def __init__(self, test_loc, runner = PythonConsoleRunner(), output = [TextResultReporter()]):
+    def __init__(self, test_loc, runner = PythonConsoleRunner(), output = [TextResultReporter()],
+                 testsInclude=None, testsExclude=None):
         '''Initialize a class instance'''
 
         # Check whether the MANTIDPATH variable is set
@@ -581,7 +585,7 @@ class TestManager(object):
             sys.path.append(test_dir)
             runner.setTestDir(test_dir)
             self._tests = self.loadTestsFromModule(os.path.basename(test_loc))
-            
+
         if len(self._tests) == 0:
             print 'No tests defined in ' + test_dir + '. Please ensure all test classes sub class stresstesting.MantidStressTest.'
             exit(2)
@@ -591,6 +595,9 @@ class TestManager(object):
         self._failedTests = 0
         self._lastTestRun = 0
 
+        self._testsInclude = testsInclude
+        self._testsExclude = testsExclude
+
         # Create a prefix to use when executing the code
         runner.createCodePrefix()
 
@@ -599,10 +606,22 @@ class TestManager(object):
     passedTests = property(lambda self: self._passedTests)
     failedTests = property(lambda self: self._failedTests)
 
+    def __shouldTest(self, suite):
+        if self._testsInclude is not None:
+            if not self._testsInclude in suite.name:
+                suite.markAsSkipped("NotIncludedTest")
+                return False
+        if self._testsExclude is not None:
+            if self._testsExclude in suite.name:
+                suite.markAsSkipped("ExcludedTest")
+                return False
+        return True
+
     def executeTests(self):
         # Get the defined tests
         for suite in self._tests:
-            suite.execute(self._runner)
+            if self.__shouldTest(suite):
+                suite.execute(self._runner)
 	    if suite.status == "success":
                 self._passedTests += 1
 	    elif suite.status == "skipped":

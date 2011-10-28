@@ -14,6 +14,10 @@ parser.add_option("", "--frameworkLoc",
 		  help="location of the stress test framework (default=%s)" % DEFAULT_FRAMEWORK_LOC)
 parser.add_option("", "--disablepropmake", action="store_false", dest="makeprop",
                   help="By default this will move your properties file out of the way and create a new one. This option turns off this behavior.")
+parser.add_option("-R", "--tests-regex", dest="testsInclude",
+                  help="String specifying which tests to run. Simply uses 'string in testname'.")
+parser.add_option("-E", "--excluderegex", dest="testsExclude",
+                  help="String specifying which tests to not run. Simply uses 'string in testname'.")
 parser.set_defaults(frameworkLoc=DEFAULT_FRAMEWORK_LOC, mantidpath=None, makeprop=True)
 (options, args) = parser.parse_args()
 
@@ -29,7 +33,8 @@ if options.makeprop:
 
 # run the tests
 reporter = stresstesting.XmlResultReporter()
-mgr = stresstesting.TestManager(mtdconf.testDir, output = [reporter])
+mgr = stresstesting.TestManager(mtdconf.testDir, output = [reporter],
+                                testsInclude=options.testsInclude, testsExclude=options.testsExclude)
 try:
   mgr.executeTests()
 except KeyboardInterrupt:
@@ -50,6 +55,9 @@ percent = 1.-float(mgr.failedTests)/float(mgr.totalTests)
 percent = int(100. * percent)
 print "%d%s tests passed, %d tests failed out of %d (%d skipped)" % \
           (percent, '%', mgr.failedTests, mgr.totalTests, mgr.skippedTests)
+if mgr.skippedTests == mgr.totalTests:
+  print "All tests were skipped"
+  success = False # fail if everything was skipped
 print 'All tests passed? ' + str(success)
 if success==False:
 	sys.exit(1)
