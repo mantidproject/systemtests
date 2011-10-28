@@ -92,12 +92,13 @@ class MantidStressTest(object):
         print self.PREFIX + self.DELIMITER + name + self.DELIMITER + str(value) + '\n',
         
     def __verifyRequiredFiles(self):
+        # by default everything is ok
         foundAll = True
+
         for filename in self.requiredFiles():
-            #if not os.path.isfile(filename):
-            #    print "Missing required file: '%s'" % filename
-            #    foundAll = False
-            pass
+            if not os.path.isfile(filename): # TODO should check data path
+                print "Missing required file: '%s'" % filename
+                foundAll = False
 
         if not foundAll:
             sys.exit(PythonTestRunner.SKIP_TEST)
