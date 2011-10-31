@@ -20,12 +20,14 @@ class XmlResultReporter(stresstesting.ResultReporter):
 		self._failures.sort()
 		self._skipped.sort()
 		print
-		print "SKIPPED:"
-		for test in self._skipped:
-			print test.name
-		print "FAILED:"
-		for test in self._failures:
-			print test.name
+		if len(self._skipped) > 0:
+			print "SKIPPED:"
+			for test in self._skipped:
+				print test.name
+		if len(self._failures) > 0:
+			print "FAILED:"
+			for test in self._failures:
+				print test.name
 
 		# return the xml document version
 		docEl = self._doc.documentElement
@@ -54,9 +56,9 @@ class XmlResultReporter(stresstesting.ResultReporter):
 			if len(result.output) > 0:
 				if "Missing required file" in result.output:
 					skipEl.setAttribute('message', "MissingRequiredFile")
-					skipEl.appendChild(self._doc.createTextNode(result.output))
 				else:
 					skipEl.setAttribute('message', result.output)
+				skipEl.appendChild(self._doc.createTextNode(result.output))
 			elem.appendChild(skipEl)
 		elif result.status != 'success':
 			self._failures.append(result)
