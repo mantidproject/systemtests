@@ -6,9 +6,8 @@ import stresstesting
 class XmlResultReporter(stresstesting.ResultReporter):
 
 	_time_taken = 0.0
-	_errors = 0
-	_failures = 0
-	_skipped = 0
+	_failures = []
+	_skipped = []
 	
 	def __init__(self):
 		self._doc = getDOMImplementation().createDocument(None,'testsuite',None)
@@ -17,12 +16,23 @@ class XmlResultReporter(stresstesting.ResultReporter):
 		return self._failures == 0
 
 	def getResults(self):
+		# print the command line summary version of the results
+		self._failures.sort()
+		self._skipped.sort()
+		print
+		print "SKIPPED:"
+		for test in self._skipped:
+			print test.name
+		print "FAILED:"
+		for test in self._failures:
+			print test.name
+
+		# return the xml document version
 		docEl = self._doc.documentElement
 		docEl.setAttribute('name','SystemTests')
 		docEl.setAttribute('tests',str(len(docEl.childNodes)))
-		docEl.setAttribute('errors',str(self._errors))
-		docEl.setAttribute('failures',str(self._failures))
-		docEl.setAttribute('skipped', str(self._skipped))
+		docEl.setAttribute('failures',str(len(self._failures)))
+		docEl.setAttribute('skipped', str(len(self._skipped)))
 		docEl.setAttribute('time',str(self._time_taken))
 		return self._doc.toxml()
 
@@ -39,7 +49,7 @@ class XmlResultReporter(stresstesting.ResultReporter):
 		elem.setAttribute('classname',class_name)
 		elem.setAttribute('name',name)
 		if result.status == 'skipped':
-			self._skipped += 1
+			self._skipped.append(result)
 			skipEl = self._doc.createElement('skipped')
 			if len(result.output) > 0:
 				if "Missing required file" in result.output:
@@ -49,7 +59,7 @@ class XmlResultReporter(stresstesting.ResultReporter):
 					skipEl.setAttribute('message', result.output)
 			elem.appendChild(skipEl)
 		elif result.status != 'success':
-			self._failures += 1
+			self._failures.append(result)
 			failEl = self._doc.createElement('failure')
 			failEl.setAttribute('file',result.filename)
 			output = ''
