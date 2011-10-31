@@ -2,7 +2,7 @@ import stresstesting
 from mantidsimple import *
 
 ''' Sample script from Tim Charlton. Described as Mantid version of quick:lam'''
-class AAASkipableTest(stresstesting.MantidStressTest):
+class SkipableTest(stresstesting.MantidStressTest):
     
   def runTest(self):
     print "Just want to have an intentionally skipped test"
