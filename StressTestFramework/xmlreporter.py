@@ -13,7 +13,7 @@ class XmlResultReporter(stresstesting.ResultReporter):
 		self._doc = getDOMImplementation().createDocument(None,'testsuite',None)
 
 	def reportStatus(self):
-		return self._failures == 0
+		return len(self._failures) == 0
 
 	def getResults(self):
 		# print the command line summary version of the results
