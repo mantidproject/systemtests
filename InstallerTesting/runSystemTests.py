@@ -3,9 +3,20 @@
 # set up the command line options
 VERSION = "1.1"
 DEFAULT_FRAMEWORK_LOC = "../StressTestFramework"
+
+info = []
+info.append("This program will configure mantid run all of the system tests located in")
+info.append("the 'SystemTests/AnalysisTests' directory and log the results in 'logs/'.")
+info.append("This program will create a temporary 'Mantid.user.properties' file which")
+info.append("it will rename to 'Mantid.user.properties.systest' upon completion. The")
+info.append("current version of the code does not print to stdout while the test is")
+info.append("running, so the impatient user may ^C to kill the process. In this case")
+info.append("all of the tests that haven't been run will be marked as skipped in the")
+info.append("full logs.")
+
 import optparse
 parser = optparse.OptionParser("Usage: %prog [options]", None,
-                               optparse.Option, VERSION, 'error', "")
+                               optparse.Option, VERSION, 'error', ' '.join(info))
 parser.add_option("-m", "--mantidpath", dest="mantidpath",
                   help="Location of mantid build")
 parser.add_option("", "--email", action="store_true",
