@@ -4,6 +4,9 @@ from mantidsimple import *
 ''' Simply tests that our LoadRaw and LoadISISNexus algorithms produce the same workspace'''
 class AzizAnalysis(stresstesting.MantidStressTest):
     
+  def requiredFiles(self):
+    return ["HRP39191.RAW", "hrpd_new_072_01_corr.cal", "HRP39187.RAW", 'AzizAnalysis.nxs']
+
   def runTest(self):
     #Load the Vanadium
     LoadRaw(Filename="HRP39191.RAW",OutputWorkspace="Vanadium")
