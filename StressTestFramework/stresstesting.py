@@ -529,6 +529,9 @@ class TestSuite(object):
         # Start the new process
         self._result.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self._result.addItem(['test_date',self._result.date])
+        print ">>>>>>>>>>"
+        print pycode
+        print "<<<<<<<<<<"
         retcode, output, err = runner.start(pycode)
         
 
