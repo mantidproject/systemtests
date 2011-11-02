@@ -99,7 +99,6 @@ class MantidStressTest(object):
         return os.path.exists(filename)
 
     def __verifyRequiredFiles(self):
-        print "self.__verifyRequiredFiles()" # REMOVE
         # first see if there is anything to do
         reqFiles = self.requiredFiles()
         if len(reqFiles) <= 0:
@@ -128,7 +127,6 @@ class MantidStressTest(object):
         '''
         Run the defined number of iterations of this test
         '''
-        print "self.execute()" # REMOVE
         self.__verifyRequiredFiles()
 
         # Start timer
@@ -392,12 +390,12 @@ class PythonTestRunner(object):
         else:
             esc = ''
 
-        self._code_prefix = 'import sys, time\n'
-        self._code_prefix += 'sys.path.insert(0, ' + esc + '"' + self._mtdpy_header + esc + '")\n' + \
-        'sys.path.append(' + esc + '"' + self._framework_path + esc + '")\n' + \
-        'sys.path.append(' + esc + '"' + self._test_dir + esc + '")\n' + \
-        'from MantidFramework import *\n' + \
-        'mtd.initialise()\n'
+        self._code_prefix = 'import sys, time;'
+        self._code_prefix += 'sys.path.insert(0, ' + esc + '"' + self._mtdpy_header + esc + '");' + \
+        'sys.path.append(' + esc + '"' + self._framework_path + esc + '");' + \
+        'sys.path.append(' + esc + '"' + self._test_dir + esc + '");' + \
+        'from MantidFramework import *;' + \
+        'mtd.initialise();'
 
     def getCodePrefix(self):
         '''
@@ -529,9 +527,6 @@ class TestSuite(object):
         # Start the new process
         self._result.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self._result.addItem(['test_date',self._result.date])
-        print ">>>>>>>>>>"
-        print pycode
-        print "<<<<<<<<<<"
         retcode, output, err = runner.start(pycode)
         
 
