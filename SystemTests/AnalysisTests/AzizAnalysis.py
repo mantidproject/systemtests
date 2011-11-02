@@ -1,5 +1,6 @@
 import stresstesting
 from mantidsimple import *
+print '*******************HELLO!!!!!!!!!!!!!!!!!!!!!!' # REMOVE
 
 ''' Simply tests that our LoadRaw and LoadISISNexus algorithms produce the same workspace'''
 class AzizAnalysis(stresstesting.MantidStressTest):
