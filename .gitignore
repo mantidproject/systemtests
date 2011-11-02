@@ -1,3 +1,5 @@
+# Ignore the logs directory that's generated when the tests are run
+logs/
 # No compiled python files
 *.pyc
 # No leftover subversion directories

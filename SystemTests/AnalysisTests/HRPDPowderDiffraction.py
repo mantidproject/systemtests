@@ -2,10 +2,10 @@ import stresstesting
 from mantidsimple import *
 
 ''' Simply tests that our LoadRaw and LoadISISNexus algorithms produce the same workspace'''
-class AzizAnalysis(stresstesting.MantidStressTest):
+class HRPDPowderDiffraction(stresstesting.MantidStressTest):
     
   def requiredFiles(self):
-    return ["HRP39191.RAW", "hrpd_new_072_01_corr.cal", "HRP39187.RAW", 'AzizAnalysis.nxs']
+    return ["HRP39191.RAW", "hrpd_new_072_01_corr.cal", "HRP39187.RAW", 'HRPDPowderDiffraction.nxs']
 
   def runTest(self):
     #Load the Vanadium
@@ -72,4 +72,4 @@ class AzizAnalysis(stresstesting.MantidStressTest):
   def validate(self):
     # Fitting parameters not saved to ParameterMap
     self.disableChecking.append("Instrument")
-    return 'Vanadium','AzizAnalysis.nxs'
+    return 'Vanadium','HRPDPowderDiffraction.nxs'
