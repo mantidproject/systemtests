@@ -99,6 +99,7 @@ class MantidStressTest(object):
         return os.path.exists(filename)
 
     def __verifyRequiredFiles(self):
+        print "self.__verifyRequiredFiles()" # REMOVE
         # first see if there is anything to do
         reqFiles = self.requiredFiles()
         if len(reqFiles) <= 0:
@@ -127,6 +128,7 @@ class MantidStressTest(object):
         '''
         Run the defined number of iterations of this test
         '''
+        print "self.execute()" # REMOVE
         self.__verifyRequiredFiles()
 
         # Start timer
