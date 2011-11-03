@@ -3,6 +3,7 @@ import sys
 import platform
 import shutil
 import subprocess
+import glob
 from getopt import getopt
 
 '''
@@ -114,33 +115,30 @@ class MantidInstaller:
         dist = platform.dist()
         if system == 'Windows':
             self.mantidPlotPath = 'C:/MantidInstall/bin/MantidPlot.exe'
-            if arch[0] == '32bit':
-                self.mantidInstaller = 'Mantid-32bit.msi'
-            else:
-                self.mantidInstaller = 'Mantid-64bit.msi'
+            pattern = 'mantid-*.msi'
             self.install = self.installWindows
         elif system == 'Linux':
             if dist[0] == 'Ubuntu':
-                ls_cmd = 'ls -t mantid_1*.deb | tail -1'
+                pattern = 'mantid_[0-9]*.deb'
                 self.install = self.installUbuntu
             elif dist[0] == 'redhat' and (dist[1].startswith('5.') or dist[1].startswith('6.')):
-                ls_cmd = 'ls -1 mantid-*.rpm | tail -1'
+                pattern = 'mantid-*.rpm'
                 self.install = self.installRHEL
             else:
-                raise Exception('Unknown Linux flavour: %s' % str(dist))
-            self.mantidInstallerPath = run(ls_cmd)
-            if not self.mantidInstallerPath:
-                raise Exception('Cannot find installer')
-            self.mantidInstallerPath = self.mantidInstallerPath.replace('\n','')
-            self.mantidInstaller = os.path.basename(self.mantidInstallerPath)
+                raise RuntimeError('Unknown Linux flavour: %s' % str(dist))
             self.mantidPlotPath = '/opt/Mantid/bin/MantidPlot'
         elif system == 'Darwin':
+            pattern = 'mantid-*.dmg'
             self.mantidPlotPath = '/Applications/MantidPlot.app/Contents/MacOS/MantidPlot'
-            self.mantidInstallerPath = run('ls -t mantid-*.dmg | head -1').replace('\n','')
-            self.mantidInstaller = os.path.basename(self.mantidInstallerPath)
             self.install = self.installDarwin
         else:
             scriptfailure('Unsupported platform ' + platform.system())
+        # Glob for packages
+        matches = glob.glob(os.path.abspath(pattern))
+        if len(matches) > 0: # Take the last one as it should have the highest version number
+            self.mantidInstaller = matches[-1]
+        else:
+            scriptfailure('Unable to find installer package in "%s"' % os.getcwd())
 
     '''
     Implementations of install() method for different systems
