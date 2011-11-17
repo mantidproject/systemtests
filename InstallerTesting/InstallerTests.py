@@ -2,7 +2,6 @@ import os
 import sys
 import platform
 import shutil
-import shlex
 import subprocess
 import glob
 from getopt import getopt
@@ -87,13 +86,14 @@ def scriptfailure(txt):
 
 def run(cmd):
     ''' Run a command '''
-    args = shlex.split(cmd)
     try:
-        p = subprocess.Popen(args,stdout=subprocess.PIPE)
+        p = subprocess.Popen(cmd,stdout=subprocess.PIPE,shell=True)
+        out = p.communicate()[0]
+        if p.returncode != 0:
+            raise Exception('Returned with code '+p.returncode+'\n'+out)
     except Exception,err:
         log('Error in subprocess '+cmd+':\n'+str(err))
         raise
-    out = p.communicate()[0]
     log(out)
     return out
 
