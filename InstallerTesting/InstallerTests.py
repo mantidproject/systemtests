@@ -2,6 +2,7 @@ import os
 import sys
 import platform
 import shutil
+import shlex
 import subprocess
 import glob
 from getopt import getopt
@@ -86,8 +87,9 @@ def scriptfailure(txt):
 
 def run(cmd):
     ''' Run a command '''
+    args = shlex.split(cmd)
     try:
-        p = subprocess.Popen(cmd,stdout=subprocess.PIPE,shell=True)
+        p = subprocess.Popen(args,stdout=subprocess.PIPE)
     except Exception,err:
         log('Error in subprocess '+cmd+':\n'+str(err))
         raise
@@ -146,7 +148,7 @@ class MantidInstaller:
     '''
 
     def installWindows(self):
-        log(run('msiexec /i '+self.mantidInstaller +  ' /quiet'))
+        run('msiexec /i '+self.mantidInstaller +  ' /quiet')
 
     def installUbuntu(self):
         run('sudo gdebi -n ' + self.mantidInstaller)
