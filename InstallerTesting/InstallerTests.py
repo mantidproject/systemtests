@@ -92,6 +92,7 @@ def run(cmd):
         log('Error in subprocess '+cmd+':\n'+str(err))
         raise
     out = p.communicate()[0]
+    log(out)
     return out
 
 def update(dir):
@@ -155,7 +156,8 @@ class MantidInstaller:
 
     def installDarwin(self):
         run('hdiutil attach '+ self.mantidInstaller)
-        mantidInstallerName =  self.mantidInstaller.replace('.dmg','')
+        mantidInstallerName = os.path.basename(self.mantidInstaller)
+        mantidInstallerName = mantidInstallerName.replace('.dmg','')
         run('sudo installer -pkg /Volumes/'+ mantidInstallerName+'/'+ mantidInstallerName+'.pkg -target "/"')
         run('hdiutil detach /Volumes/'+ mantidInstallerName+'/')
 
