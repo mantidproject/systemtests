@@ -87,10 +87,10 @@ def scriptfailure(txt):
 def run(cmd):
     ''' Run a command '''
     try:
-        p = subprocess.Popen(cmd,stdout=subprocess.PIPE,shell=True)
+        p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=True)
         out = p.communicate()[0]
         if p.returncode != 0:
-            raise Exception('Returned with code '+p.returncode+'\n'+out)
+            raise Exception('Returned with code '+str(p.returncode)+'\n'+out)
     except Exception,err:
         log('Error in subprocess '+cmd+':\n'+str(err))
         raise
@@ -154,7 +154,15 @@ class MantidInstaller:
         run('sudo gdebi -n ' + self.mantidInstaller)
 
     def installRHEL(self):
-        run('sudo rpm --upgrade ' + self.mantidInstaller)
+        try:
+            run('sudo rpm --upgrade ' + self.mantidInstaller)
+        except Exception, exc:
+            # This reports an error if the same package is already installed
+            if 'is already installed' in str(exc):
+                log("Current version is up-to-date, continuing.\n")
+                pass
+            else:
+                raise
 
     def installDarwin(self):
         run('hdiutil attach '+ self.mantidInstaller)
@@ -169,11 +177,11 @@ log("Using installer '%s'" % os.path.join(os.getcwd(), installer.mantidInstaller
 
 # Install the found package
 if doInstall:
-    log("Installing package '%s'\n" % installer.mantidInstaller)
+    log("Installing package '%s'" % installer.mantidInstaller)
     try:
         installer.install()
     except Exception,err:
-        scriptfailure("Installing failed.",str(err))
+        scriptfailure("Installing failed. "+str(err))
 
 log('Creating Mantid.user.properties file for this environment')
 # make sure the data are in the search path
