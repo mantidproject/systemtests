@@ -18,6 +18,7 @@ class HFIREff(stresstesting.MantidStressTest):
         Reduce1D()
                 
     def validate(self):
+        self.tolerance = 0.00001
         self.disableChecking.append('Instrument')
         self.disableChecking.append('Sample')
         self.disableChecking.append('SpectraMap')
