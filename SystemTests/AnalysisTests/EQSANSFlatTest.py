@@ -3,11 +3,23 @@ from MantidFramework import *
 mtd.initialise(False)
 from mantidsimple import *
 from reduction.instruments.sans.sns_command_interface import *
+import os
 
-# If true, this test will be skipped
-SKIP_ME = True
+DATADIR = os.path.join(os.path.expanduser("~"),'data','eqsans')
+OUTPUTDIR = os.path.join(os.path.expanduser("~"),'data','output')
 
 class EQSANSFlatTest(stresstesting.MantidStressTest):
+    def requiredFiles(self):
+        files = []
+        files.append(os.path.join(DATADIR,"EQSANS_5704_event.nxs"))
+        files.append(os.path.join(DATADIR,"EQSANS_5734_event.nxs"))
+        files.append(os.path.join(DATADIR,"EQSANS_5732_event.nxs"))
+        files.append(os.path.join(DATADIR,"EQSANS_5738_event.nxs"))
+        files.append(os.path.join(DATADIR,"EQSANS_5729_event.nxs"))
+        files.append(os.path.join(DATADIR,"EQSANS_5737_event.nxs"))
+        files.append(os.path.join(DATADIR,"EQSANS_5703_event.nxs"))
+        return files
+    
     def runTest(self):
         """
             System test for EQSANS.
@@ -15,21 +27,20 @@ class EQSANSFlatTest(stresstesting.MantidStressTest):
             It is used to verify that the complete reduction chain works
             and reproduces reference results.
         """
-        if SKIP_ME: return
-        
         EQSANS()
-        DataPath(os.path.expanduser("~")+"/data/eqsans")
+        DataPath(DATADIR)
         SolidAngle()
         DarkCurrent("5704")
         MonitorNormalization()
         AzimuthalAverage(n_bins=100, n_subpix=1, log_binning=False)
         IQxQy(nbins=100)
-        OutputPath(os.path.expanduser("~")+"/data/output")
+        OutputPath(OUTPUTDIR)
         UseConfigTOFTailsCutoff(True)
         PerformFlightPathCorrection(True)
         UseConfigMask(True)
         SetBeamCenter(89.6749, 129.693)
         SensitivityCorrection('5703', min_sensitivity=0.5, max_sensitivity=1.5, use_sample_dc=True)
+        #SensitivityCorrection(os.path.join(OUTPUTDIR,'EQSANS_sensitivity_5703.nxs', min_sensitivity=0.5, max_sensitivity=1.5, use_sample_dc=True)
         DivideByThickness(1)
         DirectBeamTransmission("5734", "5738", beam_radius=3)
         ThetaDependentTransmission(False)
@@ -45,8 +56,6 @@ class EQSANSFlatTest(stresstesting.MantidStressTest):
         Reduce1D()
                 
     def validate(self):
-        if SKIP_ME: return None
-        
         self.tolerance = 0.05
         self.disableChecking.append('Instrument')
         self.disableChecking.append('Sample')
