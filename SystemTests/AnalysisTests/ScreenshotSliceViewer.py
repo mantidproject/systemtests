@@ -4,7 +4,6 @@ of a GUI element and posts it to the WIKI"""
 import stresstesting
 from mantidsimple import *
 from PyQt4 import Qt
-import mantidqtpython
 
 import mwclient
 import datetime
@@ -103,6 +102,8 @@ Screenshot of %s taken on platform %s, on date: %s.
         
         # TODO: Finish this "test" and re-enable
         return
+        
+        import mantidqtpython
         
         # Create the application
         app = Qt.QApplication(sys.argv)
