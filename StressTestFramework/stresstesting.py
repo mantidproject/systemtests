@@ -277,47 +277,40 @@ class MantidStressTest(object):
 #########################################################################
      
 #======================================================================
-def replace_section_text(contents, section, newtext):
-    """ Search WIKI text to find a section text there.
+def replace_report_text(contents, section, newtext):
+    """ Search html report text to find a section text there.
     Sections start with 3 equals (===).
     Then, the contents of that section are replaced 
     
-    @param contents :: string of the entire wiki page
-    @param section :: string giving the text of the section
-    @param newtext :: replacement contents of that section.
+    @param contents :: string of the entire html report
+    @param section :: string giving the name of the section
+    @param newtext :: replacement contents of that section. No new lines!
     @return the new contents of the entire page """
     
     lines = contents.splitlines()
-    
     sections = dict()
-    
-    output = ""
-    current_section = ""
-    
     # Find the text in each section
     for line in lines:
-        line_mod = line.replace(" ", "")
-        # What section are we in?
-        if line_mod.startswith("==="):
-            current_section = line_mod[3:-3]
-            #print "Starting section %s"% current_section
-        else:
-            if not sections.has_key(current_section):
-                 sections[current_section] = ""
-            sections[current_section] += line + "\n"
+        if line.startswith("<!-- "):
+            # All lines should!
+            n = line.find(" ", 5)
+            if n > 0:
+                current_section = line[5:n].strip()
+                current_text =  line[n+3:]
+                sections[current_section] = current_text
             
     # Replace the section
-    sections[section] = newtext
+    sections[section] = newtext.replace("\n","")
     
     # Make the output
     items = sections.items()
     items.sort()
+    output = []
     for (section_name, text) in items:
-        output += "=== %s ===\n" % section_name
-        output += text
+        output.append("<!-- %s -->%s" % (section_name, text))
     
     # Return the total text
-    return output
+    return os.linesep.join(output)
     
 
 
@@ -333,34 +326,7 @@ class MantidScreenshotTest(MantidStressTest):
         """ Initialize the stress test. Connect to wiki site """
         MantidStressTest.__init__(self)
         
-        self.site = None
-        
-        # Find the user/name to login as
-        username = "Mantid Jenkins"
-        password = ""
-        inifile = os.path.join(os.getenv("HOME"), ".mantid_wiki_login.txt")
-        if os.path.exists(inifile):
-            password = open(inifile, 'r').read().strip()
-            lines = password.splitlines()
-            if len(lines) > 0:
-                password = lines[0].strip()
-        
-        if password=="":
-            print "No password found at '%s'. Skipping screenshot test!" % inifile
-            sys.exit(PythonTestRunner.SKIP_TEST)    
-        
-        try:
-            # Init site object
-            print "Connecting to site mantidproject.org"
-            self.site = mwclient.Site('www.mantidproject.org', path='/')
-            print "Logging in"
-            self.site.login(username, password)
-            
-        except:
-            # Mark the test as skipped if you could not log in.
-            print "Error logging in! Skipping screenshot test!"
-            sys.exit(PythonTestRunner.SKIP_TEST)
-        
+
        
     def uploadScreenshot(self, pix, basename):
         """Save and upload the screenshot to the wiki
@@ -370,44 +336,35 @@ class MantidScreenshotTest(MantidStressTest):
         
         import socket
         
-        env = envAsString()
-        filename = "%s.%s.png" % (basename, env)
-        pix.save(filename)
+        # Create the report directory if needed
+        if not os.path.exists("Report"):
+            os.mkdir("Report")
         
-        # Skip uploading if there was e.g. an error connecting
-        if self.site is None:
-            return;
+        env = envAsString()
+        filename = "%s.png" % (basename)
+        pix.save( os.path.join("Report", filename))
 
         # Make a descriptive string for screenshot
         now = time.strftime("%a, %d %b %Y, %H:%M:%S +0000", time.gmtime())
         hostname = socket.gethostname()
         desc = "Screenshot for %s test taken on platform %s, on host %s, on date %s" % (basename, env, hostname, now)
 
-        # Upload the screenshot
-        print "Uploading %s" % filename
-        f = open(filename, 'r')
-        # Ignore warnings of file exists, so allows overwriting
-        self.site.upload(file=f, filename=filename, description=desc, ignore=True )
-        f.close()
-        
-        # Modify the section in the wiki page
-        pagename = "SystemTests.%s" % basename
-        page = self.site.Pages[pagename]
-        print "Modifying wiki page %s" % (pagename)
-        contents = page.edit()
-        section = env
-        section_text = """
-Screenshot of %s taken on platform %s, by host %s, on date: %s.
-
-[[Image:%s|%s]]
-
-""" % (basename, env, hostname, now, filename, desc)
-
-        # This modifies the section
-        newcontents = replace_section_text(contents, section, section_text)
+        report_filename = "Report/index.htm"
+        if os.path.exists(report_filename):
+            contents = open(report_filename, 'r').read()
+        else:
+            contents = ""
+            
+        # Modify the section in the HTML page
+        section_text = '<h2>%s</h2>' % basename
+        section_text += '<table border="1"><tr><th>Platform</th><td>%s</td><th>Host</th><td>%s</td><th>Date</th><td>%s</td></tr></table> <br />' % (env, hostname, now)
+        section_text += '<img src="%s" alt="%s"></img>' % (filename, desc) 
+        contents = replace_report_text(contents, basename, section_text)
         
         # Save the contents
-        page.save(newcontents, summary="System tests - updating section %s" % section)
+        f = open(report_filename, 'w')
+        f.write(contents)
+        f.close()
         print "Done with %s." % (basename) 
     
 
