@@ -30,7 +30,7 @@ class ScreenshotSliceViewer(stresstesting.MantidScreenshotTest):
         BinMD("mdw", "uniform",  AxisAligned=1, AlignedDimX="x,0,10,30",  AlignedDimY="y,0,10,30",  AlignedDimZ="z,0,10,30", IterateEvents="1", Parallel="0")
 
         # Get the factory to create the SliceViewerWindow in C++
-        svw = mantidqtpython.WidgetFactory.Instance().createSliceViewerWindow("mdw", "")
+        svw = mantidqtpython.WidgetFactory.Instance().createSliceViewerWindow("uniform", "")
         svw.show()
         
         # Grab a screenshot
