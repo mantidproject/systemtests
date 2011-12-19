@@ -817,3 +817,18 @@ class MantidFrameworkConfig:
     def restoreconfig(self):
         self.__moveFile(self.__userPropsFile, self.__userPropsFileSystest)
         self.__moveFile(self.__userPropsFileBackup, self.__userPropsFile)
+
+
+#==============================================================================
+def envAsString():
+    """Returns a string describing the environment
+    (platform) of this test."""
+    if os.name == 'nt':
+        system = platform.system().lower()[:3]
+        arch = platform.architecture()[0][:2]
+        env = system + arch
+    elif os.name == 'mac':
+        env = platform.mac_ver()[0]
+    else:
+        env = platform.dist()[0]
+    return env
