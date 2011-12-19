@@ -32,6 +32,8 @@ import datetime
 import platform
 import subprocess
 import tempfile
+import mwclient
+
 
 #########################################################################
 # The base test class.
@@ -267,6 +269,149 @@ class MantidStressTest(object):
         i.e. remove workspaces etc
         '''
         pass
+    
+    
+
+#########################################################################
+# Special Screenshot Test 
+#########################################################################
+     
+#======================================================================
+def replace_section_text(contents, section, newtext):
+    """ Search WIKI text to find a section text there.
+    Sections start with 3 equals (===).
+    Then, the contents of that section are replaced 
+    
+    @param contents :: string of the entire wiki page
+    @param section :: string giving the text of the section
+    @param newtext :: replacement contents of that section.
+    @return the new contents of the entire page """
+    
+    lines = contents.splitlines()
+    
+    sections = dict()
+    
+    output = ""
+    current_section = ""
+    
+    # Find the text in each section
+    for line in lines:
+        line_mod = line.replace(" ", "")
+        # What section are we in?
+        if line_mod.startswith("==="):
+            current_section = line_mod[3:-3]
+            #print "Starting section %s"% current_section
+        else:
+            if not sections.has_key(current_section):
+                 sections[current_section] = ""
+            sections[current_section] += line + "\n"
+            
+    # Replace the section
+    sections[section] = newtext
+    
+    # Make the output
+    items = sections.items()
+    items.sort()
+    for (section_name, text) in items:
+        output += "=== %s ===\n" % section_name
+        output += text
+    
+    # Return the total text
+    return output
+    
+
+
+
+#======================================================================
+class MantidScreenshotTest(MantidStressTest):
+    '''Special system test that takes GUI screenshots
+    and sends them to the wiki for comparison.
+    No validation.
+    '''
+    
+    def __init__(self):
+        """ Initialize the stress test. Connect to wiki site """
+        MantidStressTest.__init__(self)
+        
+        self.site = None
+        
+        # Find the user/name to login as
+        username = "Mantid Jenkins"
+        password = ""
+        inifile = os.path.join(os.getenv("HOME"), ".mantid_wiki_login.txt")
+        if os.path.exists(inifile):
+            password = open(inifile, 'r').read().strip()
+            lines = password.splitlines()
+            if len(lines) > 0:
+                password = lines[0].strip()
+        
+        if password=="":
+            print "No password found at '%s'. Skipping screenshot test!" % inifile
+            sys.exit(PythonTestRunner.SKIP_TEST)    
+        
+        try:
+            # Init site object
+            print "Connecting to site mantidproject.org"
+            self.site = mwclient.Site('www.mantidproject.org', path='/')
+            print "Logging in"
+            self.site.login(username, password)
+            
+        except:
+            # Mark the test as skipped if you could not log in.
+            print "Error logging in! Skipping screenshot test!"
+            sys.exit(PythonTestRunner.SKIP_TEST)
+        
+       
+    def uploadScreenshot(self, pix, basename):
+        """Save and upload the screenshot to the wiki
+        
+        @param pix :: QPixmap with the screenshot
+        @param basename :: base name of the screenshot file """
+        
+        import socket
+        
+        env = envAsString()
+        filename = "%s.%s.png" % (basename, env)
+        pix.save(filename)
+        
+        # Skip uploading if there was e.g. an error connecting
+        if self.site is None:
+            return;
+
+        # Make a descriptive string for screenshot
+        now = time.strftime("%a, %d %b %Y, %H:%M:%S +0000", time.gmtime())
+        hostname = socket.gethostname()
+        desc = "Screenshot for %s test taken on platform %s, on host %s, on date %s" % (basename, env, hostname, now)
+
+        # Upload the screenshot
+        print "Uploading %s" % filename
+        f = open(filename, 'r')
+        # Ignore warnings of file exists, so allows overwriting
+        self.site.upload(file=f, filename=filename, description=desc, ignore=True )
+        f.close()
+        
+        # Modify the section in the wiki page
+        pagename = "SystemTests.%s" % basename
+        page = self.site.Pages[pagename]
+        print "Modifying wiki page %s" % (pagename)
+        contents = page.edit()
+        section = env
+        section_text = """
+Screenshot of %s taken on platform %s, by host %s, on date: %s.
+
+[[Image:%s|%s]]
+
+""" % (basename, env, hostname, now, filename, desc)
+
+        # This modifies the section
+        newcontents = replace_section_text(contents, section, section_text)
+        
+        # Save the contents
+        page.save(newcontents, summary="System tests - updating section %s" % section)
+        print "Done with %s." % (basename) 
+    
+
+
     
 #########################################################################
 # A class to store the results of a test 
@@ -676,14 +821,20 @@ class TestManager(object):
         pyfile = open(filename, 'r')
         #regex = re.compile('^class\s(.*)\(.*\)')
         regex = re.compile('^class\s(.*)\(.*MantidStressTest\)')
+        regex2 = re.compile('^class\s(.*)\(.*MantidScreenshotTest\)')
         modname = os.path.basename(filename)
         modname = modname.split('.py')[0]
         for line in pyfile:
           matcher = regex.match(line)
-          if matcher is None: continue
-          if len(matcher.groups()) != 1: continue
-          test_name = matcher.groups()[0]
-          tests.append(TestSuite(modname, test_name, filename))
+          if not matcher is None: 
+              if len(matcher.groups()) == 1: 
+                  test_name = matcher.groups()[0]
+                  tests.append(TestSuite(modname, test_name, filename))
+          matcher = regex2.match(line)
+          if not matcher is None: 
+              if len(matcher.groups()) == 1: 
+                  test_name = matcher.groups()[0]
+                  tests.append(TestSuite(modname, test_name, filename))
 
         return tests
 
@@ -830,5 +981,5 @@ def envAsString():
     elif os.name == 'mac':
         env = platform.mac_ver()[0]
     else:
-        env = platform.dist()[0]
+        env = platform.dist()[0] + "-" + platform.dist()[1]
     return env
