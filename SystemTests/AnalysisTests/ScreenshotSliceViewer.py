@@ -15,7 +15,7 @@ class ScreenshotSliceViewer(stresstesting.MantidScreenshotTest):
         CreateWorkspace('workspace2d', '1,2,3', '2,3,4')
         
         # TODO: Finish this "test" and re-enable
-        #return
+        return
         
         import mantidqtpython
         
