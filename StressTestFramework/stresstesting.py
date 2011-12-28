@@ -270,7 +270,38 @@ class MantidStressTest(object):
         '''
         pass
     
+    def assertDelta(self, value, expected, delta, msg=""):
+        """
+        Check that a value is within +- delta of the expected value
+        """
+        # Build the error message
+        if msg != "": msg += " "
+        msg += "Expected %g == %g within +- %g." % (value, expected, delta)
+        
+        if (value > expected+delta) or  (value < expected-delta):
+            raise Exception(msg)
     
+    def assertLessThan(self, value, expected, msg=""):
+        """
+        Check that a value is < expected.
+        """
+        # Build the error message
+        if msg != "": msg += " "
+        msg += "Expected %g < %g " % (value, expected)
+        
+        if (value >= expected):
+            raise Exception(msg)
+    
+    def assertGreaterThan(self, value, expected, msg=""):
+        """
+        Check that a value is > expected.
+        """
+        # Build the error message
+        if msg != "": msg += " "
+        msg += "Expected %g > %g " % (value, expected)
+        
+        if (value <= expected):
+            raise Exception(msg)
 
     
 #########################################################################
