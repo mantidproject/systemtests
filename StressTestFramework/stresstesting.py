@@ -59,6 +59,13 @@ class MantidStressTest(object):
     
     def runTest(self):
         raise NotImplementedError('"runTest(self)" should be overridden in a derived class')
+    
+    def skipTests(self):
+        '''
+        Override this to return True when the tests should be skipped for some
+        reason. If files are required, use requiredFiles() to specify them
+        '''
+        return False
 
     def validate(self):
         '''
@@ -129,7 +136,12 @@ class MantidStressTest(object):
         '''
         Run the defined number of iterations of this test
         '''
+        # Do we need to skip due to missing files?
         self.__verifyRequiredFiles()
+        
+        # A custom check for skipping the tests for other reasons
+        if self.skipTests():
+            sys.exit(PythonTestRunner.SKIP_TEST)
 
         # Start timer
         start = time.time()

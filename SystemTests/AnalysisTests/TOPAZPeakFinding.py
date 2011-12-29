@@ -8,6 +8,15 @@ import stresstesting
 from mantidsimple import *
 
 class TOPAZPeakFinding(stresstesting.MantidStressTest):
+    
+    def skipTests(self):
+        """Skip tests if memory available is insufficient (< 2 GB)"""
+        GB_avail = MemoryStats().availMem()/(1024.*1024.)
+        if (GB_avail < 2):
+            print "Insufficient memory available to run test! %g GB available." % GB_avail
+            return True
+        else:
+            return False    
 
     def runTest(self):
         # Load then convert to Q in the lab frame
