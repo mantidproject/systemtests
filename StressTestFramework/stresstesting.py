@@ -282,6 +282,16 @@ class MantidStressTest(object):
         '''
         pass
     
+    def assertTrue(self, value, msg=""):
+        """
+        Check that "value" is true.
+        """
+        # Build the error message
+        if msg == "": msg = "Expected True."
+        
+        if not value:
+            raise Exception(msg)
+        
     def assertDelta(self, value, expected, delta, msg=""):
         """
         Check that a value is within +- delta of the expected value
