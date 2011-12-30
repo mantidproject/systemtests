@@ -93,7 +93,7 @@ class MergeMDTest(stresstesting.MantidStressTest):
         
         for omega in xrange(0, 5):
             print "Starting omega %03d degrees" % omega
-            CreateMDWorkspace(Dimensions='3',Extents='-5,5,-5,5,-5,5',Names='Q_sample_x,Q_sample_y,Q__sample_z',Units='A,A,A',SplitInto='3',SplitThreshold='2000',MaxRecursionDepth='3',
+            CreateMDWorkspace(Dimensions='3',Extents='-5,5,-5,5,-5,5',Names='Q_sample_x,Q_sample_y,Q__sample_z',Units='A,A,A',SplitInto='3',SplitThreshold='200',MaxRecursionDepth='3',
             MinRecursionDepth='3', OutputWorkspace='CNCS_7860_event_MD')
             
             # Convert events to MD events
@@ -106,7 +106,9 @@ class MergeMDTest(stresstesting.MantidStressTest):
         
         MergeMD(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
             OutputFilename=r'merged.nxs',OutputWorkspace='merged')
-        
+        # 5 times the number of events in the output workspace.
+        self.assertDelta( mtd['merged'].getNPoints(), 553035, 1)
+
     def doValidation(self):
         # If we reach here, no validation failed
         return True
