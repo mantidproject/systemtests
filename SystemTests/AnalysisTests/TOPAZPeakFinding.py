@@ -83,9 +83,13 @@ class TOPAZPeakFinding(stresstesting.MantidStressTest):
         
         # Compare new and old UBs
         newUB = numpy.array(mtd["topaz_3132"].getSample().getOrientedLattice().getUB())
-        diff = abs(newUB - originalUB)
-        if numpy.any(diff > 0.001):
-            raise Exception("More than 0.001 difference between UB matrices: Q (lab frame):\n%s\nQ (sample frame):\n%s" % (originalUB, newUB) )
+        # UB Matrices are not necessarily the same, some of the H,K and/or L sign can be reversed
+        diff = abs(newUB - originalUB) < 0.001
+        diff2 = abs(newUB + originalUB) < 0.001
+        for c in xrange(3):
+            # This compares each column, allowing old == new OR old == -new
+            if not (numpy.all(diff[:,c]) or numpy.all(diff2[:,c])):
+                raise Exception("More than 0.001 difference between UB matrices: Q (lab frame):\n%s\nQ (sample frame):\n%s" % (originalUB, newUB) )
 
     def doValidation(self):
         # If we reach here, no validation failed
