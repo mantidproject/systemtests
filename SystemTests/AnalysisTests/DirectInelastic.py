@@ -17,8 +17,7 @@ def do_reduction(mono_run, white, van_run):
   reducer.sample_rmm = 435.96
   
     # Diagnostics
-  reducer.spectra_masks = reducer.diagnose(white, mono_run,remove_zero=True, tiny=0.0, large=1e10, median_lo=0.1,
-                                           median_hi=3.0, signif=3.3, bkgd_threshold=5.0, variation=1.1)
+  reducer.diagnose(white, sample=mono_run)
   
   reducer.convert_to_energy(mono_run=mono_run, ei=ei, white_run=white,
                             mono_van=van_run, abs_white_run=white)
