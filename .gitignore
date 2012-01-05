@@ -6,3 +6,6 @@ logs/
 .svn/
 # No text editor temporaries
 *~
+# No eclipse PyDev project files
+.project
+.pydevproject

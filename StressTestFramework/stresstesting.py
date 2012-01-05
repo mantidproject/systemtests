@@ -257,7 +257,7 @@ class MantidStressTest(object):
         
         # if a simple boolean then use this
         if type(validation) == bool:
-          return validation
+            return validation
 
         # switch based on validation methods
         method = self.validateMethod().lower()
@@ -276,9 +276,23 @@ class MantidStressTest(object):
         from the calling python subprocess
         """
         if self.doValidation():
-            return 0
+            retcode = 0
         else:
-            return code
+            retcode = code
+        if retcode == 0:
+            self._success = True
+        else:
+            self._success = False
+        return retcode
+
+    def succeeded(self):
+        """
+        Returns true if the test has been run and it succeeded, false otherwise
+        """
+        if hasattr(self, '_success'):
+            return self._success
+        else:
+            return False
 
     def cleanup(self):
         '''
@@ -587,6 +601,7 @@ class TestSuite(object):
                  + 'systest = ' + self._fullname + '();'\
                  + 'systest.execute();'\
                  + 'retcode = systest.returnValidationCode('+str(PythonTestRunner.VALIDATION_FAIL_CODE)+');'\
+                 + 'systest.cleanup();'\
                  + 'sys.exit(retcode)'
         # Start the new process
         self._result.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
