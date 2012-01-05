@@ -148,7 +148,8 @@ class MantidInstaller:
     '''
 
     def installWindows(self):
-        run('msiexec /i '+self.mantidInstaller +  ' /quiet')
+        # ADDLOCAL=ALL installs any optional features as well
+        run('msiexec /quiet /i '+ self.mantidInstaller + ' ADDLOCAL=ALL')
 
     def installUbuntu(self):
         run('sudo gdebi -n ' + self.mantidInstaller)
