@@ -251,8 +251,13 @@ class MantidStressTest(object):
         and validate(). If validate() is not overridden this will return True.
         """
         # if no validation is specified then it must be ok
-        if self.validate() == None:
+        validation = self.validate()
+        if validation is None:
             return True
+        
+        # if a simple boolean then use this
+        if type(validation) == bool:
+          return validation
 
         # switch based on validation methods
         method = self.validateMethod().lower()
@@ -579,8 +584,9 @@ class TestSuite(object):
         #         + 'from stresstesting import MantidStressTest\n'\
         #         + "if not issubclass(" + self._fullname + ", MantidStressTest): sys.exit("+str(PythonTestRunner.NOT_A_TEST)+")\n"\
         pycode = 'import ' + self._modname + ';'\
-                 + self._fullname + '().execute();'\
-                 + 'retcode = '+self._fullname + '().returnValidationCode('+str(PythonTestRunner.VALIDATION_FAIL_CODE)+');'\
+                 + 'systest = ' + self._fullname + '();'\
+                 + 'systest.execute();'\
+                 + 'retcode = systest.returnValidationCode('+str(PythonTestRunner.VALIDATION_FAIL_CODE)+');'\
                  + 'sys.exit(retcode)'
         # Start the new process
         self._result.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
