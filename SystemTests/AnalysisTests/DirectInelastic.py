@@ -36,6 +36,7 @@ class ReduceMonoFromFile(stresstesting.MantidStressTest):
     # Need to disable checking of the Spectra-Detector map because it isn't
     # fully saved out to the nexus file; some masked detectors should be picked
     # up with by the mask values in the spectra
+    self.tolerance = 1e-7
     self.disableChecking.append('SpectraMap')
     self.disableChecking.append('Instrument')
     return '11015.spe','DI.ReduceMonoFromFile.nxs'
@@ -60,6 +61,7 @@ class ReduceMonoFromWorkspace(stresstesting.MantidStressTest):
     # Need to disable checking of the Spectra-Detector map because it isn't
     # fully saved out to the nexus file; some masked detectors should be picked
     # up with by the mask values in the spectra
+    self.tolerance = 1e-7
     self.disableChecking.append('SpectraMap')
     self.disableChecking.append('Instrument')
     return '11015.spe','DI.ReduceMonoFromFile.nxs'
