@@ -125,7 +125,7 @@ class MantidInstaller:
                 pattern = 'mantid_[0-9]*.deb'
                 self.install = self.installUbuntu
             elif dist[0] == 'redhat' and (dist[1].startswith('5.') or dist[1].startswith('6.')):
-                pattern = 'mantid-*.rpm'
+                pattern = 'mantid*.rpm'
                 self.install = self.installRHEL
             else:
                 raise RuntimeError('Unknown Linux flavour: %s' % str(dist))
@@ -138,7 +138,13 @@ class MantidInstaller:
             scriptfailure('Unsupported platform ' + platform.system())
         # Glob for packages
         matches = glob.glob(os.path.abspath(pattern))
-        if len(matches) > 0: # Take the last one as it should have the highest version number
+        if len(matches) > 0: 
+            # Make sure we don't get Vates
+            for m in matches:
+                if 'vates'in matches:
+                    matches.remove(m)
+        # Take the last one as it should have the highest version number
+        if len(matches) > 0: 
             self.mantidInstaller = matches[-1]
         else:
             scriptfailure('Unable to find installer package in "%s"' % os.getcwd())
