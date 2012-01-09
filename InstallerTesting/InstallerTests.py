@@ -140,9 +140,9 @@ class MantidInstaller:
         matches = glob.glob(os.path.abspath(pattern))
         if len(matches) > 0: 
             # Make sure we don't get Vates
-            for m in matches:
-                if 'vates'in matches:
-                    matches.remove(m)
+            for match in matches:
+                if 'vates'in match:
+                    matches.remove(match)
         # Take the last one as it should have the highest version number
         if len(matches) > 0: 
             self.mantidInstaller = matches[-1]
