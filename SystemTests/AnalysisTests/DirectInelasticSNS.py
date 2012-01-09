@@ -35,7 +35,7 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
             temp = os.path.join(d, 'SEQ_12384_event.nxs')
             if os.path.exists(temp):
                 filename=temp
-        self.cleanu()
+        self.cleanup()
         os.mkdir(self.customDataDir)
         shutil.copyfile(filename,os.path.join(self.customDataDir,'SEQ_12384_event.nxs'))
         shutil.copyfile(filename,os.path.join(self.customDataDir,'SEQ_12385_event.nxs'))
@@ -144,7 +144,7 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
         return ['SEQ_12384_event.nxs']
 
 
-    def cleanu(self):
+    def cleanup(self):
         for ws in ['IWS', 'OWST', 'VAN', 'monitor_ws']:
             if mtd.workspaceExists(ws):
                 mtd.deleteWorkspace(ws)
