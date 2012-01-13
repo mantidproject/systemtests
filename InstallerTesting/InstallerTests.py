@@ -146,6 +146,8 @@ class MantidInstaller:
         # Take the last one as it should have the highest version number
         if len(matches) > 0: 
             self.mantidInstaller = matches[-1]
+            if system == 'Linux' and 'nightly' in self.mantidInstaller:
+                self.mantidPlotPath = '/opt/mantidnightly/bin/MantidPlot'
         else:
             scriptfailure('Unable to find installer package in "%s"' % os.getcwd())
 
