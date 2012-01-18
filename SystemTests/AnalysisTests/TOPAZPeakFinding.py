@@ -5,19 +5,13 @@ them.
 """
 
 import stresstesting
-from mantidsimple import *
 
 class TOPAZPeakFinding(stresstesting.MantidStressTest):
     
-    def skipTests(self):
-        """Skip tests if memory available is insufficient (< 2 GB)"""
-        GB_avail = MemoryStats().availMem()/(1024.*1024.)
-        if (GB_avail < 2):
-            print "Insufficient memory available to run test! %g GB available." % GB_avail
-            return True
-        else:
-            return False    
-
+    def requiredMemoryMB(self):
+        """ Require about 2GB free """
+        return 2000
+    
     def runTest(self):
         # Load then convert to Q in the lab frame
         LoadEventNexus(Filename=r'TOPAZ_3132_event.nxs',OutputWorkspace='topaz_3132')
