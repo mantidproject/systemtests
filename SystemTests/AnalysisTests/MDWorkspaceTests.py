@@ -6,6 +6,7 @@ file-backed MDWorkspaces.
 import stresstesting
 from mantidsimple import *
 
+###############################################################################
 class PlusMDTest(stresstesting.MantidStressTest):
     
     def compare_binned(self, wsname):
@@ -85,6 +86,8 @@ class PlusMDTest(stresstesting.MantidStressTest):
         return True
 
 
+
+###############################################################################
 class MergeMDTest(stresstesting.MantidStressTest):
     
     def runTest(self):
@@ -104,7 +107,7 @@ class MergeMDTest(stresstesting.MantidStressTest):
         
             SaveMD("CNCS_7860_event_MD", "CNCS_7860_event_rotated_%03d.nxs" % omega)
         
-        MergeMD(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
+        MergeMDFiles(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
             OutputFilename=r'merged.nxs',OutputWorkspace='merged')
         # 5 times the number of events in the output workspace.
         self.assertDelta( mtd['merged'].getNPoints(), 553035, 1)
