@@ -3,8 +3,9 @@ System test that loads TOPAZ single-crystal data,
 converts to Q space, finds peaks and indexes
 them.
 """
-
 import stresstesting
+import numpy
+from mantidsimple import *
 
 class TOPAZPeakFinding(stresstesting.MantidStressTest):
     
