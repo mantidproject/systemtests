@@ -34,7 +34,6 @@ import subprocess
 import tempfile
 import mwclient
 
-
 #########################################################################
 # The base test class.
 #########################################################################
@@ -63,7 +62,8 @@ class MantidStressTest(object):
     def skipTests(self):
         '''
         Override this to return True when the tests should be skipped for some
-        reason. If files are required, use requiredFiles() to specify them
+        reason. 
+        See also: requiredFiles() and requiredMemoryMB()
         '''
         return False
 
@@ -80,8 +80,17 @@ class MantidStressTest(object):
     def requiredFiles(self):
         '''
         Override this method if you want to require files for the test.
+        Return a list of files.
         '''
         return []
+    
+    def requiredMemoryMB(self):
+        '''
+        Override this method to specify the amount of free memory,
+        in megabytes, that is required to run the test.
+        The test is skipped if there is not enough memory.
+        '''
+        return 0
 
     def validateMethod(self):
         '''
@@ -131,6 +140,19 @@ class MantidStressTest(object):
 
         if not foundAll:
             sys.exit(PythonTestRunner.SKIP_TEST)
+            
+    def __verifyMemory(self):
+        """ Do we need to skip due to lack of memory? """
+        required = self.requiredMemoryMB()
+        if required <= 0:
+            return
+        
+        # Check if memory is available
+        from mantidsimple import MemoryStats
+        MB_avail = MemoryStats().availMem()/(1024.)
+        if (MB_avail < required):
+            print "Insufficient memory available to run test! %g MB available, need %g MB." % (MB_avail,required)
+            sys.exit(PythonTestRunner.SKIP_TEST)
 
     def execute(self):
         '''
@@ -138,6 +160,8 @@ class MantidStressTest(object):
         '''
         # Do we need to skip due to missing files?
         self.__verifyRequiredFiles()
+        
+        self.__verifyMemory()
         
         # A custom check for skipping the tests for other reasons
         if self.skipTests():

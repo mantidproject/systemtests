@@ -139,13 +139,20 @@ class MantidInstaller:
         # Glob for packages
         matches = glob.glob(os.path.abspath(pattern))
         if len(matches) > 0: 
+            # This will put the release mantid packages at the start and the nightly ones at the end
+            # with increasing version numbers
+            matches.sort() 
             # Make sure we don't get Vates
             for match in matches:
                 if 'vates'in match:
                     matches.remove(match)
-        # Take the last one as it should have the highest version number
+        # Take the last one as it will have the highest version number
         if len(matches) > 0: 
             self.mantidInstaller = matches[-1]
+            package = os.path.basename(self.mantidInstaller)
+            if system == 'Linux' and 'mantidnightly' in package:
+                self.mantidPlotPath = '/opt/mantidnightly/bin/MantidPlot'
+            log("Using Mantid path " + self.mantidPlotPath)
         else:
             scriptfailure('Unable to find installer package in "%s"' % os.getcwd())
 
@@ -227,11 +234,13 @@ except Exception, err:
 
 log("Running system tests. Log files are: logs/testsRun.log and logs/testsRun.err")
 try:
+    # Ensure we use the right Mantid if 2 are installed
+    run_test_cmd = "python runSystemTests.py -m %s" % mantidPlotDir
     if out2stdout:
-        p = subprocess.Popen('python runSystemTests.py --disablepropmake',shell=True) # no PIPE: print on screen for debugging
+        p = subprocess.Popen(run_test_cmd + ' --disablepropmake',shell=True) # no PIPE: print on screen for debugging
         p.wait()
     else:
-        p = subprocess.Popen('python runSystemTests.py',stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+        p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
         out,err = p.communicate() # waits for p to finish
         testsRunLog = open(testRunLogPath,'w')
         if out:
