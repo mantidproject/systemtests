@@ -4,7 +4,7 @@ from ISISCommandInterface import *
 
 # Test is giving odd results on Linux, but only this 2D one.
 
-xclass SANSLOQCan2D(stresstesting.MantidStressTest):
+class SANSLOQCan2D(stresstesting.MantidStressTest):
     
   def runTest(self):
   	  
