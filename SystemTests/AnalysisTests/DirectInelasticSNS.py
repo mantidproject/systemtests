@@ -244,5 +244,11 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
         #input workspace
         self.assertLessThan(mtd["IWS"].getNumberEvents(),100000)
         self.assertGreaterThan(mtd["IWS"].getNumberEvents(),90000)
+
+        # Need to disable checking of the Spectra-Detector map because it isn't
+        # fully saved out to the nexus file; some masked detectors should be picked
+        # up with by the mask values in the spectra
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Instrument')
         return "OWST",os.path.join(os.path.dirname(__file__), 'ReferenceResults','DirectInelasticSNS.nxs')
 
