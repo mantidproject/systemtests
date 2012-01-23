@@ -17,8 +17,17 @@ class UserAlgorithmsBuild(stresstesting.MantidStressTest):
         """
             System test for testing that the UserAlgorithm build script works
         """
-        # Before we start remove the old build files as they seem to
-        # cause random failures on Win7
+        # Run the build
+        import subprocess
+        retcode = subprocess.call(["C:\\MantidInstall\\UserAlgorithms\\build.bat","--quiet"])
+        if retcode == 0:
+          self.build_success = True
+        else:
+          self.build_success = False        
+
+    def cleanup(self):
+        # Remove build files as they will be loaded by the next
+        # process that runs this test and it then can't remove them!
         install_dir = r'C:\MantidInstall\plugins'
         lib_name = 'UserAlgorithms'
         exts = ['.dll', '.exp', '.lib']
@@ -27,13 +36,6 @@ class UserAlgorithmsBuild(stresstesting.MantidStressTest):
                 os.remove(os.path.join(install_dir, lib_name + ext))
             except OSError:
                 pass
-        # Run the build
-        import subprocess
-        retcode = subprocess.call(["C:\\MantidInstall\\UserAlgorithms\\build.bat","--quiet"])
-        if retcode == 0:
-          self.build_success = True
-        else:
-          self.build_success = False        
                 
     def validate(self):
         return self.build_success
