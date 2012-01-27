@@ -48,7 +48,7 @@ class XmlResultReporter(stresstesting.ResultReporter):
 			class_name = result.name
 			name = result.name
 		elem = self._doc.createElement('testcase')
-		elem.setAttribute('classname',class_name)
+		elem.setAttribute('classname',"SystemTests." + class_name)
 		elem.setAttribute('name',name)
 		if result.status == 'skipped':
 			self._skipped.append(result)
