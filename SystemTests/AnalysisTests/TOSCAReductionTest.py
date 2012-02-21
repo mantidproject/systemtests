@@ -17,4 +17,5 @@ class TOSCAReductionTest(stresstesting.MantidStressTest):
 
   def validate(self):
     self.disableChecking.append('Instrument')
+    self.disableChecking.append('SpectraMap')
     return 'ToscaReductionTest', 'TOSCAReductionTest.nxs'

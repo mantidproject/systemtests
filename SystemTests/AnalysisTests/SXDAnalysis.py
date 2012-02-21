@@ -7,7 +7,10 @@ class SXDAnalysis(stresstesting.MantidStressTest):
     """
     
     def runTest(self):
-        LoadRaw(Filename=r'SXD23767.raw',OutputWorkspace='SXD23767',Cache='Always',LoadLogFiles='0',LoadMonitors='Exclude')
+        # Limit mem usage as it kills our 32 bit machine when running
+        #ConvertToDiffractionMDWorkspace and we have no file backend
+        LoadRaw(Filename=r'SXD23767.raw',OutputWorkspace='SXD23767',Cache='Always',
+                LoadLogFiles='0',LoadMonitors='Exclude', SpectrumMax=20564) 
         # Ticket #4527: This step would fail occasionally.
         ConvertToDiffractionMDWorkspace(InputWorkspace='SXD23767',OutputWorkspace='QLab',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')
         FindPeaksMD(InputWorkspace='QLab',PeakDistanceThreshold='0.9',MaxPeaks='100',OutputWorkspace='peaks')

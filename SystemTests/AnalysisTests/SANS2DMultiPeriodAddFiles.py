@@ -32,4 +32,4 @@ class SANS2DMultiPeriodAddFiles(stresstesting.MantidStressTest):
     self.disableChecking.append('Instrument')
     self.disableChecking.append('Axes')
     
-    return '5512p7rear_1D_2.0_4.0','SANS2DMultiPeriodAddFiles.nxs'
+    return '5512p7rear_1D_2.0_4.0Phi-45.0_45.0','SANS2DMultiPeriodAddFiles.nxs'

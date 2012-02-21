@@ -23,7 +23,7 @@ class DirectInelasticDiagnostic(MantidStressTest):
         sv_sig = 3.3
         sv_hi = 1.5
         sv_lo = 0.0
-        s_zero = False
+        s_zero = True
         
         reducer = reduction.setup_reducer('MAPS')
         diag_mask = reducer.diagnose(white, sample=sample, tiny=tiny, huge=huge, 
