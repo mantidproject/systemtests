@@ -5,6 +5,7 @@ them.
 """
 
 import stresstesting
+from mantidsimple import *
 
 class TOPAZPeakFinding(stresstesting.MantidStressTest):
     
@@ -19,7 +20,7 @@ class TOPAZPeakFinding(stresstesting.MantidStressTest):
         
         # Find peaks and UB matrix
         FindPeaksMD(InputWorkspace='topaz_3132_MD',PeakDistanceThreshold='0.12',MaxPeaks='200',OutputWorkspace='peaks')
-        FindUBUsingMinMaxD(PeaksWorkspace='peaks',MinD='2',MaxD='16')
+        FindUBUsingFFT(PeaksWorkspace='peaks',MinD='2',MaxD='16')
 
         # Index the peaks and check        
         alg = IndexPeaks(PeaksWorkspace='peaks')
@@ -42,20 +43,24 @@ class TOPAZPeakFinding(stresstesting.MantidStressTest):
         
         # Go to HKL
         ConvertToDiffractionMDWorkspace(InputWorkspace='topaz_3132',OutputWorkspace='topaz_3132_HKL',OutputDimensions='HKL',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')
+
         # Bin to a line (H=0 to 6, L=3, K=3)
-        BinMD(InputWorkspace='topaz_3132_HKL', AxisAligned='0',BasisVectorX='X,units,1,0,0,6,60',BasisVectorY='Y,units,6.12323e-17,1,0,0.2,1',BasisVectorZ='Z,units,0,0,1,0.2,1',Origin='-6.12323e-18,2.9,5.9',OutputWorkspace='topaz_3132_HKL_line')
+        BinMD(InputWorkspace='topaz_3132_HKL',AxisAligned='0',
+            BasisVector0='X,units,1,0,0',BasisVector1='Y,units,6.12323e-17,1,0',BasisVector2='2,units,-0,0,1',
+            Translation='-0,3,6',OutputExtents='0,6, -0.1,0.1, -0.1,0.1',OutputBins='60,1,1',
+            OutputWorkspace='topaz_3132_HKL_line')
+              
         # Now check the integrated bin and the peaks
         w = mtd["topaz_3132_HKL_line"]
         self.assertLessThan( w.signalAt(1), 1e4, "Limited background signal" )
-        self.assertDelta( w.signalAt(10), 3546e3, 10e3, "Peak 1")
-        self.assertDelta( w.signalAt(20),  944e3, 10e3, "Peak 2")
-        self.assertDelta( w.signalAt(30),  505e3, 10e3, "Peak 3")
-        self.assertDelta( w.signalAt(40), 1348e3, 10e3, "Peak 4")
+        self.assertDelta( w.signalAt(10), 1043651, 10e3, "Peak 1")
+        self.assertDelta( w.signalAt(20),  354159, 10e3, "Peak 2")
+        self.assertDelta( w.signalAt(30),  231615, 10e3, "Peak 3")
 
         # Now do the same peak finding with Q in the sample frame
         ConvertToDiffractionMDWorkspace(InputWorkspace='topaz_3132',OutputWorkspace='topaz_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')
         FindPeaksMD(InputWorkspace='topaz_3132_QSample',PeakDistanceThreshold='0.12',MaxPeaks='200',OutputWorkspace='peaks_QSample')
-        FindUBUsingMinMaxD(PeaksWorkspace='peaks_QSample',MinD='2',MaxD='16')
+        FindUBUsingFFT(PeaksWorkspace='peaks_QSample',MinD='2',MaxD='16')
         CopySample(InputWorkspace='peaks_QSample',OutputWorkspace='topaz_3132',CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0')
         
         # Index the peaks and check        
@@ -70,7 +75,7 @@ class TOPAZPeakFinding(stresstesting.MantidStressTest):
         ol = s.getOrientedLattice()
         self.assertDelta( ol.a(), 4.714, 0.01, "Correct lattice a value not found.")
         self.assertDelta( ol.b(), 6.06, 0.01, "Correct lattice b value not found.")
-        self.assertDelta( ol.c(), 10.43, 0.01, "Correct lattice c value not found.")
+        self.assertDelta( ol.c(), 10.42, 0.01, "Correct lattice c value not found.")
         self.assertDelta( ol.alpha(), 90, 0.4, "Correct lattice angle alpha value not found.")
         self.assertDelta( ol.beta(), 90, 0.4, "Correct lattice angle beta value not found.")
         self.assertDelta( ol.gamma(), 90, 0.4, "Correct lattice angle gamma value not found.")

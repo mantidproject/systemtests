@@ -11,7 +11,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
     
     def compare_binned(self, wsname):
         """ Compare the given workspace to the previously-binned original """
-        BinMD(InputWorkspace=wsname,AlignedDimX='Q_lab_x, -3, 3, 100',AlignedDimY='Q_lab_y, -3, 3, 100',AlignedDimZ='Q_lab_z, -3, 3, 100',ForceOrthogonal='1',OutputWorkspace="test_binned")
+        BinMD(InputWorkspace=wsname,AlignedDim0='Q_lab_x, -3, 3, 100',AlignedDim1='Q_lab_y, -3, 3, 100',AlignedDim2='Q_lab_z, -3, 3, 100',ForceOrthogonal='1',OutputWorkspace="test_binned")
         ws = mtd["test_binned"]
         EqualToMD(ws, self.original_binned, 'comparison')
         comparison = mtd['comparison']
@@ -25,7 +25,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
         ConvertToDiffractionMDWorkspace(InputWorkspace='cncs_nxs', OutputWorkspace='cncs_original', SplitInto=2)
         SaveMD(InputWorkspace='cncs_original', Filename='cncs.nxs')
         self.assertDelta( mtd['cncs_original'].getNPoints(), 112266, 1)
-        BinMD(InputWorkspace='cncs_original',AlignedDimX='Q_lab_x, -3, 3, 100',AlignedDimY='Q_lab_y, -3, 3, 100',AlignedDimZ='Q_lab_z, -3, 3, 100',ForceOrthogonal='1',OutputWorkspace='cncs_original_binned')
+        BinMD(InputWorkspace='cncs_original',AlignedDim0='Q_lab_x, -3, 3, 100',AlignedDim1='Q_lab_y, -3, 3, 100',AlignedDim2='Q_lab_z, -3, 3, 100',ForceOrthogonal='1',OutputWorkspace='cncs_original_binned')
         # Scale by 2 to account for summing
         self.original_binned = mtd['cncs_original_binned']
         self.original_binned *= 2
