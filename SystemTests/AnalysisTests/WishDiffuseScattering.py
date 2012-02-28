@@ -8,6 +8,9 @@ import stresstesting
 from mantidsimple import *
 
 class WishDiffuseScattering(stresstesting.MantidStressTest):
+
+    def requiredMemoryMB(self):
+        return 2000
     
     def runTest(self):
         Load(Filename= 'Wish_Diffuse_Scattering_C.nxs',OutputWorkspace='C',LoadLogFiles='0',LoadMonitors='Exclude')
