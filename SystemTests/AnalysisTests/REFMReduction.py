@@ -24,7 +24,7 @@ class REFMReduction(stresstesting.MantidStressTest):
     def validate(self):
         # Be more tolerant with the output, mainly because of the errors.
         # The following tolerance check the errors up to the third digit.   
-        self.tolerance = 0.1
+        self.tolerance = 0.2
         self.disableChecking.append('Instrument')
         self.disableChecking.append('Sample')
         self.disableChecking.append('SpectraMap')
