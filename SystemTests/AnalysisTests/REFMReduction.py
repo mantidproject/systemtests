@@ -5,12 +5,8 @@ from mantidsimple import *
 
 class REFMReduction(stresstesting.MantidStressTest):
     def runTest(self):
-          #RefMReduction(RunNumbers=9709,
-          ReflectivityReduction(DataRun="REF_M_9709_event.nxs",
-          PolarizedData=True,
-          Instrument="REF_M",
-          
-          NormalizationRun="REF_M_9684_event.nxs",
+          RefMReduction(RunNumbers=9709,
+          NormalizationRunNumber=9684,
           SignalPeakPixelRange=[216, 224],
           SubtractSignalBackground=True,
           SignalBackgroundPixelRange=[172, 197],
