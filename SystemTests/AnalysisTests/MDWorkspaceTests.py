@@ -9,6 +9,8 @@ from mantidsimple import *
 ###############################################################################
 class PlusMDTest(stresstesting.MantidStressTest):
     
+    _saved_filename = None
+
     def compare_binned(self, wsname):
         """ Compare the given workspace to the previously-binned original """
         BinMD(InputWorkspace=wsname,AlignedDim0='Q_lab_x, -3, 3, 100',AlignedDim1='Q_lab_y, -3, 3, 100',AlignedDim2='Q_lab_z, -3, 3, 100',ForceOrthogonal='1',OutputWorkspace="test_binned")
@@ -23,7 +25,9 @@ class PlusMDTest(stresstesting.MantidStressTest):
         # Load then convert to Q in the lab frame
         LoadEventNexus(Filename=r'CNCS_7860_event.nxs',OutputWorkspace='cncs_nxs')
         ConvertToDiffractionMDWorkspace(InputWorkspace='cncs_nxs', OutputWorkspace='cncs_original', SplitInto=2)
-        SaveMD(InputWorkspace='cncs_original', Filename='cncs.nxs')
+        alg = SaveMD(InputWorkspace='cncs_original', Filename='cncs.nxs')
+        self._saved_filename = alg.getPropertyValue("Filename")
+
         self.assertDelta( mtd['cncs_original'].getNPoints(), 112266, 1)
         BinMD(InputWorkspace='cncs_original',AlignedDim0='Q_lab_x, -3, 3, 100',AlignedDim1='Q_lab_y, -3, 3, 100',AlignedDim2='Q_lab_z, -3, 3, 100',ForceOrthogonal='1',OutputWorkspace='cncs_original_binned')
         # Scale by 2 to account for summing
@@ -85,11 +89,24 @@ class PlusMDTest(stresstesting.MantidStressTest):
         # If we reach here, no validation failed
         return True
 
-
+    def cleanup(self):
+        """
+            Remove files create during test
+        """
+        if self._saved_filename is not None:
+            os.remove(self._saved_filename)
+            mtd.sendLogMessage("Removed %s" % self._saved_filename)
+            # Plus the _clone version
+            filename = os.path.splitext(self._saved_filename)[0]
+            filename += '_clone.nxs'
+            os.remove(filename)
+            mtd.sendLogMessage("Removed %s " % filename)
 
 ###############################################################################
 class MergeMDTest(stresstesting.MantidStressTest):
     
+    _saved_filenames = []
+
     def runTest(self):
         LoadEventNexus(Filename='CNCS_7860_event.nxs',
         OutputWorkspace='CNCS_7860_event_NXS',CompressTolerance=0.1)
@@ -105,13 +122,21 @@ class MergeMDTest(stresstesting.MantidStressTest):
             AddSampleLog("CNCS_7860_event_NXS", "phi", "%s" % 0, "Number Series")
             ConvertToDiffractionMDWorkspace(InputWorkspace='CNCS_7860_event_NXS',OutputWorkspace='CNCS_7860_event_MD',OutputDimensions='Q (sample frame)',LorentzCorrection='1', Append=True)
         
-            SaveMD("CNCS_7860_event_MD", "CNCS_7860_event_rotated_%03d.nxs" % omega)
+            alg = SaveMD("CNCS_7860_event_MD", "CNCS_7860_event_rotated_%03d.nxs" % omega)
+            self._saved_filenames.append(alg.getPropertyValue("Filename"))
         
-        MergeMDFiles(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
-            OutputFilename=r'merged.nxs',OutputWorkspace='merged')
+            alg = MergeMDFiles(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
+                               OutputFilename=r'merged.nxs',OutputWorkspace='merged')
+        self._saved_filenames.append(alg.getPropertyValue("OutputFilename"))
         # 5 times the number of events in the output workspace.
         self.assertDelta( mtd['merged'].getNPoints(), 553035, 1)
 
     def doValidation(self):
         # If we reach here, no validation failed
         return True
+
+    def cleanup(self):
+        for filename in self._saved_filenames:
+            os.remove(filename)
+            mtd.sendLogMessage("Removed %s" % filename)
+            
