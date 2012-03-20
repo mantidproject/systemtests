@@ -124,10 +124,11 @@ class MergeMDTest(stresstesting.MantidStressTest):
         
             alg = SaveMD("CNCS_7860_event_MD", "CNCS_7860_event_rotated_%03d.nxs" % omega)
             self._saved_filenames.append(alg.getPropertyValue("Filename"))
-        
-            alg = MergeMDFiles(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
-                               OutputFilename=r'merged.nxs',OutputWorkspace='merged')
+        # End for loop
+        alg = MergeMDFiles(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
+                           OutputFilename=r'merged.nxs',OutputWorkspace='merged')
         self._saved_filenames.append(alg.getPropertyValue("OutputFilename"))
+
         # 5 times the number of events in the output workspace.
         self.assertDelta( mtd['merged'].getNPoints(), 553035, 1)
 
