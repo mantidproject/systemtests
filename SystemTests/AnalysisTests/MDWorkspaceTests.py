@@ -94,13 +94,20 @@ class PlusMDTest(stresstesting.MantidStressTest):
             Remove files create during test
         """
         if self._saved_filename is not None:
-            os.remove(self._saved_filename)
-            mtd.sendLogMessage("Removed %s" % self._saved_filename)
+            try:
+                os.remove(self._saved_filename)
+                mtd.sendLogMessage("Removed %s" % self._saved_filename)
+            except OSError:
+                mtd.sendLogMessage("Filed to remov %s" % self._saved_filename)
+
             # Plus the _clone version
             filename = os.path.splitext(self._saved_filename)[0]
             filename += '_clone.nxs'
-            os.remove(filename)
-            mtd.sendLogMessage("Removed %s " % filename)
+            try:
+                os.remove(filename)
+                mtd.sendLogMessage("Removed %s " % filename)
+            except OSError:
+                mtd.sendLogMessage("Filed to remov %s" % self._saved_filename)
 
 ###############################################################################
 class MergeMDTest(stresstesting.MantidStressTest):
@@ -138,6 +145,9 @@ class MergeMDTest(stresstesting.MantidStressTest):
 
     def cleanup(self):
         for filename in self._saved_filenames:
-            os.remove(filename)
-            mtd.sendLogMessage("Removed %s" % filename)
+            try:
+                os.remove(filename)
+                mtd.sendLogMessage("Removed %s" % filename)
+            except OSError:
+                mtd.sendLogMessage("Failed to remove %s" % filename)
             
