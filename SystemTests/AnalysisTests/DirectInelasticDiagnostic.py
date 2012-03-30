@@ -1,5 +1,6 @@
 from stresstesting import MantidStressTest
 import DirectEnergyConversion as reduction
+from mantidsimple import MaskDetectors
 from MantidFramework import mtd
 import os
 
@@ -30,14 +31,16 @@ class DirectInelasticDiagnostic(MantidStressTest):
                                      van_out_lo=v_out_lo, van_out_hi=v_out_hi,
                                      van_lo=vv_lo, van_hi=vv_hi, van_sig=vv_sig,
                                      samp_lo=sv_lo, samp_hi=sv_hi, samp_sig=sv_sig, samp_zero=s_zero)
-
-        
+	
+	sample_ws = mtd[sample]	
+	MaskDetectors(sample_ws, MaskedWorkspace=diag_mask)
+	
         # Save the masked spectra nmubers to a simple ASCII file for comparison
         self.saved_diag_file = os.path.join(mtd.settings['defaultsave.directory'], 'CurrentDirectInelasticDiag.txt')
         handle = file(self.saved_diag_file, 'w')
-        for index in range(diag_mask.getNumberHistograms()):
-            if diag_mask.getDetector(index).isMasked():
-                spec_no = diag_mask.getSpectrum(index).getSpectrumNo()
+        for index in range(sample_ws.getNumberHistograms()):
+            if sample_ws.getDetector(index).isMasked():
+                spec_no = sample_ws.getSpectrum(index).getSpectrumNo()
                 handle.write(str(spec_no) + '\n')
         handle.close
         
