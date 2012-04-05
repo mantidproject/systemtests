@@ -26,8 +26,9 @@ class EQSANSSolid(stresstesting.MantidStressTest):
         TotalChargeNormalization(normalize_to_beam=False)
         SetTransmission(1.0,0.0, False)
         Reduce1D()           
-        # Scale up to match correct scaling. The reference data is off by a factor 10.0 
-        Scale("EQSANS_1466_event_Iq", "EQSANS_1466_event_Iq", 10.0)                
+         # Scale up to match correct scaling.
+        Scale(InputWorkspace="EQSANS_1466_event_Iq", Factor=2777.81, 
+              Operation='Multiply', OutputWorkspace="EQSANS_1466_event_Iq")              
                 
     def cleanup(self):
         for ws in ["EQSANS_1466_event_Iq", "EQSANS_1466_event", "EQSANS_1466_event_evt", "beam_hole_transmission_EQSANS_1466_event"]:
@@ -35,7 +36,7 @@ class EQSANSSolid(stresstesting.MantidStressTest):
                 mtd.deleteWorkspace(ws)
                 
     def validate(self):
-        self.tolerance = 0.1
+        self.tolerance = 0.2
         mtd["EQSANS_1466_event_Iq"].dataY(0)[0] = 269.688
         mtd["EQSANS_1466_event_Iq"].dataE(0)[0] = 13.8013
         mtd["EQSANS_1466_event_Iq"].dataY(0)[2] = 11.3167
@@ -69,5 +70,6 @@ class EQSANSSolidEvent(EQSANSSolid):
         TotalChargeNormalization(normalize_to_beam=False)
         SetTransmission(1.0,0.0, False)
         Reduce1D()           
-        # Scale up to match correct scaling. The reference data is off by a factor 10.0 
-        Scale("EQSANS_1466_event_Iq", "EQSANS_1466_event_Iq", 10.0)                
+        # Scale up to match correct scaling.
+        Scale(InputWorkspace="EQSANS_1466_event_Iq", Factor=2777.81, 
+              Operation='Multiply', OutputWorkspace="EQSANS_1466_event_Iq")              
