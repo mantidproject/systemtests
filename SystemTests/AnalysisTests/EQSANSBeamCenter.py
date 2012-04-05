@@ -18,7 +18,10 @@ class EQSANSBeamCenter(stresstesting.MantidStressTest):
         DirectBeamCenter("EQSANS_1466_event.nxs")    
         Reduce1D()  
         # Scale up to match correct scaling. The reference data is off by a factor 10.0 
-        Scale("EQSANS_4061_event_frame2_Iq", "EQSANS_4061_event_frame2_Iq", 10.0)
+        Scale(InputWorkspace="EQSANS_4061_event_frame2_Iq", Factor=10.0, 
+              Operation='Multiply', OutputWorkspace="EQSANS_4061_event_frame2_Iq")
+        Scale(InputWorkspace="EQSANS_4061_event_frame2_Iq", Factor=277.781, 
+              Operation='Multiply', OutputWorkspace="EQSANS_4061_event_frame2_Iq")
                 
     def cleanup(self):
         for ws in ["beam_center_EQSANS_1466_event", "beam_center_EQSANS_1466_event_evt",
@@ -52,4 +55,7 @@ class EQSANSBeamCenterEvent(EQSANSBeamCenter):
         DirectBeamCenter("EQSANS_1466_event.nxs")    
         Reduce1D()
         # Scale up to match correct scaling. The reference data is off by a factor 10.0 
-        Scale("EQSANS_4061_event_frame2_Iq", "EQSANS_4061_event_frame2_Iq", 10.0)
+        Scale(InputWorkspace="EQSANS_4061_event_frame2_Iq", Factor=10.0, 
+              Operation='Multiply', OutputWorkspace="EQSANS_4061_event_frame2_Iq")
+        Scale(InputWorkspace="EQSANS_4061_event_frame2_Iq", Factor=277.781, 
+              Operation='Multiply', OutputWorkspace="EQSANS_4061_event_frame2_Iq")

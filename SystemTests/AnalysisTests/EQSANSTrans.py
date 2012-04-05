@@ -22,8 +22,9 @@ class EQSANSTransmission(stresstesting.MantidStressTest):
         DirectBeamTransmission("EQSANS_1466_event.nxs", "EQSANS_4061_event.nxs", beam_radius=3)
         ThetaDependentTransmission(True)
         Reduce1D()  
-        # Scale up to match correct scaling. The reference data is off by a factor 10.0 
-        Scale("EQSANS_1466_event_Iq", "EQSANS_1466_event_Iq", 10.0)                
+        # Scale up to match correct scaling.
+        Scale(InputWorkspace="EQSANS_1466_event_Iq", Factor=2777.81, 
+              Operation='Multiply', OutputWorkspace="EQSANS_1466_event_Iq")              
                 
     def cleanup(self):
         for ws in ["EQSANS_1466_event_Iq", "EQSANS_1466_event", "EQSANS_1466_event_evt"]:
@@ -64,6 +65,7 @@ class EQSANSTransmissionEvent(EQSANSTransmission):
         DirectBeamTransmission("EQSANS_1466_event.nxs", "EQSANS_4061_event.nxs", beam_radius=3)
         ThetaDependentTransmission(True)
         Reduce1D()
-        # Scale up to match correct scaling. The reference data is off by a factor 10.0 
-        Scale("EQSANS_1466_event_Iq", "EQSANS_1466_event_Iq", 10.0)                
+        # Scale up to match correct scaling.
+        Scale(InputWorkspace="EQSANS_1466_event_Iq", Factor=2777.81, 
+              Operation='Multiply', OutputWorkspace="EQSANS_1466_event_Iq")              
 

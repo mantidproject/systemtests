@@ -21,6 +21,8 @@ class EQSANSProcessedEff(stresstesting.MantidStressTest):
         TotalChargeNormalization(normalize_to_beam=False)
         SensitivityCorrection("EQSANS_sensitivity.nxs")
         Reduce1D()  
+        Scale(InputWorkspace="EQSANS_1466_event_Iq", Factor=277.781, 
+              Operation='Multiply', OutputWorkspace="EQSANS_1466_event_Iq")              
                 
     def cleanup(self):
         for ws in ["EQSANS_1466_event_Iq", "EQSANS_1466_event", "EQSANS_1466_event_evt"]:

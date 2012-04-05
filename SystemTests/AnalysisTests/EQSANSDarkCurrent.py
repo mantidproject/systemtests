@@ -23,9 +23,10 @@ class EQSANSDarkCurrent(stresstesting.MantidStressTest):
         SetTransmission(1.0,0.0, False)
         DarkCurrent("EQSANS_4061_event.nxs")
         Reduce1D()           
-        # Scale up to match correct scaling. The reference data is off by a factor 10.0 
-        Scale("EQSANS_1466_event_Iq", "EQSANS_1466_event_Iq", 10.0)        
-                
+        # Scale up to match correct scaling.
+        Scale(InputWorkspace="EQSANS_1466_event_Iq", Factor=2777.81, 
+              Operation='Multiply', OutputWorkspace="EQSANS_1466_event_Iq")              
+
     def validate(self):
         self.tolerance = 1.0
         self.disableChecking.append('Instrument')

@@ -54,6 +54,7 @@ class EQSANSFlatTest(stresstesting.MantidStressTest):
         BckCombineTransmissionFits(True)
         SaveIqAscii(process='None')
         Reduce1D()
+        Scale(InputWorkspace="5729_frame1_Iq", Factor=277.781, Operation='Multiply', OutputWorkspace="5729_frame1_Iq")
                 
     def validate(self):
         self.tolerance = 0.05
