@@ -27,10 +27,10 @@ class SANSLOQBatch(stresstesting.MantidStressTest):
     LoadNexus('54433sans.nxs', 'result')
     Plus('result', '99630sanotrans', 'result')
 
-    os.remove(mtd.getConfigProperty('defaultsave.directory')+'54433sans.nxs')
-    os.remove(mtd.getConfigProperty('defaultsave.directory')+'99630sanotrans.nxs')
-    os.remove(mtd.getConfigProperty('defaultsave.directory')+'54433sans.xml')
-    os.remove(mtd.getConfigProperty('defaultsave.directory')+'99630sanotrans.xml')
+    os.remove(os.path.join(mtd.getConfigProperty('defaultsave.directory'),'54433sans.nxs'))
+    os.remove(os.path.join(mtd.getConfigProperty('defaultsave.directory'),'99630sanotrans.nxs'))
+    os.remove(os.path.join(mtd.getConfigProperty('defaultsave.directory'),'54433sans.xml'))
+    os.remove(os.path.join(mtd.getConfigProperty('defaultsave.directory'),'99630sanotrans.xml'))
     
   def validate(self):
     # Need to disable checking of the Spectra-Detector map because it isn't
