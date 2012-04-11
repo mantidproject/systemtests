@@ -8,9 +8,9 @@ class PG3Analysis(stresstesting.MantidStressTest):
 
     def requiredFiles(self):
         files = [self.ref_file, self.cal_file, self.char_file] 
-        files.append("/SNS/PG3/IPTS-2767/0/4844/NeXus/PG3_4844_event.nxs")
-        files.append("/SNS/PG3/IPTS-2767/0/4866/NeXus/PG3_4866_event.nxs")
-        files.append("/SNS/PG3/IPTS-2767/0/5226/NeXus/PG3_5226_event.nxs")
+        files.append("PG3_4844_event.nxs") # /SNS/PG3/IPTS-2767/0/
+        files.append("PG3_4866_event.nxs") # /SNS/PG3/IPTS-2767/0/
+        files.append("PG3_5226_event.nxs") # /SNS/PG3/IPTS-2767/0/
         return files
 
     def runTest(self):

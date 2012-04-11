@@ -109,13 +109,6 @@ class MantidStressTest(object):
         '''
         print self.PREFIX + self.DELIMITER + name + self.DELIMITER + str(value) + '\n',
         
-    def __fileExists(self, filename, path):
-        for direc in path:
-            temp = os.path.join(direc, filename)
-            if os.path.exists(temp):
-                return True
-        return os.path.exists(filename)
-
     def __verifyRequiredFiles(self):
         # first see if there is anything to do
         reqFiles = self.requiredFiles()
@@ -125,16 +118,14 @@ class MantidStressTest(object):
         # by default everything is ok
         foundAll = True
 
-        # get the data directories to look in
+        # initialize mantid so it can get the data directories to look in
         from MantidFramework import mtd
         mtd.initialise()
-        datasearch = mtd.settings['datasearch.directories']
-        if len(datasearch) > 0:
-            datasearch = datasearch.split(';')
 
         # check that all of the files exist
+        from mantid.api import FileFinder
         for filename in reqFiles:
-            if not self.__fileExists(filename, datasearch):
+            if not os.path.exists(FileFinder.getFullPath(filename)):
                 print "Missing required file: '%s'" % filename
                 foundAll = False
 
