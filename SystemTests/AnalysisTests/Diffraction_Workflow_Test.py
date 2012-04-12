@@ -1,7 +1,6 @@
 """
 System test that loads TOPAZ single-crystal data,
-converts to Q space, finds peaks and indexes
-them.
+and runs Diffraction Workflow.
 """
 import stresstesting
 import numpy
@@ -14,6 +13,10 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         return 2000
     
     def runTest(self):
+        # determine where to save
+        import os
+        savedir = os.path.abspath(os.path.curdir)
+
         # Basic parameters  for  Triphylite Crystal
         #Name of the workspaces to create
         ws = "TOPAZ_3132"
@@ -29,8 +32,8 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         # Convert to Q space
         ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_MD2',LorentzCorrection='0',
                 OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150')
-        # Find peaks
-        FindPeaksMD(InputWorkspace=ws+'_MD2',MaxPeaks='100',OutputWorkspace=ws+'_peaksLattice')
+        # Find peaks (Reduced number of peaks so file comparison with reference does not fail with small differences)
+        FindPeaksMD(InputWorkspace=ws+'_MD2',MaxPeaks='25',OutputWorkspace=ws+'_peaksLattice')
         # 3d integration to centroid peaks
         CentroidPeaksMD(InputWorkspace=ws+'_MD2',CoordinatesToUse='Q (lab frame)',
                 PeakRadius='0.12',PeaksWorkspace=ws+'_peaksLattice',OutputWorkspace=ws+'_peaksLattice')
@@ -44,7 +47,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
                 BackgroundOuterRadius='0.18',BackgroundInnerRadius='0.15',
                 PeaksWorkspace=ws+'_peaksLattice',OutputWorkspace=ws+'_peaksLattice')
         # Save for SHELX
-        SaveHKL(InputWorkspace=ws+'_peaksLattice', Filename=ws+'.hkl')
+        SaveHKL(InputWorkspace=ws+'_peaksLattice', Filename=savedir+'/'+ws+'.hkl')
         
         # Find peaks again for FFT
         FindPeaksMD(InputWorkspace=ws+'_MD2',MaxPeaks='100',OutputWorkspace=ws+'_peaksFFT')
@@ -63,7 +66,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
                 BackgroundOuterRadius='0.18',BackgroundInnerRadius='0.15',
                 PeaksWorkspace=ws+'_peaksFFT',OutputWorkspace=ws+'_peaksFFT')
         # Save for SHELX
-        SaveHKL(InputWorkspace=ws+'_peaksFFT', Filename=ws+'FFT.hkl')
+        SaveHKL(InputWorkspace=ws+'_peaksFFT', Filename=savedir+'/'+ws+'FFT.hkl')
         
         
         # Copy the UB matrix back to the original workspace
@@ -139,9 +142,14 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
             # This compares each column, allowing old == new OR old == -new
             if not (numpy.all(diff[:,c]) or numpy.all(diff2[:,c])):
                 raise Exception("More than 0.001 difference between UB matrices: Q (lab frame):\n%s\nQ (sample frame):\n%s" % (originalUB, newUB) )
-        #f = open('TOPAZ_3132.hkl', 'r')
-        #self.assert( f.readline(), '  -3  -2  -3 7107.66   18.60   1  2.0802 0.1974   3132      1 0.7294  17  1.86055   1.2972", "HKL file wrong.")
 
-    def doValidation(self):
-        # If we reach here, no validation failed
-        return True
+    def validateMethod(self):
+        return "ValidateASCII"
+
+    def validate(self):
+        # determine where to save
+        import os
+        savedir = os.path.abspath(os.path.curdir)
+        return savedir+'/TOPAZ_3132.hkl', \
+            os.path.join(os.path.dirname(__file__), 'ReferenceResults','TOPAZ_3132_reference.hkl')
+
