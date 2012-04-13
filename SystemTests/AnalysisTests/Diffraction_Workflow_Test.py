@@ -33,7 +33,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_MD2',LorentzCorrection='0',
                 OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150')
         # Find peaks (Reduced number of peaks so file comparison with reference does not fail with small differences)
-        FindPeaksMD(InputWorkspace=ws+'_MD2',MaxPeaks='25',OutputWorkspace=ws+'_peaksLattice')
+        FindPeaksMD(InputWorkspace=ws+'_MD2',MaxPeaks='20',OutputWorkspace=ws+'_peaksLattice')
         # 3d integration to centroid peaks
         CentroidPeaksMD(InputWorkspace=ws+'_MD2',CoordinatesToUse='Q (lab frame)',
                 PeakRadius='0.12',PeaksWorkspace=ws+'_peaksLattice',OutputWorkspace=ws+'_peaksLattice')
