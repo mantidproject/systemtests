@@ -143,13 +143,12 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
             if not (numpy.all(diff[:,c]) or numpy.all(diff2[:,c])):
                 raise Exception("More than 0.001 difference between UB matrices: Q (lab frame):\n%s\nQ (sample frame):\n%s" % (originalUB, newUB) )
 
+        # load output hkl file and the golden one
+        LoadHKL("TOPAZ_3132.hkl", "TOPAZ_3132")
+        LoadHKL(os.path.join(os.path.dirname(__file__), 'ReferenceResults','TOPAZ_3132_reference.hkl'), "TOPAZ_3132_golden")
+
     def validateMethod(self):
-        return "ValidateASCII"
+        return "ValidateWorkspaceToWorkspace"
 
     def validate(self):
-        # determine where to save
-        import os
-        savedir = os.path.abspath(os.path.curdir)
-        return savedir+'/TOPAZ_3132.hkl', \
-            os.path.join(os.path.dirname(__file__), 'ReferenceResults','TOPAZ_3132_reference.hkl')
-
+        return ('TOPAZ_3132','TOPAZ_3132_golden')
