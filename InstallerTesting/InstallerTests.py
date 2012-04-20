@@ -170,7 +170,7 @@ class MantidInstaller:
         # ADDLOCAL=ALL installs any optional features as well
         run('msiexec /quiet /i '+ self.mantidInstaller + ' ADDLOCAL=ALL')
         
-    def installWindowsViaNSISExe
+    def installWindowsViaNSISExe(self):
         run("start 'Installer' /wait Mantid-Version-win64.exe /S")
     
     def installUbuntu(self):
