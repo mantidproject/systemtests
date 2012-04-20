@@ -25,6 +25,7 @@ if ('-h','') in opt:
     print "       -n Run tests without installing Mantid (it must be already installed)"
     print "       -o Output to the screen instead of log files"
     print "       -h Display the usage"
+    print "       -v Run the newer version (NSIS) of the windows installer"
     sys.exit(0)
 
 doInstall = True
@@ -33,6 +34,8 @@ if ('-n','') in opt:
 out2stdout = False
 if ('-o','') in opt:
     out2stdout = True
+if ('-v','') in opt:
+    useNSISWindowsInstaller = True
 
 '''
 The directories that will be used
@@ -118,8 +121,12 @@ class MantidInstaller:
         dist = platform.dist()
         if system == 'Windows':
             self.mantidPlotPath = 'C:/MantidInstall/bin/MantidPlot.exe'
-            pattern = 'mantid-*.msi'
-            self.install = self.installWindows
+            if useNSISWindowsInstaller:
+                pattern = 'Mantid-*-win64.exe'
+                self.install = self.installWindowsViaNSISExe
+            else:
+                pattern = 'mantid-*.msi'
+                self.install = self.installWindowsViaMSI
         elif system == 'Linux':
             if dist[0] == 'Ubuntu':
                 pattern = 'mantid_[0-9]*.deb'
@@ -159,11 +166,13 @@ class MantidInstaller:
     '''
     Implementations of install() method for different systems
     '''
-
-    def installWindows(self):
+    def installWindowsViaMSI(self):
         # ADDLOCAL=ALL installs any optional features as well
         run('msiexec /quiet /i '+ self.mantidInstaller + ' ADDLOCAL=ALL')
-
+        
+    def installWindowsViaNSISExe
+        run("start 'Installer' /wait Mantid-Version-win64.exe /S")
+    
     def installUbuntu(self):
         run('sudo gdebi -n ' + self.mantidInstaller)
 
