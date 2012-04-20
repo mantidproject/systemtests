@@ -29,6 +29,7 @@ if ('-h','') in opt:
     sys.exit(0)
 
 doInstall = True
+useNSISWindowsInstaller = False
 if ('-n','') in opt:
     doInstall = False
 out2stdout = False
@@ -171,7 +172,15 @@ class MantidInstaller:
         run('msiexec /quiet /i '+ self.mantidInstaller + ' ADDLOCAL=ALL')
         
     def installWindowsViaNSISExe(self):
-        run("start 'Installer' /wait Mantid-Version-win64.exe /S")
+        """
+            The NSIS installer spawns a new process and returns immediately.
+            We use the start command with the /WAIT option to make it stay around
+            until completion.
+            The chained "&& exit 1" ensures that if the return code of the
+            installer > 0 then the resulting start process exits with a return code
+            of 1 so we can pick this up as a failure
+        """        
+        run('start "Installer" /wait ' + self.mantidInstaller + ' /S && exit 1')
     
     def installUbuntu(self):
         run('sudo gdebi -n ' + self.mantidInstaller)
@@ -227,6 +236,8 @@ for dir in dataDirs:
 mtd.settings['datasearch.directories'] = data_path
 # Save path
 mtd.settings['defaultsave.directory'] = saveDir
+# Do not show paraview dialog
+mtd.settings['paraview.ignore'] = "1"
 # Ensure each new version of Mantid started in the subprocess gets these paths
 log('Saving user properties to "%s"' % mtd.settings.getUserFilename()) 
 mtd.settings.saveConfig(mtd.settings.getUserFilename())
