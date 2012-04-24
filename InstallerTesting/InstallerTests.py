@@ -180,7 +180,7 @@ class MantidInstaller:
             installer > 0 then the resulting start process exits with a return code
             of 1 so we can pick this up as a failure
         """        
-        run('start "Installer" /wait ' + self.mantidInstaller + ' /S && exit 1')
+        run('start "Installer" /wait ' + self.mantidInstaller + ' /S')
     
     def installUbuntu(self):
         run('sudo gdebi -n ' + self.mantidInstaller)
