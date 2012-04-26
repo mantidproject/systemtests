@@ -42,6 +42,8 @@ DET/CORR FRONT X -44.0
 DET/CORR FRONT Y -20.0
 DET/CORR FRONT Z 47.0
 DET/CORR FRONT ROT 0.0
+DET/CORR/FRONT/RADIUS 1.0
+DET/CORR/FRONT/SIDE 1.0
 !
 !! 29/11/09  Bouchard, front det only, at 11m,   A2=5mm runs, det moved 25mm
 !! scale from fit to .0098 to .334, 6% log bin data, using 1/data wts as errors too large
