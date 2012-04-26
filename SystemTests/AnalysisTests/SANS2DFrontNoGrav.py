@@ -8,6 +8,8 @@ class SANS2DFrontNoGrav(stresstesting.MantidStressTest):
 
     SANS2D()
     MaskFile('MASKSANS2D_094i_RKH.txt')
+    SetDetectorOffsets('REAR', -16.0, 58.0, 0.0, 0.0, 0.0, 0.0)
+    SetDetectorOffsets('FRONT', -44.0, -20.0, 47.0, 0.0, 1.0, 1.0)
     Gravity(False)
     Set1D()
     
