@@ -123,7 +123,7 @@ class MantidInstaller:
         if system == 'Windows':
             self.mantidPlotPath = 'C:/MantidInstall/bin/MantidPlot.exe'
             if useNSISWindowsInstaller:
-                pattern = 'Mantid-*-win64.exe'
+                pattern = 'Mantid-*-win*.exe'
                 self.install = self.installWindowsViaNSISExe
             else:
                 pattern = 'mantid-*.msi'
