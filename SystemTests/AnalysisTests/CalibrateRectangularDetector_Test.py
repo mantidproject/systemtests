@@ -1,7 +1,16 @@
 import stresstesting
 from mantidsimple import *
+import sys
 
 class PG3Calibration(stresstesting.MantidStressTest):
+
+    def skipTests(self):
+        # We skip this test if the system is not Linux for the moment
+        if sys.platform.startswith('win') or sys.platform == 'darwin':
+          return True
+        else:
+          return False
+
 
     def requiredFiles(self):
         files = ["PG3_2538_event.nxs","PG3_golden.cal"] 
