@@ -1,4 +1,4 @@
-# Calibration file for instrument POWGEN written on 2012-05-03T12:47:26.
+# Calibration file for instrument POWGEN written on 2012-05-09T20:59:02.
 # Format: number    UDET         offset    select    group
         0             -1      0.0000000       1       0
         1          27500      0.0000000       0       1
