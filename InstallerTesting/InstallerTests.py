@@ -117,25 +117,24 @@ except Exception, err:
 
 log("Running system tests. Log files are: logs/testsRun.log and logs/testsRun.err")
 try:
-    pass
-    # Ensure we use the right Mantid if 2 are installed
-    # run_test_cmd = "python runSystemTests.py -m %s" % mantidPlotDir
-    # if out2stdout:
-    #     p = subprocess.Popen(run_test_cmd + ' --disablepropmake',shell=True) # no PIPE: print on screen for debugging
-    #     p.wait()
-    # else:
-    #     p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
-    #     out,err = p.communicate() # waits for p to finish
-    #     testsRunLog = open(testRunLogPath,'w')
-    #     if out:
-    #         testsRunLog.write(out)
-    #     testsRunLog.close()
-    #     testsRunErr = open(testRunErrPath,'w')
-    #     if err:
-    #         testsRunErr.write(err)
-    #     testsRunErr.close()
-    # if p.returncode != 0:
-    #     failure()
+    #Ensure we use the right Mantid if 2 are installed
+    run_test_cmd = "python runSystemTests.py -m %s" % mantidPlotDir
+    if out2stdout:
+        p = subprocess.Popen(run_test_cmd + ' --disablepropmake',shell=True) # no PIPE: print on screen for debugging
+        p.wait()
+    else:
+        p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+        out,err = p.communicate() # waits for p to finish
+        testsRunLog = open(testRunLogPath,'w')
+        if out:
+            testsRunLog.write(out)
+        testsRunLog.close()
+        testsRunErr = open(testRunErrPath,'w')
+        if err:
+            testsRunErr.write(err)
+        testsRunErr.close()
+    if p.returncode != 0:
+        failure()
 except:
     failure(installer)
 
