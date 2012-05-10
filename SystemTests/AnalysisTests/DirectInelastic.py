@@ -16,8 +16,9 @@ def do_reduction(mono_run, white, van_run):
   reducer.sample_mass = 10
   reducer.sample_rmm = 435.96
   
-    # Diagnostics
-  reducer.diagnose(white, sample=mono_run)
+  hard_mask = 'mar11015.msk'
+  # Diagnostics
+  reducer.diagnose(white, sample=mono_run, hard_mask=hard_mask)
   
   reducer.convert_to_energy(mono_run=mono_run, ei=ei, white_run=white,
                             mono_van=van_run, abs_white_run=white)
