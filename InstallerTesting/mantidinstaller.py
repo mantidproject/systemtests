@@ -226,7 +226,7 @@ class RPMInstaller(MantidInstaller):
     def do_uninstall(self):
         """Removes the debian package
         """
-        package_name = os.pathbasename(self.mantidInstaller).split("-")[0]
+        package_name = os.path.basename(self.mantidInstaller).split("-")[0]
         run('sudo rpm --erase %s' % package_name)
 
 
