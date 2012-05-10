@@ -2,9 +2,10 @@ import os
 import sys
 import platform
 import shutil
-import subprocess
-import glob
 from getopt import getopt
+
+from mantidinstaller import (createScriptLog, log, stop, failure, scriptfailure, 
+                             get_installer, run)
 
 '''
 
@@ -55,165 +56,27 @@ dataDirs = [os.path.join(parentDir, "SystemTests"),
 # the log file for this script
 if not os.path.exists(parentDir + '/logs'):
     os.mkdir(parentDir + '/logs')
-scriptLog = open(parentDir + '/logs/TestScript.log','w')
+
+createScriptLog(parentDir + '/logs/TestScript.log')
 testRunLogPath = parentDir + '/logs/testsRun.log'
 testRunErrPath = parentDir + '/logs/testsRun.err'
 
-# Define useful functions
-
-def stop():
-    ''' Save the log, exit with error code 0 '''
-    scriptLog.close()
-    sys.exit(0)
-
-def log(txt):
-    ''' Write text to the script log file '''
-    if txt and len(txt) > 0:
-        scriptLog.write(txt)
-        if not txt.endswith('\n'):
-            scriptLog.write('\n')
-        print txt
-
-def failure():
-    ''' Report failure of test(s), exit with code 1 '''
-    log('Tests failed')
-    print 'Tests failed'
-    sys.exit(1)
-
-def scriptfailure(txt):
-    '''Report failure of this script, exit with code 1 '''
-    if txt:
-        log(txt)
-    os.chdir(currentDir)
-    scriptLog.close()
-    sys.exit(1)
-
-def run(cmd):
-    ''' Run a command '''
-    try:
-        p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=True)
-        out = p.communicate()[0]
-        if p.returncode != 0:
-            raise Exception('Returned with code '+str(p.returncode)+'\n'+out)
-    except Exception,err:
-        log('Error in subprocess '+cmd+':\n'+str(err))
-        raise
-    log(out)
-    return out
-
-def update(dir):
-    '''Update a directory '''
-    try:
-        log("Updating "+dir)
-        log(run('svn update ' + dir))
-    except Exception, err:
-        scriptfailure("Update failed: "+str(err))
-
-class MantidInstaller:
-    '''
-    Class for copying and installing Mantid installer. 
-
-    mantidInstaller :: name of the installer file
-    mantidPlotPath :: path to installed MantidPlot executable
-    '''
-    def __init__(self):
-        system = platform.system()
-        arch = platform.architecture()
-        dist = platform.dist()
-        if system == 'Windows':
-            self.mantidPlotPath = 'C:/MantidInstall/bin/MantidPlot.exe'
-            if useNSISWindowsInstaller:
-                pattern = 'Mantid-*-win*.exe'
-                self.install = self.installWindowsViaNSISExe
-            else:
-                pattern = 'mantid-*.msi'
-                self.install = self.installWindowsViaMSI
-        elif system == 'Linux':
-            if dist[0] == 'Ubuntu':
-                pattern = 'mantid_[0-9]*.deb'
-                self.install = self.installUbuntu
-            elif dist[0] == 'redhat' and (dist[1].startswith('5.') or dist[1].startswith('6.')):
-                pattern = 'mantid*.rpm'
-                self.install = self.installRHEL
-            else:
-                raise RuntimeError('Unknown Linux flavour: %s' % str(dist))
-            self.mantidPlotPath = '/opt/Mantid/bin/MantidPlot'
-        elif system == 'Darwin':
-            pattern = 'mantid-*.dmg'
-            self.mantidPlotPath = '/Applications/MantidPlot.app/Contents/MacOS/MantidPlot'
-            self.install = self.installDarwin
-        else:
-            scriptfailure('Unsupported platform ' + platform.system())
-        # Glob for packages
-        matches = glob.glob(os.path.abspath(pattern))
-        if len(matches) > 0: 
-            # This will put the release mantid packages at the start and the nightly ones at the end
-            # with increasing version numbers
-            matches.sort() 
-            # Make sure we don't get Vates
-            for match in matches:
-                if 'vates'in match:
-                    matches.remove(match)
-        # Take the last one as it will have the highest version number
-        if len(matches) > 0: 
-            self.mantidInstaller = matches[-1]
-            package = os.path.basename(self.mantidInstaller)
-            if system == 'Linux' and 'mantidnightly' in package:
-                self.mantidPlotPath = '/opt/mantidnightly/bin/MantidPlot'
-            log("Using Mantid path " + self.mantidPlotPath)
-        else:
-            scriptfailure('Unable to find installer package in "%s"' % os.getcwd())
-
-    '''
-    Implementations of install() method for different systems
-    '''
-    def installWindowsViaMSI(self):
-        # ADDLOCAL=ALL installs any optional features as well
-        run('msiexec /quiet /i '+ self.mantidInstaller + ' ADDLOCAL=ALL')
-        
-    def installWindowsViaNSISExe(self):
-        """
-            The NSIS installer spawns a new process and returns immediately.
-            We use the start command with the /WAIT option to make it stay around
-            until completion.
-            The chained "&& exit 1" ensures that if the return code of the
-            installer > 0 then the resulting start process exits with a return code
-            of 1 so we can pick this up as a failure
-        """        
-        run('start "Installer" /wait ' + self.mantidInstaller + ' /S')
-    
-    def installUbuntu(self):
-        run('sudo gdebi -n ' + self.mantidInstaller)
-
-    def installRHEL(self):
-        try:
-            run('sudo rpm --upgrade ' + self.mantidInstaller)
-        except Exception, exc:
-            # This reports an error if the same package is already installed
-            if 'is already installed' in str(exc):
-                log("Current version is up-to-date, continuing.\n")
-                pass
-            else:
-                raise
-
-    def installDarwin(self):
-        run('hdiutil attach '+ self.mantidInstaller)
-        mantidInstallerName = os.path.basename(self.mantidInstaller)
-        mantidInstallerName = mantidInstallerName.replace('.dmg','')
-        run('sudo installer -pkg /Volumes/'+ mantidInstallerName+'/'+ mantidInstallerName+'.pkg -target "/"')
-        run('hdiutil detach /Volumes/'+ mantidInstallerName+'/')
 
 log('Starting system tests')
-installer = MantidInstaller()
-log("Using installer '%s'" % os.path.join(os.getcwd(), installer.mantidInstaller))
+installer = get_installer(useNSISWindowsInstaller)
+log("Using installer '%s'" % installer.mantidInstaller)
 
 # Install the found package
 if doInstall:
     log("Installing package '%s'" % installer.mantidInstaller)
     try:
         installer.install()
+        log("Application path " + installer.mantidPlotPath)
+        installer.no_uninstall = False
     except Exception,err:
         scriptfailure("Installing failed. "+str(err))
+else:
+    installer.no_uninstall = True
 
 log('Creating Mantid.user.properties file for this environment')
 # make sure the data are in the search path
@@ -228,7 +91,7 @@ mtd.settings['logging.loggers.root.level'] = 'information'
 data_path = ''
 for dir in dataDirs:
     if not os.path.exists(dir):
-        scriptfailure('Directory ' + dir + ' was not found.')
+        scriptfailure('Directory ' + dir + ' was not found.', installer)
     search_dir = dir.replace('\\','/')
     if not search_dir.endswith('/'):
         search_dir += '/'
@@ -250,30 +113,31 @@ try:
         version_tested.write(version)
     version_tested.close()
 except Exception, err:
-    scriptfailure('Version test failed: '+str(err))
+    scriptfailure('Version test failed: '+str(err), installer)
 
 log("Running system tests. Log files are: logs/testsRun.log and logs/testsRun.err")
 try:
+    pass
     # Ensure we use the right Mantid if 2 are installed
-    run_test_cmd = "python runSystemTests.py -m %s" % mantidPlotDir
-    if out2stdout:
-        p = subprocess.Popen(run_test_cmd + ' --disablepropmake',shell=True) # no PIPE: print on screen for debugging
-        p.wait()
-    else:
-        p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
-        out,err = p.communicate() # waits for p to finish
-        testsRunLog = open(testRunLogPath,'w')
-        if out:
-            testsRunLog.write(out)
-        testsRunLog.close()
-        testsRunErr = open(testRunErrPath,'w')
-        if err:
-            testsRunErr.write(err)
-        testsRunErr.close()
-    if p.returncode != 0:
-        failure()
+    # run_test_cmd = "python runSystemTests.py -m %s" % mantidPlotDir
+    # if out2stdout:
+    #     p = subprocess.Popen(run_test_cmd + ' --disablepropmake',shell=True) # no PIPE: print on screen for debugging
+    #     p.wait()
+    # else:
+    #     p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+    #     out,err = p.communicate() # waits for p to finish
+    #     testsRunLog = open(testRunLogPath,'w')
+    #     if out:
+    #         testsRunLog.write(out)
+    #     testsRunLog.close()
+    #     testsRunErr = open(testRunErrPath,'w')
+    #     if err:
+    #         testsRunErr.write(err)
+    #     testsRunErr.close()
+    # if p.returncode != 0:
+    #     failure()
 except:
-    failure()
+    failure(installer)
 
 # Test run completed successfully
-stop()
+stop(installer)
