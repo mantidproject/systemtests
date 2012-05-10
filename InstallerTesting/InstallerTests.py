@@ -2,6 +2,7 @@ import os
 import sys
 import platform
 import shutil
+import subprocess
 from getopt import getopt
 
 from mantidinstaller import (createScriptLog, log, stop, failure, scriptfailure, 
@@ -81,6 +82,7 @@ else:
 log('Creating Mantid.user.properties file for this environment')
 # make sure the data are in the search path
 mantidPlotDir = os.path.dirname(installer.mantidPlotPath)
+log('MantidPlot directory %s' % mantidPlotDir)
 sys.path.append(mantidPlotDir)
 from MantidFramework import mtd
 mtd.initialise()
@@ -134,7 +136,9 @@ try:
             testsRunErr.write(err)
         testsRunErr.close()
     if p.returncode != 0:
-        failure()
+        failure(installer)
+except Exception, exc:
+    scriptfailure(str(exc),installer)
 except:
     failure(installer)
 
