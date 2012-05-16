@@ -155,7 +155,7 @@ class NSISInstaller(MantidInstaller):
         """        
         run('start "Installer" /wait ' + self.mantidInstaller + ' /S')
 
-    def do_uninstall():
+    def do_uninstall(self):
         "Runs the uninstall exe"
         uninstall_path = 'C:/MantidInstall/Uninstall.exe'
         run('start "Uninstaller" /wait ' + uninstall_path + ' /S')
