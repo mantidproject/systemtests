@@ -24,12 +24,13 @@ class HFIRReduction(stresstesting.MantidStressTest):
         AzimuthalAverage(binning="0.01,0.001,0.11", error_weighting=True)
         Reduce1D()
         
-        SaveAscii(Filename="tmp.txt", InputWorkspace="BioSANS_test_data_Iq")
-        LoadAscii('tmp.txt', "output")
-        LoadAscii('AnalysisTests/ReferenceResults/BioSANS_test_data_Iq.txt', "ref")
+        #SaveAscii(Filename="tmp.txt", InputWorkspace="BioSANS_test_data_Iq")
+        #LoadAscii('tmp.txt', "output")
+        #LoadAscii('AnalysisTests/ReferenceResults/BioSANS_test_data_Iq.txt', "ref")
 
-    def validateMethod(self):
-        return 'WorkspaceToWorkspace'
-                
     def validate(self):
-        return "output", "ref"
+        self.disableChecking.append('Instrument')
+        self.disableChecking.append('Sample')
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Axes')
+        return "BioSANS_test_data_Iq", "HFIRReduction.nxs"
