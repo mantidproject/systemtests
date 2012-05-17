@@ -23,7 +23,7 @@ class PG3Analysis(stresstesting.MantidStressTest):
                            PreserveEvents=True,
                            CalibrationFile=self.cal_file,
                            CharacterizationRunsFile=self.char_file,
-                           UnwrapRef=62, LowResRef=15000, RemovePromptPulseWidth=50,
+                           LowResRef=15000, RemovePromptPulseWidth=50,
                            Binning=-0.0004, BinInDspace=True, FilterBadPulses=True,
                            SaveAs="gsas", OutputDirectory=savedir,
                            NormalizeByCurrent=True, FinalDataUnits="dSpacing")
