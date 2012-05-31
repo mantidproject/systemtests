@@ -65,18 +65,39 @@ class WishMasking(stresstesting.MantidStressTest):
 		ExtractMask( InputWorkspace=ws, OutputWorkspace='masking_wish_workspace' )
 		mask_ws =  mtd['masking_wish_workspace']
 		
+		## COMPLETE TESTS: These following are the tests that should pass when everything works. See below for reasons why. 
+		
 		# Test the 'isMasked' property on the detectors of the masked workspace
 		# The following tests have been added even though they are broken because extracted workspaces currently do not preserve the Masking flags (buty they SHOULD!). Hopefully the broken functionality will be fixed and I can enable them.
 		#self.assertTrue( mask_ws.getDetector(masking_edge).isMasked() )
 		#self.assertTrue( not mask_ws.getDetector(masking_edge + 1).isMasked() )
 		
-		#Save masking
-		#The following is also broken on the master branch!
+		# Save masking
+		# The following is also broken on the master branch!
 		#mask_file = 'wish_masking_system_test_mask_file_temp.xml'
 		#SaveMask(InputWorkspace=mask_ws,OutputFile=mask_file)
-		#check the mask file was created.
+		# Check the mask file was created.
 		#self.assertTrue(os.path.isfile(mask_file)) 
 		#os.remove(mask_file)
+		
+		## END COMPLETE TESTS 
+		
+		## CHARACTERISATION TESTS: These tests characterise the current breakage of the masking code.
+		## I've included these false-positives as a testing strategy because it will flag up that the functionality has been fixed when these tests start failing (we can then test the right thing, see above)
+		
+		# Testing that the isMasking is the same on both sides of the masking boundary. If things were working properly the following would not pass!
+		self.assertTrue( mask_ws.getDetector(masking_edge).isMasked() == mask_ws.getDetector(masking_edge + 1).isMasked() )
+		
+		mask_file = 'wish_masking_system_test_mask_file_temp.xml'
+		try:
+			SaveMask(InputWorkspace=mask_ws,OutputFile=mask_file)
+		except:
+			self.assertTrue(not os.path.isfile(mask_file)) 
+		else:
+			os.remove(mask_file)
+			self.assertTrue(False)
+			
+		## END CHARACTERISATION TESTS 
 		
 		#Test creation with normal masking
 		invert_masking = False;
