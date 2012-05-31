@@ -54,8 +54,29 @@ class WishMasking(stresstesting.MantidStressTest):
 		ws = mtd['wish_ws']
 		MaskDetectors(Workspace=ws, WorkspaceIndexList='0,1,2,3,4,5,6,7,8,9')
 		
-		#we just masked all detectors up to index == 9
+		# We just masked all detectors up to index == 9
 		masking_edge = 9 
+		
+		# Test the 'isMasked' property on the detectors of the original workspace
+		self.assertTrue( ws.getDetector(masking_edge).isMasked() )
+		self.assertTrue( not ws.getDetector(masking_edge + 1).isMasked() )
+		
+		# Extract a masking workspace
+		ExtractMask( InputWorkspace=ws, OutputWorkspace='masking_wish_workspace' )
+		mask_ws =  mtd['masking_wish_workspace']
+		
+		# Test the 'isMasked' property on the detectors of the masked workspace
+		# The following tests have been added even though they are broken because extracted workspaces currently do not preserve the Masking flags (buty they SHOULD!). Hopefully the broken functionality will be fixed and I can enable them.
+		#self.assertTrue( mask_ws.getDetector(masking_edge).isMasked() )
+		#self.assertTrue( not mask_ws.getDetector(masking_edge + 1).isMasked() )
+		
+		#Save masking
+		#The following is also broken on the master branch!
+		#mask_file = 'wish_masking_system_test_mask_file_temp.xml'
+		#SaveMask(InputWorkspace=mask_ws,OutputFile=mask_file)
+		#check the mask file was created.
+		#self.assertTrue(os.path.isfile(mask_file)) 
+		#os.remove(mask_file)
 		
 		#Test creation with normal masking
 		invert_masking = False;
