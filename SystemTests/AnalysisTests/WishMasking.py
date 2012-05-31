@@ -107,5 +107,35 @@ class WishMasking(stresstesting.MantidStressTest):
 		invert_masking = True;
 		self.do_test_cal_file(ws, invert_masking, 1, 0, masking_edge)
 		
+		#Test merge cal files
+		master_cal_file_name = 'master.cal'
+		update_cal_file_name =  'update.cal'
+		merged_cal_file_name = 'merged.cal'
+		try:
+			MaskWorkspaceToCalFile(InputWorkspace=ws, OutputFile=master_cal_file_name, Invert=False)
+			MaskWorkspaceToCalFile(InputWorkspace=ws, OutputFile=update_cal_file_name, Invert=True)
+			MergeCalFiles(UpdateFile=update_cal_file_name, MasterFile=master_cal_file_name, OutputFile=merged_cal_file_name, MergeOffsets=True)
+			
+			merged_cal_file = open(merged_cal_file_name, 'r')
+			update_cal_file = open(merged_cal_file_name, 'r')
+			
+			merged_mask_boundary_inside = self.get_masking_for_index(merged_cal_file, masking_edge)
+			merged_mask_boundary_outside = self.get_masking_for_index(merged_cal_file, masking_edge+1)
+			update_mask_boundary_inside = self.get_masking_for_index(update_cal_file, masking_edge)
+			update_mask_boundary_outside = self.get_masking_for_index(update_cal_file, masking_edge+1)
+			
+			#Test that the merged output cal file has actually taken the masking from the update file.
+			self.assertTrue(merged_mask_boundary_inside != merged_mask_boundary_outside)
+			self.assertTrue(merged_mask_boundary_inside == update_mask_boundary_inside)
+			self.assertTrue(merged_mask_boundary_outside == update_mask_boundary_outside)
+			
+		finally:
+			#clean up no mater what.
+			merged_cal_file.close()
+			update_cal_file.close()
+			os.remove(master_cal_file_name)
+			os.remove(update_cal_file_name)
+			os.remove(merged_cal_file_name)
+		
 	def doValidate(self):
 		return True;
