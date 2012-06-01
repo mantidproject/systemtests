@@ -84,6 +84,11 @@ log('Creating Mantid.user.properties file for this environment')
 mantidPlotDir = os.path.dirname(installer.mantidPlotPath)
 log('MantidPlot directory %s' % mantidPlotDir)
 sys.path.append(mantidPlotDir)
+# Ensure MANTIDPATH points at this directory so that 
+# the correct properties file is loaded              
+log('Pointing MANTIDPATH at MantidPlot directory %s' % mantidPlotDir)
+os.environ["MANTIDPATH"] = mantidPlotDir
+# Start Mantid
 from MantidFramework import mtd
 mtd.initialise()
 
