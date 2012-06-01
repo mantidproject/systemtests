@@ -45,7 +45,7 @@ class WishMasking(stresstesting.MantidStressTest):
 			self.assertTrue(False)
 		finally:
 			file.close()
-			os.remove(cal_filename)
+			os.remove(cal_file_full_path)
 	
 	def requiredMemoryMB(self):
 		return 2000
