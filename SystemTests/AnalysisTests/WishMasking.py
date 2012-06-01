@@ -32,8 +32,9 @@ class WishMasking(stresstesting.MantidStressTest):
 	def do_test_cal_file(self, masked_workspace, should_invert, expected_masking_identifier, expected_not_masking_identifier, masking_edge):
 		
 		cal_filename = 'wish_masking_system_test_temp.cal'
-		MaskWorkspaceToCalFile(InputWorkspace=masked_workspace, OutputFile=cal_filename, Invert=should_invert)
-		file = open(cal_filename, 'r')
+		cal_file_alg = MaskWorkspaceToCalFile(InputWorkspace=masked_workspace, OutputFile=cal_filename, Invert=should_invert)
+		cal_file_full_path = str(cal_file_alg.getPropertyValue('OutputFile'))
+		file = open(cal_file_full_path, 'r')
 		try:
 			mask_boundary_inside = self.get_masking_for_index(file, masking_edge)
 			mask_boundary_outside = self.get_masking_for_index(file, masking_edge+1)
@@ -111,13 +112,21 @@ class WishMasking(stresstesting.MantidStressTest):
 		master_cal_file_name = 'master.cal'
 		update_cal_file_name =  'update.cal'
 		merged_cal_file_name = 'merged.cal'
+		master_cal_file_path = None
+		update_cal_file_path = None
+		merged_cal_file_path = None
+		
 		try:
-			MaskWorkspaceToCalFile(InputWorkspace=ws, OutputFile=master_cal_file_name, Invert=False)
-			MaskWorkspaceToCalFile(InputWorkspace=ws, OutputFile=update_cal_file_name, Invert=True)
-			MergeCalFiles(UpdateFile=update_cal_file_name, MasterFile=master_cal_file_name, OutputFile=merged_cal_file_name, MergeOffsets=True)
+			master_cal_file_alg = MaskWorkspaceToCalFile(InputWorkspace=ws, OutputFile=master_cal_file_name, Invert=False)
+			update_cal_file_alg = MaskWorkspaceToCalFile(InputWorkspace=ws, OutputFile=update_cal_file_name, Invert=True)
+			master_cal_file_path = master_cal_file_alg.getPropertyValue('OutputFile')
+			update_cal_file_path = update_cal_file_alg.getPropertyValue('OutputFile')
 			
-			merged_cal_file = open(merged_cal_file_name, 'r')
-			update_cal_file = open(merged_cal_file_name, 'r')
+			merge_cal_file_alg = MergeCalFiles(UpdateFile=update_cal_file_path, MasterFile=master_cal_file_path, OutputFile=merged_cal_file_name, MergeSelections=True)
+			merged_cal_file_path = merge_cal_file_alg.getPropertyValue('OutputFile')
+			
+			update_cal_file = open(update_cal_file_path, 'r')
+			merged_cal_file = open(merged_cal_file_path, 'r')
 			
 			merged_mask_boundary_inside = self.get_masking_for_index(merged_cal_file, masking_edge)
 			merged_mask_boundary_outside = self.get_masking_for_index(merged_cal_file, masking_edge+1)
@@ -133,9 +142,9 @@ class WishMasking(stresstesting.MantidStressTest):
 			#clean up no mater what.
 			merged_cal_file.close()
 			update_cal_file.close()
-			os.remove(master_cal_file_name)
-			os.remove(update_cal_file_name)
-			os.remove(merged_cal_file_name)
+			os.remove(master_cal_file_path)
+			os.remove(update_cal_file_path)
+			os.remove(merged_cal_file_path)
 		
 	def doValidate(self):
 		return True;
