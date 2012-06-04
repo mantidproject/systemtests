@@ -31,5 +31,5 @@ class REFLReduction(stresstesting.MantidStressTest):
         self.disableChecking.append('Sample')
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Axes')
-        return "reflectivity-70977", 'REFLReduction.nxs'
+        return "reflectivity_70977", 'REFLReduction.nxs'
 
