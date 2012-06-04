@@ -37,5 +37,5 @@ class EQSANSProcessedEff(stresstesting.MantidStressTest):
         self.disableChecking.append('Sample')
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Axes')
-        return "EQSANS_1466_event_Iq", 'EQSANSEff.nxs'
+        return "EQSANS_1466_event_Iq", 'EQSANSProcessedEff.nxs'
 
