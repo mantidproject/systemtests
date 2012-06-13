@@ -9,7 +9,7 @@ import os
 class PG3Calibration(stresstesting.MantidStressTest):
 
     def skipTests(self):
-        # We skip this test if the system is not Linux for the moment
+        # We skip this test if the system is not Rhel6 for the moment
         system = os.uname()
         if sys.platform.startswith('win') or sys.platform == 'darwin' or 'Ubuntu' in system[3]:
           return True
@@ -52,8 +52,9 @@ class PG3Calibration(stresstesting.MantidStressTest):
 class PG3CCCalibration(stresstesting.MantidStressTest):
 
     def skipTests(self):
-        # We skip this test if the system is not Linux for the moment
-        if sys.platform.startswith('win') or sys.platform == 'darwin':
+        # We skip this test if the system is not Rhel6 for the moment
+        system = os.uname()
+        if sys.platform.startswith('win') or sys.platform == 'darwin' or 'Ubuntu' in system[3]:
           return True
         else:
           return False
