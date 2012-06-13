@@ -4,13 +4,14 @@ import datetime
 from time import localtime, strftime
 
 import sys
+import os
 
 class PG3Calibration(stresstesting.MantidStressTest):
 
     def skipTests(self):
         # We skip this test if the system is not Linux for the moment
         system = os.uname()
-        if sys.platform.startswith('win') or sys.platform == 'darwin' or system[1] == 'ubuntu':
+        if sys.platform.startswith('win') or sys.platform == 'darwin' or system[2].startswith('12.04'):
           return True
         else:
           return False
