@@ -11,7 +11,7 @@ class PG3Calibration(stresstesting.MantidStressTest):
     def skipTests(self):
         # We skip this test if the system is not Linux for the moment
         system = os.uname()
-        if sys.platform.startswith('win') or sys.platform == 'darwin' or system[2].startswith('12.04'):
+        if sys.platform.startswith('win') or sys.platform == 'darwin' or 'Ubuntu' in system[3]:
           return True
         else:
           return False
