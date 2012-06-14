@@ -2,20 +2,24 @@ import stresstesting
 from mantidsimple import *
 import datetime
 from time import localtime, strftime
-
-import sys
 import os
+
+def _skip_test():
+    """Helper function to determine if we run the test"""
+    import platform
+    # Only runs on RHEL6 at the moment
+    if platform.platform() != "Linux":
+        return True
+    flavour = platform.linux_distribution()[2]
+    if flavour == 'Santiago': # Codename for RHEL6
+        return False # Do not skip
+    else:
+        return True
 
 class PG3Calibration(stresstesting.MantidStressTest):
 
     def skipTests(self):
-        # We skip this test if the system is not Rhel6 for the moment
-        system = os.uname()
-        if sys.platform.startswith('win') or sys.platform == 'darwin' or 'Ubuntu' in system[3]:
-          return True
-        else:
-          return False
-
+        return _skip_test()
 
     def requiredFiles(self):
         files = ["PG3_2538_event.nxs"] 
@@ -52,13 +56,7 @@ class PG3Calibration(stresstesting.MantidStressTest):
 class PG3CCCalibration(stresstesting.MantidStressTest):
 
     def skipTests(self):
-        # We skip this test if the system is not Rhel6 for the moment
-        system = os.uname()
-        if sys.platform.startswith('win') or sys.platform == 'darwin' or 'Ubuntu' in system[3]:
-          return True
-        else:
-          return False
- 
+        return _skip_test()
 
     def requiredFiles(self):
         files = ["PG3_2538_event.nxs"] 
