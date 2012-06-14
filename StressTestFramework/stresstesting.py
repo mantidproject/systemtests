@@ -262,8 +262,9 @@ class MantidStressTest(object):
 
     def doValidation(self):
         """
-        Perform validation. This selects which validation method to use by the result of validateMethod()
-        and validate(). If validate() is not overridden this will return True.
+        Perform validation. This selects which validation method to use by the result 
+        of validateMethod() and validate(). If validate() is not overridden this will
+        return True.
         """
         # if no validation is specified then it must be ok
         validation = self.validate()
@@ -287,8 +288,8 @@ class MantidStressTest(object):
     
     def returnValidationCode(self,code):
         """
-        Calls doValidation() and returns 0 in success and code if failed. This will be used as return code
-        from the calling python subprocess
+        Calls doValidation() and returns 0 in success and code if failed. This will be
+        used as return code from the calling python subprocess
         """
         if self.doValidation():
             retcode = 0
@@ -311,8 +312,8 @@ class MantidStressTest(object):
 
     def cleanup(self):
         '''
-        This function is called after a test has completed and can be used to clean up,
-        i.e. remove workspaces etc
+        This function is called after a test has completed and can be used to
+        clean up, i.e. remove workspaces etc
         '''
         pass
     
@@ -547,16 +548,20 @@ class MantidPlotTestRunner(PythonTestRunner):
         '''
         Run the code in a new instance of the MantidPlot scripting environment
         '''
-        # The code needs wrapping in a temporary file so that it can be passed to MantidPlot,
-        # along with the redirection of the scripting output to stdout
-        # On Windows, just using the file given back by tempfile doesn't work as the name is mangled to a short version where
-        # all characters after a space are replace by ~. So on windows use put the file in the current directory
+        # The code needs wrapping in a temporary file so that it can be passed
+        # to MantidPlot, along with the redirection of the scripting output to
+        # stdout
+        # On Windows, just using the file given back by tempfile doesn't work
+        # as the name is mangled to a short version where all characters after 
+        # a space are replace by ~. So on windows use put the file in the 
+        # current directory
         if os.name == 'nt':
             loc = '.'
         else:
             loc = ''
-        # MG 11/09/2009: I tried the simple tempfile.NamedTemporaryFile() method but this didn't work
-        # on Windows so I had to be a little long winded about it
+        # MG 11/09/2009: I tried the simple tempfile.NamedTemporaryFile() method
+        # but this didn't work on Windows so I had to be a little long winded
+        # about it
         fd, tmpfilepath = tempfile.mkstemp(suffix = '.py', dir = loc, text=True)
 
         os.write(fd, 'import sys\nsys.stdout = sys.__stdout__\n' + self.getCodePrefix() + pycode)
@@ -894,9 +899,9 @@ class MantidFrameworkConfig:
         self.__userPropsFileSystest = self.__userPropsFile + ".systest"
         self.__moveFile(self.__userPropsFile, self.__userPropsFileBackup)
 
-        # Up the log level so that failures can give useful information                                                        
+        # Up the log level so that failures can give useful information
         mtd.settings['logging.loggers.root.level'] = 'information'
-        # Set the correct search path                                                                                          
+        # Set the correct search path
         data_path = ''
         for dir in self.__dataDirs:
             if not os.path.exists(dir):
@@ -907,7 +912,7 @@ class MantidFrameworkConfig:
                 data_path += search_dir + ';'
         mtd.settings['datasearch.directories'] = data_path
 
-        # Save path                                                                                                            
+        # Save path
         mtd.settings['defaultsave.directory'] = self.__saveDir
 
         # set the data directories
