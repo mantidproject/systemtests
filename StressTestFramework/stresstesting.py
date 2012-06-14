@@ -795,6 +795,8 @@ class MantidFrameworkConfig:
     def __init__(self, mantidDir=None, sourceDir=None):
         # force the environment variable
         if mantidDir is not None:
+            if os.path.isfile(mantidDir):
+                mantidDir = os.path.split(mantidDir)[0]
             os.environ['MANTIDPATH'] = mantidDir
 
         # add it to the python path
