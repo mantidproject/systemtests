@@ -29,7 +29,12 @@ parser.add_option("-R", "--tests-regex", dest="testsInclude",
                   help="String specifying which tests to run. Simply uses 'string in testname'.")
 parser.add_option("-E", "--excluderegex", dest="testsExclude",
                   help="String specifying which tests to not run. Simply uses 'string in testname'.")
-parser.set_defaults(frameworkLoc=DEFAULT_FRAMEWORK_LOC, mantidpath=None, makeprop=True)
+loglevelChoices=["error", "warning", "notice", "information", "debug"]
+parser.add_option("-l", "--loglevel", dest="loglevel",
+                  choices=loglevelChoices,
+                  help="Set the log level for test running: [" + ', '.join(loglevelChoices) + "]")
+parser.set_defaults(frameworkLoc=DEFAULT_FRAMEWORK_LOC, mantidpath=None, makeprop=True,
+                    loglevel="information")
 (options, args) = parser.parse_args()
 
 # import the stress testing framework
@@ -38,7 +43,7 @@ import os
 sys.path.append(options.frameworkLoc)
 import stresstesting
 
-mtdconf = stresstesting.MantidFrameworkConfig(options.mantidpath)
+mtdconf = stresstesting.MantidFrameworkConfig(options.mantidpath, loglevel=options.loglevel)
 if options.makeprop:
   mtdconf.config()
 

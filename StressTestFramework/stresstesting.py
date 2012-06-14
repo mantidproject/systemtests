@@ -797,7 +797,8 @@ class TestManager(object):
 #########################################################################
 class MantidFrameworkConfig:
 
-    def __init__(self, mantidDir=None, sourceDir=None):
+    def __init__(self, mantidDir=None, sourceDir=None,
+                 loglevel='information'):
         # force the environment variable
         if mantidDir is not None:
             if os.path.isfile(mantidDir):
@@ -835,6 +836,9 @@ class MantidFrameworkConfig:
                 os.path.join(parentDir, "Data/SANS2D"),
                 self.__saveDir
                 ]
+
+        # set the log level
+        self.__loglevel = loglevel
 
     def __locateSourceDir(self, suggestion):
         if suggestion is None:
@@ -900,7 +904,7 @@ class MantidFrameworkConfig:
         self.__moveFile(self.__userPropsFile, self.__userPropsFileBackup)
 
         # Up the log level so that failures can give useful information
-        mtd.settings['logging.loggers.root.level'] = 'information'
+        mtd.settings['logging.loggers.root.level'] = self.__loglevel
         # Set the correct search path
         data_path = ''
         for dir in self.__dataDirs:
