@@ -33,8 +33,8 @@ class ReflectometryISIS(stresstesting.MantidStressTest):
         spectrum_table = mtd['spectrum_numbers']
         self.assertTrue(2 == spectrum_table.columnCount())
         self.assertTrue(1 == spectrum_table.rowCount())
-        self.assertTrue(avgDB == spectrum_table.cell(0, 0)) #Check that the algorithm found the expected answer for the reflected line
-        self.assertTrue(SC == spectrum_table.cell(0, 1)) #Check that the algorithm found the expected answer for the transmisson line
+        self.assertTrue(SC == spectrum_table.cell(0, 0)) #Check that the algorithm found the expected answer for the reflected line
+        self.assertTrue(avgDB == spectrum_table.cell(0, 1)) #Check that the algorithm found the expected answer for the transmisson line
         
         # Move the detector so that the detector channel matching the reflected beam is at 0,0
         MoveInstrumentComponent(Workspace=I,ComponentName="lineardetector",X=0,Y=0,Z=-PIX*( (SC-avgDB)/2.0 +avgDB) )
