@@ -1,0 +1,7 @@
+IN5 Vanadium data set, lambda=5 Angs, 2h acquisition at 200 K, from Jacques Ollivier (2009) Cycle 094.
+
+run_number wavelength    experiment_identifier       start_time                  end_time                    duration    temperature  reg_temp   detsum           detrate       monsum          monrate
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+68288      5             Source ponctuelle 5A        08-Oct-09 19:36:04          08-Oct-09 21:36:32          120         207.553      199.999     1.02448e+008     14229         1.04049e+006    145
