@@ -3,7 +3,7 @@ These system tests are to verify the behaviour of the ISIS reflectometry reducti
 """
 
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 
 class ReflectometryISIS(stresstesting.MantidStressTest):
 
@@ -15,7 +15,7 @@ class ReflectometryISIS(stresstesting.MantidStressTest):
         
         Load(Filename='POLREF00004699.nxs',OutputWorkspace='POLREF00004699')
         X=mtd['POLREF00004699']
-        ConvertUnits(InputWorkspace=X,OutputWorkspace=X,Target="Wavelength",AlignBins="1")
+        X = ConvertUnits(InputWorkspace=X,Target="Wavelength",AlignBins="1")
         # Reference intensity to normalise by
         CropWorkspace(InputWorkspace=X,OutputWorkspace='Io',XMin=0.8,XMax=14.5,StartWorkspaceIndex=2,EndWorkspaceIndex=2)
         # Crop out transmission and noisy data 
@@ -24,7 +24,8 @@ class ReflectometryISIS(stresstesting.MantidStressTest):
         D=mtd['D']
     
         # Peform the normaisation step
-        Divide(D,Io,'I','1','1')
+        Divide(LHSWorkspace=D,RHSWorkspace=Io,OutputWorkspace='I',
+               AllowDifferentNumberSpectra='1',ClearRHSWorkspace='1')
         I=mtd['I'][0]
         
         # Automatically determine the SC and averageDB 
@@ -71,9 +72,9 @@ class ReflectometryISIS(stresstesting.MantidStressTest):
         pipf_comparison = CompareMDWorkspaces(Workspace1='PiPf_rebinned',Workspace2='PiPf_benchmark', Tolerance=0.01, CheckEvents=False)
         
         # Assert against the outputs
-        self.assertTrue(int(qxqy_comparison.getPropertyValue("Equals")) == 1)
-        self.assertTrue(int(kikf_comparison.getPropertyValue("Equals")) == 1)
-        self.assertTrue(int(pipf_comparison.getPropertyValue("Equals")) == 1)
+        self.assertTrue(int(qxqy_comparison[1]) == 1)
+        self.assertTrue(int(kikf_comparison[1]) == 1)
+        self.assertTrue(int(pipf_comparison[1]) == 1)
         
         return True;
         
