@@ -67,13 +67,14 @@ if options.makeprop:
   mtdconf.restoreconfig()
 
 print
-percent = 1.-float(mgr.failedTests)/float(mgr.totalTests)
-percent = int(100. * percent)
-print "%d%s tests passed, %d tests failed out of %d (%d skipped)" % \
-          (percent, '%', mgr.failedTests, mgr.totalTests, mgr.skippedTests)
 if mgr.skippedTests == mgr.totalTests:
   print "All tests were skipped"
   success = False # fail if everything was skipped
+else:
+  percent = 1.-float(mgr.failedTests)/float(mgr.totalTests-mgr.skippedTests)
+  percent = int(100. * percent)
+  print "%d%s tests passed, %d tests failed out of %d (%d skipped)" % \
+      (percent, '%', mgr.failedTests, (mgr.totalTests-mgr.skippedTests), mgr.skippedTests)
 print 'All tests passed? ' + str(success)
 if success==False:
 	sys.exit(1)
