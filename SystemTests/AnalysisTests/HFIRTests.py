@@ -153,7 +153,7 @@ class HFIRTests(stresstesting.MantidStressTest):
     def test_data_path(self):
         self.assertEqual(ReductionSingleton()._data_path, '.')
         #any path that definitely exists on a computer with Mantid installed
-        test_path = mtd.getConfigProperty('instrumentDefinition.directory')
+        test_path = os.path.normcase(mtd.getConfigProperty('instrumentDefinition.directory'))
         DataPath(test_path)
         self.assertEqual(ReductionSingleton()._data_path, test_path)
         
@@ -276,9 +276,9 @@ class HFIRTests(stresstesting.MantidStressTest):
         Reduce1D()
         
         data = mtd["BioSANS_test_data_Iq"].dataY(0)
-        self.assertAlmostEqual(data[0], 0.1948464330517794, 0.00001)
-        self.assertAlmostEqual(data[10], 0.25088976280978281, 0.00001)
-        self.assertAlmostEqual(data[20], 0.252098592791137, 0.00001)
+        self.assertAlmostEqual(data[0], 0.1948464330517794, delta=0.00001)
+        self.assertAlmostEqual(data[10], 0.25088976280978281, delta=0.00001)
+        self.assertAlmostEqual(data[20], 0.252098592791137, delta=0.00001)
 
     def test_reduction_2(self):
         HFIRSANS()
