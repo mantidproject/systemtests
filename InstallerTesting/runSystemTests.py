@@ -76,5 +76,5 @@ else:
   print "%d%s tests passed, %d tests failed out of %d (%d skipped)" % \
       (percent, '%', mgr.failedTests, (mgr.totalTests-mgr.skippedTests), mgr.skippedTests)
 print 'All tests passed? ' + str(success)
-if success==False:
-	sys.exit(1)
+if not success:
+  sys.exit(1)

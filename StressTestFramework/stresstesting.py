@@ -33,6 +33,9 @@ import platform
 import subprocess
 import tempfile
 import mwclient
+import imp
+import inspect
+import abc
 
 #########################################################################
 # The base test class.
@@ -771,26 +774,41 @@ class TestManager(object):
         Load test classes from the given module object which has been
         imported with the __import__ statement
         '''
-        tests = []
-        pyfile = open(filename, 'r')
-        #regex = re.compile('^class\s(.*)\(.*\)')
-        regex = re.compile('^class\s(.*)\(.*MantidStressTest\)')
-        regex2 = re.compile('^class\s(.*)\(.*MantidScreenshotTest\)')
         modname = os.path.basename(filename)
         modname = modname.split('.py')[0]
-        for line in pyfile:
-          matcher = regex.match(line)
-          if not matcher is None: 
-              if len(matcher.groups()) == 1: 
-                  test_name = matcher.groups()[0]
-                  tests.append(TestSuite(modname, test_name, filename))
-          matcher = regex2.match(line)
-          if not matcher is None: 
-              if len(matcher.groups()) == 1: 
-                  test_name = matcher.groups()[0]
-                  tests.append(TestSuite(modname, test_name, filename))
-
+        path = os.path.dirname(filename)
+        pyfile = open(filename, 'r')
+        tests = []
+        try:
+            mod = imp.load_module(modname, pyfile, filename, ("","",imp.PY_SOURCE))
+            mod_attrs = dir(mod)
+            for key in mod_attrs:
+                value = getattr(mod, key)
+                if key is "MantidStressTest" or not inspect.isclass(value):
+                    continue
+                if self.isValidTestClass(value):
+                    test_name = key
+                    tests.append(TestSuite(modname, test_name, filename))
+        except RuntimeError:
+            pass
+        finally:
+            pyfile.close()
         return tests
+
+    def isValidTestClass(self, class_obj):
+        """Returns true if the test is a valid test class. It is valid
+        if: the class subclassses MantidStressTest and has no abstract methods
+        """
+        if not issubclass(class_obj, MantidStressTest):
+            return False
+        # Check if the get_reference_file is abstract or not
+        if hasattr(class_obj, "__abstractmethods__"):
+            if len(class_obj.__abstractmethods__) == 0:
+                return True
+            else:
+                return False
+        else:
+            return True
 
 #########################################################################
 # Class to handle the environment
