@@ -31,7 +31,8 @@ BANNED_FILES = ['992 Descriptions.txt',
 EXPECTED_EXT = '.expected'
 
 BANNED_REGEXP = [r'SANS2D\d+.log$',
-                 r'SANS2D00000808_.+.txt$']
+                 r'SANS2D00000808_.+.txt$',
+                 r'.*_reduction.log$']
 
 def useDir(direc):
     """Only allow directories that aren't test output or 
@@ -108,7 +109,6 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
             return False
 
         id = wksp.id()
-        print id, "***", dir(wksp) # REMOVE?
         if id is None or len(id) <= 0:
             print "Workspace does not have an id"
             del wksp
@@ -124,8 +124,8 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
                 print "Workspace has zero histograms"
                 del wksp
                 return False
-            if wksp.getMemorySize() <= 0:
-                print "Workspace takes no memory"
+            if "managed" not in id.lower() and wksp.getMemorySize() <= 0:
+                print "Workspace takes no memory: Memory used=" + str(wksp.getMemorySize())
                 del wksp
                 return False
 
