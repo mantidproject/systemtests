@@ -35,23 +35,20 @@ class PG3Calibration(stresstesting.MantidStressTest):
                           GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.0004, 2.5', 
                           PeakPositions = '2.0592,1.2610,1.0754,0.8916,0.8182,0.7280,0.6864,0.6305,0.6029', 
                           CrossCorrelation = False, Instrument = 'PG3', RunNumber = '2538', Extension = '_event.nxs')
+
+        # load saved cal file
         self.saved_cal_file = savedir+"/PG3_calibrate_d2538"+strftime("_%Y_%m_%d.cal")
-        # delete first line with date and time
-        f = open( self.saved_cal_file, 'r' )
-        lines = f.readlines()
-        f.close()
-
-        f = open( self.saved_cal_file, 'w' )
-        f.write( ''.join( lines[1:] ) )
-        f.close()
-
+        LoadCalFile(InputWorkspace="PG3_2538_calibrated", CalFileName=self.saved_cal_file, WorkspaceName="PG3_2538", 
+            MakeGroupingWorkspace=False, MakeMaskWorkspace=False)
+        # load golden cal file
+        LoadCalFile(InputWorkspace="PG3_2538_calibrated", CalFileName="PG3_golden.cal", WorkspaceName="PG3_2538_golden", 
+            MakeGroupingWorkspace=False, MakeMaskWorkspace=False)
 
     def validateMethod(self):
-        return "ValidateASCII"
+        return "ValidateWorkspaceToWorkspace"
 
     def validate(self):
-        return self.saved_cal_file, \
-            os.path.join(os.path.dirname(__file__), 'ReferenceResults','PG3_golden.cal')
+        return ('PG3_2538_offsets','PG3_2538_golden_offsets')
 
 class PG3CCCalibration(stresstesting.MantidStressTest):
 
@@ -74,20 +71,16 @@ class PG3CCCalibration(stresstesting.MantidStressTest):
                           PeakPositions = '0.7282933,1.261441',DetectorsPeaks = '17,6',
                           CrossCorrelation = True, Instrument = 'PG3', RunNumber = '2538', Extension = '_event.nxs')
 
+        # load saved cal file
         self.saved_cal_file = savedir+"/PG3_calibrate_d2538"+strftime("_%Y_%m_%d.cal")
-        # delete first line with date and time
-        f = open( self.saved_cal_file, 'r' )
-        lines = f.readlines()
-        f.close()
-
-        f = open( self.saved_cal_file, 'w' )
-        f.write( '\n'.join( lines[1:] ) )
-        f.close()
-
+        LoadCalFile(InputWorkspace="PG3_2538_calibrated", CalFileName=self.saved_cal_file, WorkspaceName="PG3_2538", 
+            MakeGroupingWorkspace=False, MakeMaskWorkspace=False)
+        # load golden cal file
+        LoadCalFile(InputWorkspace="PG3_2538_calibrated", CalFileName="PG3_goldenCC.cal", WorkspaceName="PG3_2538_golden", 
+            MakeGroupingWorkspace=False, MakeMaskWorkspace=False)
 
     def validateMethod(self):
-        return "ValidateASCII"
+        return "ValidateWorkspaceToWorkspace"
 
     def validate(self):
-        return self.saved_cal_file, \
-            os.path.join(os.path.dirname(__file__), 'ReferenceResults','PG3_goldenCC.cal')
+        return ('PG3_2538_offsets','PG3_2538_golden_offsets')
