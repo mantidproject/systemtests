@@ -123,7 +123,7 @@ class MARIReductionFromFile(ISISDirectInelasticReduction):
     self.hard_mask = "mar11015.msk"
     
   def get_reference_file(self):
-    return "DI.ReduceMonoFromFile.nxs"
+    return "MARIReduction.nxs"
     
 class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
 
@@ -158,6 +158,6 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
       return "11015.spe"
 
   def get_reference_file(self):
-    return "DI.ReduceMonoFromFile.nxs"
+    return "MARIReduction.nxs"
 
 
