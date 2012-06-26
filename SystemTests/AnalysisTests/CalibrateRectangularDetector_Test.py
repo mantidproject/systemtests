@@ -4,22 +4,7 @@ import datetime
 from time import localtime, strftime
 import os
 
-def _skip_test():
-    """Helper function to determine if we run the test"""
-    import platform
-    # Only runs on RHEL6 at the moment
-    if platform.platform() != "Linux":
-        return True
-    flavour = platform.linux_distribution()[2]
-    if flavour == 'Santiago': # Codename for RHEL6
-        return False # Do not skip
-    else:
-        return True
-
 class PG3Calibration(stresstesting.MantidStressTest):
-
-    def skipTests(self):
-        return _skip_test()
 
     def requiredFiles(self):
         files = ["PG3_2538_event.nxs"] 
@@ -51,9 +36,6 @@ class PG3Calibration(stresstesting.MantidStressTest):
         return ('PG3_2538_offsets','PG3_2538_golden_offsets')
 
 class PG3CCCalibration(stresstesting.MantidStressTest):
-
-    def skipTests(self):
-        return _skip_test()
 
     def requiredFiles(self):
         files = ["PG3_2538_event.nxs"] 
