@@ -91,7 +91,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
         raise RuntimeError("sample_mass property should be a numerical quantity")
       if self.sample_rmm is not None and not self._is_numeric(self.sample_rmm):
         raise RuntimeError("sample_rmm property should be a numerical quantity")
-      if type(self.hard_mask) != str:
+      if self.hard_mask is not None and type(self.hard_mask) != str:
         raise RuntimeError("hard_mask property should be a string")
       
     def _is_numeric(self, obj):
@@ -160,4 +160,24 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
   def get_reference_file(self):
     return "MARIReduction.nxs"
 
+#------------------------- MAPS tests -------------------------------------------------
 
+class MAPSReduction(ISISDirectInelasticReduction):
+
+  def __init__(self):
+    ISISDirectInelasticReduction.__init__(self)
+    self.instr_name = 'MAPS'
+    self.sample_run = 17269
+    self.incident_energy = 150
+    self.bins = [-15,3,135]
+    self.white_beam = 17186
+    self.map_file = "4to1.map"
+    self.mono_van = 17589
+    # We care about deviations from expected so the absolute numbers are not vital
+    # Using same as above
+    self.sample_mass = 10
+    self.sample_rmm = 435.96
+    self.hard_mask = None
+    
+  def get_reference_file(self):
+    return "MAPSReduction.nxs"
