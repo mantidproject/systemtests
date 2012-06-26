@@ -33,7 +33,7 @@ class PG3Calibration(stresstesting.MantidStressTest):
         return "ValidateWorkspaceToWorkspace"
 
     def validate(self):
-        self.tolerance = 1.0e-3
+        self.tolerance = 1.0e-2
         return ('PG3_2538_offsets','PG3_2538_golden_offsets')
 
 class PG3CCCalibration(stresstesting.MantidStressTest):
@@ -66,5 +66,5 @@ class PG3CCCalibration(stresstesting.MantidStressTest):
         return "ValidateWorkspaceToWorkspace"
 
     def validate(self):
-        self.tolerance = 1.0e-3
+        self.tolerance = 1.0e-2
         return ('PG3_2538_offsets','PG3_2538_golden_offsets')
