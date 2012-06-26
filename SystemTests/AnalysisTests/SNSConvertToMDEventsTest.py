@@ -131,7 +131,7 @@ class SNSConvertToMDEventsNoHistNoProjTest(stresstesting.MantidStressTest):
         return "ValidateWorkspaceToWorkspace"
     
     def validate(self):
-        self.tolerance = 1.0e-3
+        self.tolerance = 1.0e-1
         return (self.output_ws, self.gold_ws_name)
 
 class SNSConvertToMDEventsHistNoProjTest(stresstesting.MantidStressTest):
@@ -155,7 +155,7 @@ class SNSConvertToMDEventsHistNoProjTest(stresstesting.MantidStressTest):
         return "ValidateWorkspaceToWorkspace"
     
     def validate(self):
-        self.tolerance = 1.0e-3
+        self.tolerance = 1.0e-1
         return (self.output_ws, self.gold_ws_name)
 
 class SNSConvertToMDEventsNoHistProjTest(stresstesting.MantidStressTest):
