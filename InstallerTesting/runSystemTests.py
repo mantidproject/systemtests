@@ -43,7 +43,22 @@ import os
 sys.path.append(options.frameworkLoc)
 import stresstesting
 
-mtdconf = stresstesting.MantidFrameworkConfig(options.mantidpath, loglevel=options.loglevel)
+# Make sure the specifed MantidFramework is picked up
+# Use specified option if given
+mantid_module_path = None
+if options.mantidpath is not None:
+  mantid_module_path = options.mantidpath
+elif os.path.exists("MantidFramework"):
+  pass # Current directory is in the already
+elif 'MANTIDPATH' in os.environ:
+  mantid_module_path = os.environ['MANTIDPATH']
+else: 
+  pass
+
+# Ensure that this is the one that is picked
+sys.path.insert(0, mantid_module_path)
+
+mtdconf = stresstesting.MantidFrameworkConfig(mantid_module_path, loglevel=options.loglevel)
 if options.makeprop:
   mtdconf.config()
 

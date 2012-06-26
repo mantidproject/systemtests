@@ -1,6 +1,4 @@
 import stresstesting
-import MantidFramework
-MantidFramework.mtd.initialize() # OS X needs this to be here before mantidsimple
 from mantidsimple import *
 from ISISCommandInterface import *
 
