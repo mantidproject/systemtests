@@ -30,6 +30,10 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       """Returns the name of the reference file to compare against"""
       raise NotImplementedError("Implmenent get_reference_file to return "
                                 "the name of the file to compare against.")
+
+    def get_result_workspace(self):
+        """Returns the result workspace to be checked"""
+        return str(self.sample_run) + ".spe"
   
     def runTest(self):
       """Defines the workflow for the test"""
@@ -60,7 +64,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       self.tolerance = 1e-7
       self.disableChecking.append('SpectraMap')
       self.disableChecking.append('Instrument')
-      result = str(self.sample_run) + ".spe"
+      result = self.get_result_workspace()
       reference = self.get_reference_file()
       return result, reference
 
@@ -149,8 +153,9 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
     self.sample_rmm = 435.96
     self.hard_mask = "mar11015.msk"
     
-  def validate(self):
-    return "11015.spe", self.get_reference_file()
+  def get_result_workspace(self):
+      """Returns the result workspace to be checked"""
+      return "11015.spe"
 
   def get_reference_file(self):
     return "DI.ReduceMonoFromFile.nxs"
