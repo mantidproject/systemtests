@@ -98,3 +98,18 @@ class OSIRISReduction(ISISIndirectInelasticReduction):
     
     def get_reference_file(self):
         return "II.OSIRISReductionFromFile.nxs"
+
+#------------------------- IRIS tests ---------------------------------------
+
+class IRISReduction(ISISIndirectInelasticReduction):
+
+    def __init__(self):
+        ISISIndirectInelasticReduction.__init__(self)
+        self.instr_name = 'IRIS'
+        self.detector_range = [3, 53]
+        self.data_file = 'IRS21360.raw'
+        self.rebin_string = None
+        self.result_name = 'IrisReductionTest'
+    
+    def get_reference_file(self):
+        return "II.IRISReductionFromFile.nxs"
