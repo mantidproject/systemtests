@@ -38,7 +38,8 @@ class ISISIndirectInelasticReduction(stresstesting.MantidStressTest):
         reducer.set_detector_range(self.detector_range[0], 
                                    self.detector_range[1])
         reducer.append_data_file(self.data_file)
-        reducer.set_rebin_string(self.rebin_string)
+        if self.rebin_string is not None:
+            reducer.set_rebin_string(self.rebin_string)
         
         # Do the reduction and rename the result.
         reducer.reduce()
@@ -63,7 +64,7 @@ class ISISIndirectInelasticReduction(stresstesting.MantidStressTest):
                                "values")
         if type(self.data_file) != str:
             raise RuntimeError("data_file property should be a string")
-        if type(self.rebin_string) != str:
+        if self.rebin_string is not None and type(self.rebin_string) != str:
             raise RuntimeError("rebin_string property should be a string")
         if type(self.result_name) != str:
             raise RuntimeError("result_name property should be a string")
@@ -82,3 +83,18 @@ class TOSCAReduction(ISISIndirectInelasticReduction):
     
     def get_reference_file(self):
         return "II.TOSCAReductionFromFile.nxs"
+
+#------------------------- OSIRIS tests ---------------------------------------
+
+class OSIRISReduction(ISISIndirectInelasticReduction):
+
+    def __init__(self):
+        ISISIndirectInelasticReduction.__init__(self)
+        self.instr_name = 'OSIRIS'
+        self.detector_range = [963, 1004]
+        self.data_file = 'OSI97919.raw'
+        self.rebin_string = None
+        self.result_name = 'OsirisReductionTest'
+    
+    def get_reference_file(self):
+        return "II.OSIRISReductionFromFile.nxs"
