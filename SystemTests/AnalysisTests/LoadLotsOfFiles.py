@@ -3,7 +3,8 @@ import os
 import re
 import stresstesting
 
-BANNED_FILES = ['992 Descriptions.txt',
+BANNED_FILES = ['4to1.map',
+                '992 Descriptions.txt',
                 'BioSANS_dark_current.xml',
                 'BioSANS_empty_cell.xml',
                 'BioSANS_empty_trans.xml',
