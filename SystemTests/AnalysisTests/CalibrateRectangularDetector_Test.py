@@ -17,7 +17,7 @@ class PG3Calibration(stresstesting.MantidStressTest):
 
         # run the actual code
         CalibrateRectangularDetectors(OutputDirectory = savedir, SaveAs = 'calibration', FilterBadPulses = True,
-                          GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.0002, 2.5', 
+                          GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.0004, 2.5', 
                           PeakPositions = '2.0592,1.2610,1.0754,0.8916,0.8182,0.7280,0.6864,0.6305,0.6029', 
                           CrossCorrelation = False, Instrument = 'PG3', RunNumber = '2538', Extension = '_event.nxs')
 
@@ -33,7 +33,7 @@ class PG3Calibration(stresstesting.MantidStressTest):
         return "ValidateWorkspaceToWorkspace"
 
     def validate(self):
-        self.tolerance = 1.0
+        self.tolerance = 1.0e-4
         return ('PG3_2538_offsets','PG3_2538_golden_offsets')
 
 class PG3CCCalibration(stresstesting.MantidStressTest):
@@ -50,7 +50,7 @@ class PG3CCCalibration(stresstesting.MantidStressTest):
         # run the actual code
 
         CalibrateRectangularDetectors(OutputDirectory = savedir, SaveAs = 'calibration', FilterBadPulses = True,
-                          GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.0002, 2.5',
+                          GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.0004, 2.5',
                           PeakPositions = '0.7282933,1.261441',DetectorsPeaks = '17,6',
                           CrossCorrelation = True, Instrument = 'PG3', RunNumber = '2538', Extension = '_event.nxs')
 
@@ -66,5 +66,5 @@ class PG3CCCalibration(stresstesting.MantidStressTest):
         return "ValidateWorkspaceToWorkspace"
 
     def validate(self):
-        self.tolerance = 1.0
+        self.tolerance = 1.0e-4
         return ('PG3_2538_offsets','PG3_2538_golden_offsets')
