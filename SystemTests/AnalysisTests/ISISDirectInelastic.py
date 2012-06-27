@@ -17,11 +17,11 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
         - incident_energy: A float value for the Ei guess
         - bins: A list of rebin parameters
         - white_beam: An integer giving a white_beam_file or a workspace
-        - mono_van: An integer giving a mono-vanadium run or a workspace
-        - map_file: An optional string pointing to a map file
-        - sample_mass: A float value for the sample mass
-        - sample_rmm: A float value for the sample rmm
-        - hard_mask: An optional hard mask file
+        - mono_van: An integer giving a mono-vanadium run or a workspace or None
+        - map_file: An optional string pointing to a map file 
+        - sample_mass: A float value for the sample mass or None
+        - sample_rmm: A float value for the sample rmm or None
+        - hard_mask: An hard mask file or None
     """
     __metaclass__ = ABCMeta # Mark as an abstract class
 
@@ -82,8 +82,8 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
         raise RuntimeError("bins property should be a list of atleast 3 values")
       if type(self.white_beam) != int and not self._is_workspace(self.white_beam):
         raise RuntimeError("white_beam property should be an integer or a workspace")
-      if type(self.mono_van) is not None and type(self.mono_van) != int and \
-            not self._is_workspace(self.mono_van):
+      if self.mono_van is not None and type(self.mono_van) != int and \
+              not self._is_workspace(self.mono_van) :
         raise RuntimeError("mono_van property should be an integer or a workspace")
       if self.map_file is not None and type(self.map_file) != str:
         raise RuntimeError("map_file property should be a string")
@@ -164,6 +164,10 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
 
 class MAPSReduction(ISISDirectInelasticReduction):
 
+  def requiredMemoryMB(self):
+      """Far too slow for managed workspaces. They're tested in other places. Requires 10Gb"""
+      return 10000
+
   def __init__(self):
     ISISDirectInelasticReduction.__init__(self)
     self.instr_name = 'MAPS'
@@ -181,3 +185,27 @@ class MAPSReduction(ISISDirectInelasticReduction):
     
   def get_reference_file(self):
     return "MAPSReduction.nxs"
+
+#------------------------- MAPS tests -------------------------------------------------
+
+class MERLINReduction(ISISDirectInelasticReduction):
+
+  def requiredMemoryMB(self):
+      """Far too slow for managed workspaces. They're tested in other places. Requires 16Gb"""
+      return 16000
+
+  def __init__(self):
+    ISISDirectInelasticReduction.__init__(self)
+    self.instr_name = 'MERLIN'
+    self.sample_run = 6398
+    self.incident_energy = 18
+    self.bins = [-10, 0.2, 15]
+    self.white_beam = 6399
+    self.map_file = "rings_113.map"
+    self.mono_van = None
+    self.sample_mass = None
+    self.sample_rmm = None
+    self.hard_mask = None
+    
+  def get_reference_file(self):
+    return "MERLINReduction.nxs"

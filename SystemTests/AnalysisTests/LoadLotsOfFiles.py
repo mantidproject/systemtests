@@ -24,6 +24,7 @@ BANNED_FILES = ['4to1.map',
                 'PG3_characterization_2011_08_31-HR.txt',
                 'REF_M_9684_event.nxs',
                 'REF_M_9709_event.nxs',
+                'rings_113.map'
                 'SANS2D_periodTests.csv',
                 'SANS2D_992_91A.csv',
                 'testCansas1DMultiEntry.xml',
