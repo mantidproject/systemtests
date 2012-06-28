@@ -85,4 +85,4 @@ class PG3CCCalibration(stresstesting.MantidStressTest):
 
     def validate(self):
         self.tolerance = 1.0e-4
-        return ('PG3_2538_offsets','PG3_2538_golden_offsets')import stresstesting
+        return ('PG3_2538_offsets','PG3_2538_golden_offsets')
