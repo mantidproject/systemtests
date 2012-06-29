@@ -24,11 +24,13 @@ BANNED_FILES = ['4to1.map',
                 'PG3_characterization_2011_08_31-HR.txt',
                 'REF_M_9684_event.nxs',
                 'REF_M_9709_event.nxs',
-                'rings_113.map'
+                'rings_113.map',
                 'SANS2D_periodTests.csv',
                 'SANS2D_992_91A.csv',
                 'testCansas1DMultiEntry.xml',
-                'Wish_Diffuse_Scattering_ISAW_UB.mat']
+                'Wish_Diffuse_Scattering_ISAW_UB.mat',
+                'SANS2D_periodTests.csv'
+                ]
 
 EXPECTED_EXT = '.expected'
 
