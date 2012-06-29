@@ -1,14 +1,36 @@
 import stresstesting
 from mantidsimple import RenameWorkspace
+import os
 
 from inelastic_indirect_reducer import IndirectReducer
 from inelastic_indirect_reduction_steps import CreateCalibrationWorkspace
 from IndirectEnergyConversion import resolution
+from IndirectEnergyConversion import slice
 
 from abc import ABCMeta, abstractmethod
 
+class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
+    """A common base class for the base classes of each workflow.
+    """
+    __metaclass__ = ABCMeta # Mark as an abstract class
+
+    @abstractmethod
+    def get_reference_file(self):
+        """Returns the name of the reference file to compare against"""
+        raise NotImplementedError("Implmenent get_reference_file to return "
+                                  "the name of the file to compare against.")
+
+    def validate(self):
+        """Returns the name of the workspace & file to compare"""
+        self.tolerance = 1e-7
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Instrument')
+        result = self.result_name
+        reference = self.get_reference_file()
+        return result, reference
+
 #==============================================================================
-class ISISIndirectInelasticReduction(stresstesting.MantidStressTest):
+class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
     """A base class for the ISIS indirect inelastic reduction tests
     
     The workflow is defined in the runTest() method, simply
@@ -24,12 +46,6 @@ class ISISIndirectInelasticReduction(stresstesting.MantidStressTest):
                         to save to.
     """
     __metaclass__ = ABCMeta # Mark as an abstract class
-
-    @abstractmethod
-    def get_reference_file(self):
-        """Returns the name of the reference file to compare against"""
-        raise NotImplementedError("Implmenent get_reference_file to return "
-                                  "the name of the file to compare against.")
     
     def runTest(self):
         """Defines the workflow for the test"""
@@ -47,15 +63,6 @@ class ISISIndirectInelasticReduction(stresstesting.MantidStressTest):
         reducer.reduce()
         ws = reducer.get_result_workspaces()[0]
         RenameWorkspace(ws, self.result_name)
-
-    def validate(self):
-        """Returns the name of the workspace & file to compare"""
-        self.tolerance = 1e-7
-        self.disableChecking.append('SpectraMap')
-        self.disableChecking.append('Instrument')
-        result = self.result_name
-        reference = self.get_reference_file()
-        return result, reference
 
     def _validate_properties(self):
         """Check the object properties are in an expected state to continue"""
@@ -118,7 +125,7 @@ class IRISReduction(ISISIndirectInelasticReduction):
 
         
 #==============================================================================
-class ISISIndirectInelasticCalibration(stresstesting.MantidStressTest):
+class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
     """A base class for the ISIS indirect inelastic calibration tests
     
     The workflow is defined in the runTest() method, simply
@@ -133,12 +140,6 @@ class ISISIndirectInelasticCalibration(stresstesting.MantidStressTest):
         - self.result_name: a string containing the name of the result
     """
     __metaclass__ = ABCMeta # Mark as an abstract class
-
-    @abstractmethod
-    def get_reference_file(self):
-        """Returns the name of the reference file to compare against"""
-        raise NotImplementedError("Implmenent get_reference_file to return "
-                                  "the name of the file to compare against.")
     
     def runTest(self):
         """Defines the workflow for the test"""
@@ -158,15 +159,6 @@ class ISISIndirectInelasticCalibration(stresstesting.MantidStressTest):
         calib.execute(None, None) # Does not appear to be used.
         result = calib.result_workspace()
         RenameWorkspace(result, self.result_name)
-
-    def validate(self):
-        """Returns the name of the workspace & file to compare"""
-        self.tolerance = 1e-7
-        self.disableChecking.append('SpectraMap')
-        self.disableChecking.append('Instrument')
-        result = self.result_name
-        reference = self.get_reference_file()
-        return result, reference
 
     def _validate_properties(self):
         """Check the object properties are in an expected state to continue"""
@@ -220,7 +212,7 @@ class IRISCalibration(ISISIndirectInelasticCalibration):
 
         
 #==============================================================================
-class ISISIndirectInelasticResolution(stresstesting.MantidStressTest):
+class ISISIndirectInelasticResolution(ISISIndirectInelasticBase):
     """A base class for the ISIS indirect inelastic resolution tests
     
     The workflow is defined in the runTest() method, simply
@@ -235,12 +227,6 @@ class ISISIndirectInelasticResolution(stresstesting.MantidStressTest):
         - self.files: a list of strings containing filenames
     """
     __metaclass__ = ABCMeta # Mark as an abstract class
-
-    @abstractmethod
-    def get_reference_file(self):
-        """Returns the name of the reference file to compare against"""
-        raise NotImplementedError("Implmenent get_reference_file to return "
-                                  "the name of the file to compare against.")
     
     def runTest(self):
         """Defines the workflow for the test"""
@@ -258,15 +244,6 @@ class ISISIndirectInelasticResolution(stresstesting.MantidStressTest):
                             plotOpt = False)
         
         RenameWorkspace(result, self.result_name)
-
-    def validate(self):
-        """Returns the name of the workspace & file to compare"""
-        self.tolerance = 1e-7
-        self.disableChecking.append('SpectraMap')
-        self.disableChecking.append('Instrument')
-        result = self.result_name
-        reference = self.get_reference_file()
-        return result, reference
 
     def _validate_properties(self):
         """Check the object properties are in an expected state to continue"""
@@ -324,3 +301,78 @@ class IRISResolution(ISISIndirectInelasticResolution):
     
     def get_reference_file(self):
         return "II.IRISResolution.nxs"
+
+        
+#==============================================================================
+class ISISIndirectInelasticDiagnostics(ISISIndirectInelasticBase):
+    """A base class for the ISIS indirect inelastic diagnostic tests
+    
+    The workflow is defined in the runTest() method, simply
+    define an __init__ method and set the following properties
+    on the object
+    """
+    __metaclass__ = ABCMeta # Mark as an abstract class
+    
+    def runTest(self):
+        """Defines the workflow for the test"""
+        
+        self._validate_properties()
+        
+        slice(self.rawfiles,
+              '',# No calib file.
+              self.tofRange,
+              self.spectra,
+              self.suffix,
+              Save=False, 
+              Verbose=False, 
+              Plot=False)
+        
+        file = self.rawfiles[0]
+        result = os.path.splitext(file)[0] + "_" + self.suffix + "_slice"
+        
+        RenameWorkspace(result, self.result_name)
+
+    def _validate_properties(self):
+        """Check the object properties are in an expected state to continue"""
+        
+        if type(self.rawfiles) != list and len(self.rawfiles) != 2:
+            raise RuntimeError("rawfiles should be a list of exactly 2 "
+                               "values")
+        if type(self.tofRange) != list and len(self.tofRange) != 1:
+            raise RuntimeError("tofRange should be a list of exactly 1 "
+                               "value")
+        if type(self.spectra) != list and len(self.spectra) != 2:
+            raise RuntimeError("spectra should be a list of exactly 2 "
+                               "values")
+        if type(self.suffix) != str:
+            raise RuntimeError("suffix property should be a string")
+
+#------------------------- OSIRIS tests ---------------------------------------
+
+class OSIRISDiagnostics(ISISIndirectInelasticDiagnostics):
+
+    def __init__(self):
+        ISISIndirectInelasticDiagnostics.__init__(self)
+        self.tofRange = [62500,65000]
+        self.rawfiles = ['IRS53664.raw']
+        self.spectra = [3,53]
+        self.suffix = 'graphite002'
+        self.result_name = 'OsirisDiagnosticsTest'
+    
+    def get_reference_file(self):
+        return "II.OSIRISDiagnostics.nxs"
+
+#------------------------- IRIS tests -----------------------------------------
+
+class IRISDiagnostics(ISISIndirectInelasticDiagnostics):
+
+    def __init__(self):
+        ISISIndirectInelasticDiagnostics.__init__(self)
+        self.tofRange = [59000,61000]
+        self.rawfiles = ['OSI97935.raw']
+        self.spectra = [963,1004]
+        self.suffix = 'graphite002'
+        self.result_name = 'IrisDiagnosticsTest'
+    
+    def get_reference_file(self):
+        return "II.IRISDiagnostics.nxs"
