@@ -18,7 +18,7 @@ class SXDAnalysis(stresstesting.MantidStressTest):
         
         # A basic check that peak finding was possible. We don't do much more than this with SXD in mantid at this point.
         peaks = mtd['peaks']
-        self.assertEqual(60, peaks.rowCount())
+        self.assertTrue(60 == peaks.getNumberPeaks())
         
     def doValidation(self):
         # If we reach here, no validation failed
