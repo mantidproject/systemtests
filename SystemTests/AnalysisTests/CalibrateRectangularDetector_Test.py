@@ -14,7 +14,7 @@ def _skip_test():
     if flavour == 'Santiago': # Codename for RHEL6
         return False # Do not skip
     else:
-        return True
+        return False
 
 class PG3Calibration(stresstesting.MantidStressTest):
 
@@ -32,7 +32,7 @@ class PG3Calibration(stresstesting.MantidStressTest):
 
         # run the actual code
         CalibrateRectangularDetectors(OutputDirectory = savedir, SaveAs = 'calibration', FilterBadPulses = True,
-                          GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.0008, 2.5', 
+                          GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.002, 2.5', 
                           PeakPositions = '2.0592,1.2610,1.0754,0.8916,0.8182,0.7280,0.6864,0.6305,0.6029', 
                           CrossCorrelation = False, Instrument = 'PG3', RunNumber = '2538', Extension = '_event.nxs')
 
@@ -68,7 +68,7 @@ class PG3CCCalibration(stresstesting.MantidStressTest):
         # run the actual code
 
         CalibrateRectangularDetectors(OutputDirectory = savedir, SaveAs = 'calibration', FilterBadPulses = True,
-                          GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.0008, 2.5',
+                          GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.002, 2.5',
                           PeakPositions = '0.7282933,1.261441',DetectorsPeaks = '17,6',
                           CrossCorrelation = True, Instrument = 'PG3', RunNumber = '2538', Extension = '_event.nxs')
 
