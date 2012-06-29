@@ -301,7 +301,7 @@ class OSIRISResolution(ISISIndirectInelasticResolution):
         self.reflection = '002'
         self.background = [ -0.563032, 0.605636 ]
         self.rebin_params = '-0.2,0.002,0.2'
-        self.files = [r'C:\test\OSIRIS\OSI97935.raw']
+        self.files = ['OSI97935.raw']
         self.result_name = 'OsirisReductionTest'
     
     def get_reference_file(self):
