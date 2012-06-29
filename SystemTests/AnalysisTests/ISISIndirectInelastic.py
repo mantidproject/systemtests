@@ -302,7 +302,25 @@ class OSIRISResolution(ISISIndirectInelasticResolution):
         self.background = [ -0.563032, 0.605636 ]
         self.rebin_params = '-0.2,0.002,0.2'
         self.files = ['OSI97935.raw']
-        self.result_name = 'OsirisReductionTest'
+        self.result_name = 'OsirisResolutionTest'
     
     def get_reference_file(self):
         return "II.OSIRISResolution.nxs"
+
+#------------------------- IRIS tests -----------------------------------------
+
+class IRISResolution(ISISIndirectInelasticResolution):
+
+    def __init__(self):
+        ISISIndirectInelasticResolution.__init__(self)
+        self.icon_opt = { 'first': 3, 'last': 53 }
+        self.instrument = 'IRIS'
+        self.analyser = 'graphite'
+        self.reflection = '002'
+        self.background = [ -0.54, 0.65 ]
+        self.rebin_params = '-0.2,0.002,0.2'
+        self.files = ['IRS53664.raw']
+        self.result_name = 'IrisResolutionTest'
+    
+    def get_reference_file(self):
+        return "II.IRISResolution.nxs"
