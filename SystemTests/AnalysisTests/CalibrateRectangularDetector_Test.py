@@ -14,7 +14,7 @@ def _skip_test():
     if flavour == 'Santiago': # Codename for RHEL6
         return False # Do not skip
     else:
-        return False
+        return True
 
 class PG3Calibration(stresstesting.MantidStressTest):
 
