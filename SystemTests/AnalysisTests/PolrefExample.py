@@ -2,6 +2,12 @@ import stresstesting
 from mantidsimple import *
 
 ''' Sample script from Tim Charlton. Described as Mantid version of quick:lam'''
+'''
+Owen Arnold
+29/06/2012
+The analysis performed here is a subset of what is done in ReflectometryISIS.py. We may want to remove this test in the furture to avoid duplication. However,
+I'm leaving this in here for now because Tim Charlton suggests making the ReflectometryISIS.py test more generic for every reflectometry instrument.
+'''
 class PolrefExample(stresstesting.MantidStressTest):
     
   def runTest(self):

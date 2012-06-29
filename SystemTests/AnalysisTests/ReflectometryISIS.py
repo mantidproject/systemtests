@@ -5,16 +5,27 @@ These system tests are to verify the behaviour of the ISIS reflectometry reducti
 import stresstesting
 from mantid.simpleapi import *
 
+from abc import ABCMeta, abstractmethod
+
 class ReflectometryISIS(stresstesting.MantidStressTest):
 
+    __metaclass__ = ABCMeta # Mark as an abstract class
+    
+    @abstractmethod
+    def get_workspace_name(self):
+      """Returns the name of the workspace"""
+      raise NotImplementedError("Implement get_workspace_name to return ")
+    
     def runTest(self):
+        
+        workspace_name = self.get_workspace_name()
+        workspace_nexus_file = workspace_name + ".nxs"
         
         PIX=1.1E-3 #m
         SC=75
         avgDB=29
-        
-        Load(Filename='POLREF00004699.nxs',OutputWorkspace='POLREF00004699')
-        X=mtd['POLREF00004699']
+        Load(Filename=workspace_nexus_file,OutputWorkspace=workspace_name)
+        X=mtd[workspace_name]
         X = ConvertUnits(InputWorkspace=X,Target="Wavelength",AlignBins="1")
         # Reference intensity to normalise by
         CropWorkspace(InputWorkspace=X,OutputWorkspace='Io',XMin=0.8,XMax=14.5,StartWorkspaceIndex=2,EndWorkspaceIndex=2)
@@ -80,4 +91,11 @@ class ReflectometryISIS(stresstesting.MantidStressTest):
         
     def doValidate(self):
         return True;
+   
+# Specialisation for testing POLREF
+class POLREF_ReflectometryISIS(ReflectometryISIS):
+    def get_workspace_name(self):
+        return "POLREF4699"
+        
     
+#Others to follow here.
