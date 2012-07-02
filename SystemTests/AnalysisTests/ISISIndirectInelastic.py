@@ -6,6 +6,7 @@ from inelastic_indirect_reducer import IndirectReducer
 from inelastic_indirect_reduction_steps import CreateCalibrationWorkspace
 from IndirectEnergyConversion import resolution
 from IndirectEnergyConversion import slice
+from IndirectDataAnalysis import elwin
 
 from abc import ABCMeta, abstractmethod
 
@@ -416,3 +417,57 @@ class IRISDiagnostics(ISISIndirectInelasticDiagnostics):
     
     def get_reference_files(self):
         return ["II.IRISDiagnostics.nxs"]
+        
+
+#==============================================================================
+class ISISIndirectInelasticElwin(ISISIndirectInelasticBase):
+    '''A base class for the ISIS indirect inelastic Elwin tests
+    
+    The workflow is defined in the _run() method, simply
+    define an __init__ method and set the following properties
+    on the object
+    '''
+    __metaclass__ = ABCMeta # Mark as an abstract class
+    
+    def _run(self):
+        '''Defines the workflow for the test'''
+        result = elwin(self.files,
+                       self.eRange,
+                       Save=False,
+                       Verbose=False,
+                       Plot=False)
+        self.result_names = [result[0][0], result[1][0]]
+                                  
+    def _validate_properties(self):
+        """Check the object properties are in an expected state to continue"""
+        
+        if type(self.files) != list and len(self.files) != 1:
+            raise RuntimeError("files should be a list of exactly 1 "
+                               "value")
+        if type(self.eRange) != list and len(self.eRange) != 2:
+            raise RuntimeError("eRange should be a list of exactly 2 "
+                               "values")
+
+#------------------------- OSIRIS tests ---------------------------------------
+
+class OSIRISElwin(ISISIndirectInelasticElwin):
+
+    def __init__(self):
+        ISISIndirectInelasticElwin.__init__(self)
+        self.files = ['osi97935_graphite002_red.nxs']
+        self.eRange = [-0.02,0.02]
+
+    def get_reference_files(self):
+        return ['II.OSIRISElwinEQ1.nxs', 'II.OSIRISElwinEQ2.nxs']
+
+#------------------------- IRIS tests -----------------------------------------
+
+class IRISElwin(ISISIndirectInelasticElwin):
+
+    def __init__(self):
+        ISISIndirectInelasticElwin.__init__(self)
+        self.files = ['irs53664_graphite002_red.nxs']
+        self.eRange = [-0.02,0.02]
+
+    def get_reference_files(self):
+        return ['II.IRISElwinEQ1.nxs', 'II.IRISElwinEQ2.nxs']
