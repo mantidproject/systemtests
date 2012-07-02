@@ -32,7 +32,6 @@ import datetime
 import platform
 import subprocess
 import tempfile
-import mwclient
 import imp
 import inspect
 import abc
@@ -529,7 +528,7 @@ class PythonConsoleRunner(PythonTestRunner):
         '''
         Run the code in a new instance of a python interpreter
         '''
-        return self.spawnSubProcess('python -c \"' + self.getCodePrefix() + pycode + '\"')
+        return self.spawnSubProcess(sys.executable + ' -c \"' + self.getCodePrefix() + pycode + '\"')
 
 #########################################################################
 # A runner class to execute the tests on using the command line interface
