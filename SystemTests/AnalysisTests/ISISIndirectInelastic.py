@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import RenameWorkspace
+from mantidsimple import RenameWorkspace, LoadNexus
 import os
 
 from inelastic_indirect_reducer import IndirectReducer
@@ -9,31 +9,101 @@ from IndirectEnergyConversion import slice
 
 from abc import ABCMeta, abstractmethod
 
+'''
+stresstesting.MantidStressTest
+ |
+ +--ISISIndirectInelasticBase
+     |
+     +--ISISIndirectInelasticReduction
+     |   |
+     |   +--TOSCAReduction
+     |   +--IRISReduction
+     |   +--OSIRISReduction
+     |
+     +--ISISIndirectInelasticCalibratrion
+     |   |
+     |   +--IRISCalibratrion
+     |   +--OSIRISCalibratrion
+     |
+     +--ISISIndirectInelasticResolution
+     |   |
+     |   +--IRISResolution
+     |   +--OSIRISResolution
+     |
+     +--ISISIndirectInelasticDiagnostics
+         |
+         +--IRISDiagnostics
+         +--OSIRISDiagnostics
+'''
+
 class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
-    """A common base class for the base classes of each workflow.
-    """
+    '''A common base class for the ISISIndirectInelastic* base classes.
+    '''
     __metaclass__ = ABCMeta # Mark as an abstract class
 
     @abstractmethod
-    def get_reference_file(self):
-        """Returns the name of the reference file to compare against"""
-        raise NotImplementedError("Implmenent get_reference_file to return "
-                                  "the name of the file to compare against.")
+    def get_reference_files(self):
+        '''Returns the name of the reference files to compare against.'''
+        raise NotImplementedError("Implmenent get_reference_files to return "
+                                  "the names of the files to compare against.")
+
+    @abstractmethod
+    def _run(self):
+        raise NotImplementedError("Implement _run.")
+    
+    def validate_results_and_references(self):
+        if type(self.get_reference_files()) != list:
+            raise RuntimeError("The reference file(s) should be in a list")
+        if type(self.result_names) != list:
+            raise RuntimeError("The result workspace(s) should be in a list")
+        if len(self.get_reference_files()) !=\
+           len(self.result_names):
+            raise RuntimeError("The number of result workspaces does not match"
+                               " the number of reference files.")
+        if len(self.get_reference_files()) < 1:
+            raise RuntimeError("There needs to be a least one result and "
+                               "reference.")
+    
+    @abstractmethod
+    def _validate_properties(self):
+        '''Check the object properties are in an expected state to continue'''
+        raise NotImplementedError("Implmenent _validate_properties.")
+    
+    def runTest(self):
+        self._validate_properties()
+        self._run()
+        self.validate_results_and_references()
 
     def validate(self):
-        """Returns the name of the workspace & file to compare"""
+        '''Performs the validation for the generalised case of multiple results
+        and multiple reference files.
+        '''
         self.tolerance = 1e-7
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Instrument')
-        result = self.result_name
-        reference = self.get_reference_file()
-        return result, reference
+        self.disableChecking.append('Axes')
+        
+        for reference_file, result in zip(self.get_reference_files(),
+                                          self.result_names):
+            wsName = "RefFile"
+            if reference_file.endswith('.nxs'):
+                LoadNexus(Filename=reference_file,OutputWorkspace=wsName)
+            else:
+                raise RuntimeError("Should supply a NeXus file: %s" % 
+                                   reference_file)
+            
+            if not self.validateWorkspaces([wsName, result]):
+                print str([reference_file, result]) + " do not match."
+                return False
+        
+        return True
+
 
 #==============================================================================
 class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
-    """A base class for the ISIS indirect inelastic reduction tests
+    '''A base class for the ISIS indirect inelastic reduction tests
     
-    The workflow is defined in the runTest() method, simply
+    The workflow is defined in the _run() method, simply
     define an __init__ method and set the following properties
     on the object
         - instr_name: A string giving the instrument name for the test
@@ -41,16 +111,13 @@ class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
                           range of detectors to use
         - data_file: A string giving the data file to use
         - rebin_string: A comma separated string giving the rebin params
-        - result_name: A string giving the name of the resulting ws
         - save_formats: A list containing the file extensions of the formats
                         to save to.
-    """
+    '''
     __metaclass__ = ABCMeta # Mark as an abstract class
     
-    def runTest(self):
-        """Defines the workflow for the test"""
-        self._validate_properties()
-        
+    def _run(self):
+        '''Defines the workflow for the test'''
         reducer = IndirectReducer()
         reducer.set_instrument_name(self.instr_name)
         reducer.set_detector_range(self.detector_range[0], 
@@ -61,11 +128,10 @@ class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
         
         # Do the reduction and rename the result.
         reducer.reduce()
-        ws = reducer.get_result_workspaces()[0]
-        RenameWorkspace(ws, self.result_name)
+        self.result_names = reducer.get_result_workspaces()
 
     def _validate_properties(self):
-        """Check the object properties are in an expected state to continue"""
+        '''Check the object properties are in an expected state to continue'''
         if type(self.instr_name) != str:
             raise RuntimeError("instr_name property should be a string")
         if type(self.detector_range) != list and len(self.detector_range) != 2:
@@ -75,8 +141,6 @@ class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
             raise RuntimeError("data_file property should be a string")
         if self.rebin_string is not None and type(self.rebin_string) != str:
             raise RuntimeError("rebin_string property should be a string")
-        if type(self.result_name) != str:
-            raise RuntimeError("result_name property should be a string")
 
 #------------------------- TOSCA tests ----------------------------------------
 
@@ -88,10 +152,9 @@ class TOSCAReduction(ISISIndirectInelasticReduction):
         self.detector_range = [1, 139]
         self.data_file = 'TSC11453.raw'
         self.rebin_string = '-2.5,0.015,3,-0.005,1000'
-        self.result_name = 'ToscaReductionTest'
     
-    def get_reference_file(self):
-        return "II.TOSCAReductionFromFile.nxs"
+    def get_reference_files(self):
+        return ["II.TOSCAReductionFromFile.nxs"]
 
 #------------------------- OSIRIS tests ---------------------------------------
 
@@ -103,10 +166,9 @@ class OSIRISReduction(ISISIndirectInelasticReduction):
         self.detector_range = [963, 1004]
         self.data_file = 'OSI97919.raw'
         self.rebin_string = None
-        self.result_name = 'OsirisReductionTest'
     
-    def get_reference_file(self):
-        return "II.OSIRISReductionFromFile.nxs"
+    def get_reference_files(self):
+        return ["II.OSIRISReductionFromFile.nxs"]
 
 #------------------------- IRIS tests -----------------------------------------
 
@@ -118,17 +180,16 @@ class IRISReduction(ISISIndirectInelasticReduction):
         self.detector_range = [3, 53]
         self.data_file = 'IRS21360.raw'
         self.rebin_string = None
-        self.result_name = 'IrisReductionTest'
     
-    def get_reference_file(self):
-        return "II.IRISReductionFromFile.nxs"
+    def get_reference_files(self):
+        return ["II.IRISReductionFromFile.nxs"]
 
-        
+
 #==============================================================================
 class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
-    """A base class for the ISIS indirect inelastic calibration tests
+    '''A base class for the ISIS indirect inelastic calibration tests
     
-    The workflow is defined in the runTest() method, simply
+    The workflow is defined in the _run() method, simply
     define an __init__ method and set the following properties
     on the object
         - self.data_file: a string giving the name of the data file
@@ -137,15 +198,11 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
         - self.parameters: a list containing four doubles, each a parameter.
         - self.analyser: a string giving the name of the analyser to use
         - self.reflection: a string giving the reflection to use
-        - self.result_name: a string containing the name of the result
-    """
+    '''
     __metaclass__ = ABCMeta # Mark as an abstract class
     
-    def runTest(self):
-        """Defines the workflow for the test"""
-        
-        self._validate_properties()
-        
+    def _run(self):
+        '''Defines the workflow for the test'''
         calib = CreateCalibrationWorkspace()
         calib.set_files([self.data_file])
         calib.set_detector_range(self.detector_range[0], 
@@ -157,11 +214,10 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
         calib.set_analyser(self.analyser)
         calib.set_reflection(self.reflection)
         calib.execute(None, None) # Does not appear to be used.
-        result = calib.result_workspace()
-        RenameWorkspace(result, self.result_name)
+        self.result_names = [calib.result_workspace()]
 
     def _validate_properties(self):
-        """Check the object properties are in an expected state to continue"""
+        '''Check the object properties are in an expected state to continue'''
         
         if type(self.data_file) != str:
             raise RuntimeError("data_file property should be a string")
@@ -175,8 +231,6 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
             raise RuntimeError("analyser property should be a string")
         if type(self.reflection) != str:
             raise RuntimeError("reflection property should be a string")
-        if type(self.result_name) != str:
-            raise RuntimeError("result_name property should be a string")
 
 #------------------------- OSIRIS tests ---------------------------------------
 
@@ -189,10 +243,9 @@ class OSIRISCalibration(ISISIndirectInelasticCalibration):
         self.parameters = [68000.00,70000.00,59000.00,61000.00]
         self.analyser = 'graphite'
         self.reflection = '002'
-        self.result_name = 'OsirisCalibrationTest'
     
-    def get_reference_file(self):
-        return "II.OSIRISCalibration.nxs"
+    def get_reference_files(self):
+        return ["II.OSIRISCalibration.nxs"]
 
 #------------------------- IRIS tests ---------------------------------------
 
@@ -205,17 +258,16 @@ class IRISCalibration(ISISIndirectInelasticCalibration):
         self.parameters = [59000.00,61500.00,62500.00,65000.00]
         self.analyser = 'graphite'
         self.reflection = '002'
-        self.result_name = 'IrisCalibrationTest'
     
-    def get_reference_file(self):
-        return "II.IRISCalibration.nxs"
+    def get_reference_files(self):
+        return ["II.IRISCalibration.nxs"]
 
-        
+
 #==============================================================================
 class ISISIndirectInelasticResolution(ISISIndirectInelasticBase):
-    """A base class for the ISIS indirect inelastic resolution tests
+    '''A base class for the ISIS indirect inelastic resolution tests
     
-    The workflow is defined in the runTest() method, simply
+    The workflow is defined in the _run() method, simply
     define an __init__ method and set the following properties
     on the object
         - self.icon_opt: a dictionary of icon options
@@ -225,28 +277,23 @@ class ISISIndirectInelasticResolution(ISISIndirectInelasticBase):
         - self.background: a list of two doubles, giving the background params
         - rebin_params: a comma separated string containing the rebin params
         - self.files: a list of strings containing filenames
-    """
+    '''
     __metaclass__ = ABCMeta # Mark as an abstract class
     
-    def runTest(self):
-        """Defines the workflow for the test"""
-        
-        self._validate_properties()
-        
-        result = resolution(self.files,
-                            self.icon_opt,
-                            self.rebin_params,
-                            self.background,
-                            self.instrument,
-                            self.analyser,
-                            self.reflection,
-                            # Don't plot from a system test:
-                            plotOpt = False)
-        
-        RenameWorkspace(result, self.result_name)
+    def _run(self):
+        '''Defines the workflow for the test'''
+        self.result_names = [resolution(self.files,
+                                        self.icon_opt,
+                                        self.rebin_params,
+                                        self.background,
+                                        self.instrument,
+                                        self.analyser,
+                                        self.reflection,
+                                        # Don't plot from a system test:
+                                        plotOpt = False)]
 
     def _validate_properties(self):
-        """Check the object properties are in an expected state to continue"""
+        '''Check the object properties are in an expected state to continue'''
         
         if type(self.icon_opt) != dict:
             raise RuntimeError("icon_opt should be a dictionary of exactly")
@@ -279,10 +326,9 @@ class OSIRISResolution(ISISIndirectInelasticResolution):
         self.background = [ -0.563032, 0.605636 ]
         self.rebin_params = '-0.2,0.002,0.2'
         self.files = ['OSI97935.raw']
-        self.result_name = 'OsirisResolutionTest'
     
-    def get_reference_file(self):
-        return "II.OSIRISResolution.nxs"
+    def get_reference_files(self):
+        return ["II.OSIRISResolution.nxs"]
 
 #------------------------- IRIS tests -----------------------------------------
 
@@ -297,27 +343,23 @@ class IRISResolution(ISISIndirectInelasticResolution):
         self.background = [ -0.54, 0.65 ]
         self.rebin_params = '-0.2,0.002,0.2'
         self.files = ['IRS53664.raw']
-        self.result_name = 'IrisResolutionTest'
     
-    def get_reference_file(self):
-        return "II.IRISResolution.nxs"
+    def get_reference_files(self):
+        return ["II.IRISResolution.nxs"]
 
-        
+
 #==============================================================================
 class ISISIndirectInelasticDiagnostics(ISISIndirectInelasticBase):
-    """A base class for the ISIS indirect inelastic diagnostic tests
+    '''A base class for the ISIS indirect inelastic diagnostic tests
     
-    The workflow is defined in the runTest() method, simply
+    The workflow is defined in the _run() method, simply
     define an __init__ method and set the following properties
     on the object
-    """
+    '''
     __metaclass__ = ABCMeta # Mark as an abstract class
     
-    def runTest(self):
-        """Defines the workflow for the test"""
-        
-        self._validate_properties()
-        
+    def _run(self):
+        '''Defines the workflow for the test'''
         slice(self.rawfiles,
               '',# No calib file.
               self.tofRange,
@@ -327,13 +369,13 @@ class ISISIndirectInelasticDiagnostics(ISISIndirectInelasticBase):
               Verbose=False, 
               Plot=False)
         
+        # Construct the result ws name.
         file = self.rawfiles[0]
-        result = os.path.splitext(file)[0] + "_" + self.suffix + "_slice"
-        
-        RenameWorkspace(result, self.result_name)
+        self.result_names = [os.path.splitext(file)[0] + "_" + 
+                            self.suffix + "_slice"]
 
     def _validate_properties(self):
-        """Check the object properties are in an expected state to continue"""
+        '''Check the object properties are in an expected state to continue'''
         
         if type(self.rawfiles) != list and len(self.rawfiles) != 2:
             raise RuntimeError("rawfiles should be a list of exactly 2 "
@@ -357,10 +399,9 @@ class OSIRISDiagnostics(ISISIndirectInelasticDiagnostics):
         self.rawfiles = ['IRS53664.raw']
         self.spectra = [3,53]
         self.suffix = 'graphite002'
-        self.result_name = 'OsirisDiagnosticsTest'
     
-    def get_reference_file(self):
-        return "II.OSIRISDiagnostics.nxs"
+    def get_reference_files(self):
+        return ["II.OSIRISDiagnostics.nxs"]
 
 #------------------------- IRIS tests -----------------------------------------
 
@@ -372,7 +413,6 @@ class IRISDiagnostics(ISISIndirectInelasticDiagnostics):
         self.rawfiles = ['OSI97935.raw']
         self.spectra = [963,1004]
         self.suffix = 'graphite002'
-        self.result_name = 'IrisDiagnosticsTest'
     
-    def get_reference_file(self):
-        return "II.IRISDiagnostics.nxs"
+    def get_reference_files(self):
+        return ["II.IRISDiagnostics.nxs"]
