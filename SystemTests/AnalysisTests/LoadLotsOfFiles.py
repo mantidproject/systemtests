@@ -78,17 +78,17 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
         dirs = [item for item in dirs if useDir(item)]
         print "Looking for data files in:", ', '.join(dirs)
 
-        # get the list of files
-        files = []
+        # Files and their corresponding sizes. the low-memory win machines
+        # fair better loading the big files first
+        files = {}
         for direc in dirs:
             myFiles = os.listdir(direc)
             for filename in myFiles:
                 (good, filename) = useFile(direc, filename)
                 print "***", good, filename
                 if good:
-                    files.append(filename)
-        files.sort()
-        return files
+                    files[filename] = os.path.getsize(filename)
+        return sorted(files, key=lambda key: files[key], reverse=True)
 
     def __runExtraTests__(self, wksp, filename):
         """Runs extra tests that are specified in '.expected' files
@@ -168,7 +168,7 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
                 failed.append(filename)
             finally:
                 # Clear everything for the next test
-                FrameworkManager.Instance().clearData()
+                FrameworkManager.Instance().clear()
 
         # final say on whether or not it 'worked'
         print "----------------------------------------"
