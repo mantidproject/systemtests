@@ -1,4 +1,5 @@
 from mantid.simpleapi import *
+from mantid.api import FrameworkManager
 import os
 import re
 import stresstesting
@@ -21,6 +22,9 @@ BANNED_FILES = ['4to1.map',
                 'MASKSANS2D_094i_RKH.txt',
                 'MASKSANS2D.091A',
                 'MASKSANS2Doptions.091A',
+                'MAP17269.raw', # Don't need to check multiple MAPS files 
+                'MAP17589.raw',
+                'MER06399.raw', # Don't need to check multiple MERLIN files
                 'PG3_characterization_2011_08_31-HR.txt',
                 'REF_M_9684_event.nxs',
                 'REF_M_9709_event.nxs',
@@ -162,6 +166,9 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
                 print "FAILED TO LOAD '%s' WITH ERROR:" % filename
                 print e
                 failed.append(filename)
+            finally:
+                # Clear everything for the next test
+                FrameworkManager.Instance().clearData()
 
         # final say on whether or not it 'worked'
         print "----------------------------------------"
