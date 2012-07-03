@@ -92,13 +92,13 @@ def execReduction(dohist, doproj):
     md_output_ws = makeOutputName(workspace_name, dohist, doproj)
 
     if not doproj:
-        ConvertToMDEvents(InputWorkspace=workspace_name,
+        ConvertToMD(InputWorkspace=workspace_name,
                           OutputWorkspace=md_output_ws,
     	                  QDimensions='Q3D', MinValues='-5,-5,-5,-10',
     	                  QConversionScales='HKL',
     	                  MaxValues='5,5,5,45', MaxRecursionDepth='1')
     else:
-    	ConvertToMDEvents(InputWorkspace=workspace_name,
+    	ConvertToMD(InputWorkspace=workspace_name,
                           OutputWorkspace=md_output_ws,
     	                  QDimensions='Q3D', MinValues='-5,-5,-5,-10',
     	                  QConversionScales='HKL',
