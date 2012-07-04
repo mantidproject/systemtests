@@ -851,6 +851,7 @@ class MantidFrameworkConfig:
                 os.path.join(parentDir, "Data"),
                 os.path.join(parentDir, "Data/LOQ"),
                 os.path.join(parentDir, "Data/SANS2D"),
+                os.path.join(parentDir, "Data/PEARL"),
                 self.__saveDir
                 ]
 
@@ -886,6 +887,7 @@ class MantidFrameworkConfig:
         dirs.append(os.path.join(testDir, "Data"))
         dirs.append(os.path.join(testDir, "Data/LOQ"))
         dirs.append(os.path.join(testDir, "Data/SANS2D"))
+        dirs.append(os.path.join(testDir, "Data/PEARL"))
         dirs.append(os.path.join(testDir, "SystemTests"))
         dirs.append(os.path.join(testDir, \
                                  "SystemTests/AnalysisTests/ReferenceResults"))
