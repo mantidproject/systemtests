@@ -938,10 +938,10 @@ class MantidFrameworkConfig:
         # Save path
         mtd.settings['defaultsave.directory'] = self.__saveDir
 
-        # set the data directories
-        #for direc in self.__dataDirs:
-        #    mtd.settings.appendDataSearchDir(direc)
-
+        # Do not show paraview dialog
+        mtd.settings['paraview.ignore'] = "1"
+        
+        # Save this configuration
         mtd.settings.saveConfig(self.__userPropsFile)
 
     def restoreconfig(self):
