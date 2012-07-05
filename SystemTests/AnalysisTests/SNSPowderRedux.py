@@ -69,7 +69,7 @@ class PG3StripPeaks(stresstesting.MantidStressTest):
                       OutputWorkspace="PG3_4866",
                       XMax=16666.669999999998)
         LoadCalFile(InputWorkspace="PG3_4866",
-                    CalFilename="/SNS/PG3/2011_2_11A_CAL/PG3_FERNS_d4832_2011_08_24.cal",
+                    CalFilename=self.cal_file,
                     WorkspaceName="PG3")
         MaskDetectors(Workspace="PG3_4866",
                       MaskedWorkspace="PG3_mask")
