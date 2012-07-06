@@ -33,6 +33,8 @@ loglevelChoices=["error", "warning", "notice", "information", "debug"]
 parser.add_option("-l", "--loglevel", dest="loglevel",
                   choices=loglevelChoices,
                   help="Set the log level for test running: [" + ', '.join(loglevelChoices) + "]")
+parser.add_option("", "--showskipped", dest="showskipped", action="store_true",
+                  help="List the skipped tests.")
 parser.set_defaults(frameworkLoc=DEFAULT_FRAMEWORK_LOC, mantidpath=None, makeprop=True,
                     loglevel="information")
 (options, args) = parser.parse_args()
@@ -63,7 +65,7 @@ if options.makeprop:
   mtdconf.config()
 
 # run the tests
-reporter = stresstesting.XmlResultReporter()
+reporter = stresstesting.XmlResultReporter(showSkipped=options.showskipped)
 mgr = stresstesting.TestManager(mtdconf.testDir, output = [reporter],
                                 testsInclude=options.testsInclude, testsExclude=options.testsExclude)
 try:

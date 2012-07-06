@@ -9,8 +9,9 @@ class XmlResultReporter(stresstesting.ResultReporter):
 	_failures = []
 	_skipped = []
 	
-	def __init__(self):
+	def __init__(self, showSkipped=True):
 		self._doc = getDOMImplementation().createDocument(None,'testsuite',None)
+		self._show_skipped = showSkipped
 
 	def reportStatus(self):
 		return len(self._failures) == 0
@@ -20,7 +21,7 @@ class XmlResultReporter(stresstesting.ResultReporter):
 		self._failures.sort()
 		self._skipped.sort()
 		print
-		if len(self._skipped) > 0:
+		if self._show_skipped and len(self._skipped) > 0:
 			print "SKIPPED:"
 			for test in self._skipped:
 				print test.name
