@@ -902,6 +902,11 @@ class MantidFrameworkConfig:
             import shutil
             shutil.move(src, dst)
 
+    def __copyFile(self, src, dst):
+        if os.path.exists(src):
+            import shutil
+            shutil.copyfile(src, dst)
+
     saveDir = property(lambda self: self.__saveDir)
     testDir = property(lambda self: self.__testDir)
 
@@ -920,7 +925,7 @@ class MantidFrameworkConfig:
         self.__userPropsFile = mtd.settings.getUserFilename()
         self.__userPropsFileBackup  = self.__userPropsFile + ".bak"
         self.__userPropsFileSystest = self.__userPropsFile + ".systest"
-        self.__moveFile(self.__userPropsFile, self.__userPropsFileBackup)
+        self.__copyFile(self.__userPropsFile, self.__userPropsFileBackup)
 
         # Up the log level so that failures can give useful information
         mtd.settings['logging.loggers.root.level'] = self.__loglevel
