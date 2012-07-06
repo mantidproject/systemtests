@@ -46,3 +46,31 @@ class EQSANSIQOutput(stresstesting.MantidStressTest):
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Axes')
         return "EQSANS_1466_event_Iq", 'EQSANSIQOutput.nxs'
+
+class EQSANSDQOutput(stresstesting.MantidStressTest):
+    """
+        Analysis Tests for EQSANS
+        Testing that the Q resolution output of is correct 
+    """
+    
+    def runTest(self):
+        """
+            Check that the Q resolution calculation returns positive values
+            even when background is larger than signal and I(q) is negative.
+            (Non-physical value that's an experimental edge case)
+        """
+        mtd.settings['default.facility'] = 'SNS'
+        EQSANS()
+        AppendDataFile("EQSANS_1466_event.nxs")
+        UseConfig(False)
+        UseConfigTOFTailsCutoff(False)
+        UseConfigMask(False)
+        TotalChargeNormalization(normalize_to_beam=False)
+        SetTransmission(1.0,0.0, False)
+        Background("EQSANS_4061_event.nxs")
+        Resolution()
+        Reduce1D()           
+                        
+    def validate(self):
+        dq = mtd['EQSANS_1466_event_Iq'].dataDx(0)
+        return min(dq)>=0
