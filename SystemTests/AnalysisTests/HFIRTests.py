@@ -389,6 +389,27 @@ class HFIRTests(stresstesting.MantidStressTest):
         self.assertAlmostEqual(data[10], 0.0,10)
         self.assertAlmostEqual(data[20], 0.0,10)
             
+    def test_background_multiple_files(self):
+        """
+            Subtracting background using multiple files should properly take
+            into account the normalization.
+        """
+        HFIRSANS()
+        DataPath(TEST_DIR)
+        SetBeamCenter(16, 95)
+        AppendDataFile("BioSANS_test_data.xml")
+        SensitivityCorrection("BioSANS_flood_data.xml", dark_current="BioSANS_dark_current.xml")
+        DarkCurrent("BioSANS_dark_current.xml")
+        Background("BioSANS_test_data.xml")
+        Background("BioSANS_test_data.xml,BioSANS_test_data.xml")
+        AzimuthalAverage(binning="0.01,0.001,0.11", error_weighting=True)
+        Reduce1D()
+                
+        data = mtd["BioSANS_test_data_Iq"].dataY(0)
+        self.assertAlmostEqual(data[0], 0.0,10)
+        self.assertAlmostEqual(data[10], 0.0,10)
+        self.assertAlmostEqual(data[20], 0.0,10)
+            
     def test_bck_w_transmission(self):
         HFIRSANS()
         DataPath(TEST_DIR)
