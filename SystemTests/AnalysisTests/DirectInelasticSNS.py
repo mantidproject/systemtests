@@ -23,11 +23,11 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
                 indexlist.append(i)
         
         MaskDetectors(Workspace='mask',WorkspaceIndexList=indexlist)
-        SaveNexus(InputWorkspace="mask",Filename=self.customDataDir+"mask_top_bottom.nxs")
+        SaveNexus(InputWorkspace="mask",Filename = os.path.join(self.customDataDir,"mask_top_bottom.nxs"))
         mtd.deleteWorkspace('mask')
 
     def setupFiles(self):
-        self.customDataDir=mtd.settings['defaultsave.directory']+'temp/'
+        self.customDataDir = os.path.join(mtd.settings['defaultsave.directory'], 'temp')
         datasearch = mtd.settings['datasearch.directories']
         datasearch = datasearch.split(';')
         filename=''
@@ -64,7 +64,7 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
                 detIDlist.append(elem)
                 ang_list.append(ang)
         # file with grouping information
-        f=open(self.customDataDir+"group.map",'w')
+        f = open(os.path.join(self.customDataDir,"group.map"),'w')
         print >>f,len(ang_list)
         for i in range(len(ang_list)):
             print >>f,i
@@ -74,7 +74,7 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
             print >>f,mystring
         f.close()
         # par file
-        f=open(self.customDataDir+"group.par",'w')
+        f = open(os.path.join(self.customDataDir,"group.par"),'w')
         print >>f,len(ang_list)
         for i in range(len(ang_list)):
             print >>f,5.5,ang_list[i],0.0,1.0,1.0,1
@@ -109,7 +109,7 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
             temppath=[]
             tempnewruns=[]
             for i in range(len(r)):
-                temppath.append(folder+prefix+str(r[i])+suffix)      
+                temppath.append(os.path.join(folder,prefix+str(r[i])+suffix))
                 tempnewruns.append(r[i])
                 if (not(os.path.isfile(temppath[i]))):
                     raise IOError(temppath[i]+" not found")
@@ -122,7 +122,7 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
         Creates the Van workspace, one bin for each histogram, containing the integrated Vanadium intensity
         VAN also contains the mask.
         """
-    	if (not(os.path.isfile(self.customDataDir+"van.nx5"))):
+    	if not os.path.isfile(os.path.join(self.customDataDir, "van.nx5")):
     		LoadEventNexus(Filename=vanfile,OutputWorkspace="VAN")
 		
     		Rebin(InputWorkspace="VAN",OutputWorkspace="VAN",Params="1000,15000,16000",PreserveEvents=False)	#integrate all events between 1000 and 16000 microseconds
@@ -134,9 +134,9 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
     		    DeleteWorkspace(Workspace="temp_mask")
     		MaskDetectors(Workspace="VAN",MaskedWorkspace="MASK")										        #Mask "VAN". This prevents dividing by 0		
     		DeleteWorkspace(Workspace="MASK")														            #Mask is carried by VAN workspace
-    		SaveNexus(InputWorkspace="VAN",Filename=self.customDataDir+"van.nx5")
+    		SaveNexus(InputWorkspace="VAN",Filename=os.path.join(self.customDataDir,"van.nx5"))
     	else:
-    		LoadNexus(Filename=self.customDataDir+"van.nx5",OutputWorkspace="VAN")
+    		LoadNexus(Filename=os.path.join(self.customDataDir,"van.nx5"),OutputWorkspace="VAN")
 		    
 
     #functions from stresstesting 
@@ -154,8 +154,8 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
     def runTest(self):
         self.setupFiles()
         runs=[[12384,12385]]
-        maskfile=self.customDataDir+'mask_top_bottom.nxs'
-        V_file=self.customDataDir+'SEQ_12384_event.nxs'
+        maskfile = os.path.join(self.customDataDir,'mask_top_bottom.nxs')
+        V_file=os.path.join(self.customDataDir, 'SEQ_12384_event.nxs')
         Eguess=35.0														#initial energy guess
         Erange="-10.0,0.25,32.0"										#Energy bins:    Emin,Estep,Emax
         datadir=self.customDataDir		                                #Data directory	
@@ -209,11 +209,12 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
         if (do_powder):
             if (i==0):
                 mapping=self.createanglelist("OWST",anglemin,anglemax,anglestep)
-            GroupDetectors(InputWorkspace="OWST",OutputWorkspace="OWST",MapFile=self.customDataDir+"group.map",Behaviour="Sum")
+            GroupDetectors(InputWorkspace="OWST",OutputWorkspace="OWST",MapFile=os.path.join(self.customDataDir,"group.map"),Behaviour="Sum")
             SolidAngle(InputWorkspace="OWST",OutputWorkspace="sa")
             Divide(LHSWorkspace="OWST",RHSWorkspace="sa",OutputWorkspace="OWST")
             DeleteWorkspace("sa") 
-        fname_out="%s%s%d_%g"%(outdir,fout_prefix,rlist[0],psi)
+        barefname = "%s%d_%g" % (fout_prefix,rlist[0],psi)
+        fname_out = os.path.join(outdir, barefname)
         fname_out=fname_out.replace('.','p')
         if flag_spe:
             SaveSPE(InputWorkspace="OWST",Filename=fname_out+".spe")					#save the data in spe format. 
@@ -221,21 +222,25 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
                 SavePHX(InputWorkspace="OWST",Filename=fname_out+".spe")
         if flag_nxspe:                                                                  #save in NXSPE format       
             if (do_powder):
-                SaveNXSPE(InputWorkspace="OWST",Filename=fname_out+".nxspe",Efixed=Efixed,psi=psi,KiOverKfScaling=True,ParFile=outdir+"group.par")
+                SaveNXSPE(InputWorkspace="OWST",Filename=fname_out+".nxspe",Efixed=Efixed,psi=psi,KiOverKfScaling=True,ParFile=os.path.join(outdir, "group.par"))
             else:
                 SaveNXSPE(InputWorkspace="OWST",Filename=fname_out+".nxspe",Efixed=Efixed,psi=psi,KiOverKfScaling=True)
 
     def validate(self):
         #check if required files are created
-        self.assertTrue(os.path.exists(self.customDataDir+'group.map'))
-        self.assertDelta(os.path.getsize(self.customDataDir+'group.map'),700000,100000)
-        self.assertTrue(os.path.exists(self.customDataDir+'group.par'))
-        self.assertGreaterThan(os.path.getsize(self.customDataDir+'group.par'),1000)
-        self.assertTrue(os.path.exists(self.customDataDir+'van.nx5'))
-        self.assertGreaterThan(os.path.getsize(self.customDataDir+'van.nx5'),10000000)
+        mapfile = os.path.join(self.customDataDir, 'group.map')
+        parfile = os.path.join(self.customDataDir, 'group.par')
+        self.assertTrue(os.path.exists(mapfile))
+        self.assertDelta(os.path.getsize(mapfile),700000,100000)
+        self.assertTrue(os.path.exists(parfile))
+        self.assertGreaterThan(os.path.getsize(parfile),1000)
+        vanadiumfile = os.path.join(self.customDataDir, 'van.nx5')
+        self.assertTrue(os.path.exists(vanadiumfile))
+        self.assertGreaterThan(os.path.getsize(vanadiumfile),10000000)
         #find the nxspe filename: it should be only one, but the name might depend on the rounding of phi
-        nxspelist=glob.glob(self.customDataDir+'*.nxspe')
+        nxspelist=glob.glob(os.path.join(self.customDataDir,'*.nxspe'))
         if len(nxspelist)!=1:
+            print "Error: No nxspe files found in %s" % (self.customDataDir)
             return False
         nxspefilename=nxspelist[0]
         self.assertGreaterThan(os.path.getsize(nxspefilename),100000)
@@ -250,5 +255,5 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
         # up with by the mask values in the spectra
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Instrument')
-        return "OWST",os.path.join(os.path.dirname(__file__), 'ReferenceResults','DirectInelasticSNS.nxs')
+        return "OWST",'DirectInelasticSNS.nxs'
 
