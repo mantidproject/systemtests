@@ -278,7 +278,10 @@ class MantidStressTest(object):
             return validation
 
         # switch based on validation methods
-        method = self.validateMethod().lower()
+        method = self.validateMethod()
+        if method is None:
+            return True # don't validate
+        method = method.lower()
         if "validateworkspacetonexus".endswith(method):
             return self.validateWorkspaceToNeXus()
         elif "validateworkspacetoworkspace".endswith(method):
