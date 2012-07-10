@@ -4,6 +4,7 @@ file-backed MDWorkspaces.
 """
 
 import stresstesting
+import os
 from mantidsimple import *
 
 ###############################################################################
@@ -22,11 +23,15 @@ class PlusMDTest(stresstesting.MantidStressTest):
                 raise Exception("Difference in workspace %s vs original_binned at index %d" % (wsname, i))
     
     def runTest(self):
+        # Some platforms can't clean up the open file handle on cncs.nxs from the last test, so run cleanup here as well
+        barefilename = "cncs.nxs"
+        self._saved_filename = os.path.join(mtd.settings["defaultsave.directory"], barefilename)
+        self.cleanup()
+
         # Load then convert to Q in the lab frame
         LoadEventNexus(Filename=r'CNCS_7860_event.nxs',OutputWorkspace='cncs_nxs')
         ConvertToDiffractionMDWorkspace(InputWorkspace='cncs_nxs', OutputWorkspace='cncs_original', SplitInto=2)
-        alg = SaveMD(InputWorkspace='cncs_original', Filename='cncs.nxs')
-        self._saved_filename = alg.getPropertyValue("Filename")
+        alg = SaveMD(InputWorkspace='cncs_original', Filename=barefilename)
 
         self.assertDelta( mtd['cncs_original'].getNPoints(), 112266, 1)
         BinMD(InputWorkspace='cncs_original',AlignedDim0='Q_lab_x, -3, 3, 100',AlignedDim1='Q_lab_y, -3, 3, 100',AlignedDim2='Q_lab_z, -3, 3, 100',ForceOrthogonal='1',OutputWorkspace='cncs_original_binned')
@@ -98,7 +103,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
                 os.remove(self._saved_filename)
                 mtd.sendLogMessage("Removed %s" % self._saved_filename)
             except OSError:
-                mtd.sendLogMessage("Filed to remov %s" % self._saved_filename)
+                mtd.sendLogMessage("Failed to remove %s" % self._saved_filename)
 
             # Plus the _clone version
             filename = os.path.splitext(self._saved_filename)[0]
@@ -107,7 +112,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
                 os.remove(filename)
                 mtd.sendLogMessage("Removed %s " % filename)
             except OSError:
-                mtd.sendLogMessage("Filed to remov %s" % self._saved_filename)
+                mtd.sendLogMessage("Failed to remove %s" % self._saved_filename)
 
 ###############################################################################
 class MergeMDTest(stresstesting.MantidStressTest):
