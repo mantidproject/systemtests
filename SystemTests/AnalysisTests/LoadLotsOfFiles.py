@@ -26,6 +26,8 @@ BANNED_FILES = ['4to1.map',
                 'MAP17589.raw',
                 'MER06399.raw', # Don't need to check multiple MERLIN files
                 'PG3_characterization_2011_08_31-HR.txt',
+                'PG3_2538_event.nxs', # Don't need to check all of the PG3 files
+                'PG3_9829_event.nxs',
                 'REF_M_9684_event.nxs',
                 'REF_M_9709_event.nxs',
                 'rings_113.map',
