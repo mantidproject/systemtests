@@ -90,6 +90,11 @@ class PlusMDTest(stresstesting.MantidStressTest):
         self.compare_binned('cncs_added')
         self.assertDelta( mtd['cncs_added'].getNPoints(), 112266*2, 1)
 
+        # Make sure we delete the workspaces so the file handles are freed
+        workspaces_to_delete = ["cncs_file", "cncs_mem", "cncs_added"]
+        for name in workspaces_to_delete:
+            DeleteWorkspace(name)
+
     def doValidation(self):
         # If we reach here, no validation failed
         return True
