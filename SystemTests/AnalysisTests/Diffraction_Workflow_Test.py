@@ -13,6 +13,12 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         return 2000
     
     def runTest(self):
+        import platform
+        if platform.system() == "Darwin":
+            import resource
+            # Activate core dumps to try & find the reason for the crashes
+            resource.setrlimit(resource.RLIMIT_CORE, (-1, -1)) 
+
         # determine where to save
         import os
         savedir = os.path.abspath(os.path.curdir)
