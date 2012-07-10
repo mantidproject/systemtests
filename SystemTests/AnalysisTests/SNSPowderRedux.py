@@ -1,6 +1,11 @@
 import stresstesting
 from mantidsimple import *
 
+def getSaveDir():
+        """determine where to save - the current working directory"""
+        import os
+        return os.path.abspath(os.path.curdir)
+
 class PG3Analysis(stresstesting.MantidStressTest):
     ref_file  = 'PG3_4844_reference.gsa'
     cal_file  = "PG3_FERNS_d4832_2011_08_24.cal"
@@ -14,9 +19,7 @@ class PG3Analysis(stresstesting.MantidStressTest):
         return files
 
     def runTest(self):
-        # determine where to save
-        import os
-        savedir = os.path.abspath(os.path.curdir)
+        savedir = getSaveDir()
 
         # run the actual code
         SNSPowderReduction(Instrument="PG3", RunNumber=4844, Extension="_event.nxs",
@@ -135,3 +138,62 @@ class PG3StripPeaks(stresstesting.MantidStressTest):
 
     def validate(self):
         return ('PG3_4866','PG3_4866_golden')
+
+class SeriesAndConjoinFilesTest(stresstesting.MantidStressTest):
+    cal_file   = "PG3_FERNS_d4832_2011_08_24.cal"
+    char_file  = "PG3_characterization_2012_02_23-HR-ILL.txt"
+    ref_files  = ['PG3_9829_reference.gsa', 'PG3_9830_reference.gsa']
+    data_files = ['PG3_9829_event.nxs', 'PG3_9830_event.nxs']
+
+    def requiredFiles(self):
+        files = [self.cal_file, self.char_file]
+        files.extend(self.ref_files)
+        files.extend(self.data_files)
+        return files
+
+    def runTest(self):
+        savedir = getSaveDir()
+
+        # reduce a sum of runs - and drop it
+        SNSPowderReduction(Instrument="PG3", RunNumber=[9829,9830], Extension="_event.nxs",
+                           Sum=True, # This is the difference with the next call
+                           PreserveEvents=True, VanadiumNumber=-1,
+                           CalibrationFile=self.cal_file,
+                           CharacterizationRunsFile=self.char_file,
+                           LowResRef=15000, RemovePromptPulseWidth=50,
+                           Binning=-0.0004, BinInDspace=True, FilterBadPulses=True,
+                           SaveAs="gsas", OutputDirectory=savedir,
+                           NormalizeByCurrent=True, FinalDataUnits="dSpacing")
+
+        # reduce a series of runs
+        SNSPowderReduction(Instrument="PG3", RunNumber=[9829,9830], Extension="_event.nxs",
+                           PreserveEvents=True, VanadiumNumber=-1,
+                           CalibrationFile=self.cal_file,
+                           CharacterizationRunsFile=self.char_file,
+                           LowResRef=15000, RemovePromptPulseWidth=50,
+                           Binning=-0.0004, BinInDspace=True, FilterBadPulses=True,
+                           SaveAs="gsas", OutputDirectory=savedir,
+                           NormalizeByCurrent=True, FinalDataUnits="dSpacing")
+
+        # needs to be set for ConjoinFiles to work
+        mtd.settings['default.facility'] = 'SNS'
+        mtd.settings['default.instrument'] = 'POWGEN'
+
+        # load back in the resulting gsas files
+        ConjoinFiles(RunNumbers=[9829,9830], OutputWorkspace='ConjoinFilesTest', Directory=savedir)
+        # convert units makes sure the geometry was picked up
+        ConvertUnits(InputWorkspace='ConjoinFilesTest', OutputWorkspace='ConjoinFilesTest',
+                     Target="dSpacing")
+
+        # prepare for validation
+        LoadGSS("PG3_9829.gsa", "PG3_9829")
+        LoadGSS(self.ref_files[0], "PG3_4844_golden")
+        #LoadGSS("PG3_9830.gsa", "PG3_9830") # can only validate one workspace
+        #LoadGSS(self.ref_file[1], "PG3_9830_golden")
+
+    def validateMethod(self):
+        return None # it running is all that we need
+
+    def validate(self):
+        return ('PG3_9829','PG3_9829_golden')
+        #return ('PG3_9830','PG3_9830_golden') # can only validate one workspace
