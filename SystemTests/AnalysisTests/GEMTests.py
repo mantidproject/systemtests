@@ -142,11 +142,9 @@ class GEMTest(stresstesting.MantidStressTest):
 		if os.path.exists(self.cal_file):
 			os.remove(self.cal_file)
 		for file in self.xye_tof_files:
-			print '\nremove',file
 			if os.path.exists(file):
 				os.remove(file)
 		for file in self.xye_d_files:
-			print '\nremove',file
 			if os.path.exists(file):
 				os.remove(file)
 			
@@ -198,6 +196,5 @@ class GEMTest(stresstesting.MantidStressTest):
 		from mantid.api import FileFinder
 		i = self.file_index
 		self.file_index += 1
-		print '\ni=',i,len(self.xye_d_files),len(self.ref_xye_d_files)
 		return self.xye_d_files[i], FileFinder.getFullPath(self.ref_xye_d_files[i])
 
