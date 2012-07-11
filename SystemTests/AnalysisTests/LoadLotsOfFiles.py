@@ -25,8 +25,6 @@ BANNED_FILES = ['4to1.map',
                 'MAP17269.raw', # Don't need to check multiple MAPS files 
                 'MAP17589.raw',
                 'MER06399.raw', # Don't need to check multiple MERLIN files
-                'PG3_characterization_2011_08_31-HR.txt',
-                'PG3_characterization_2012_02_23-HR-ILL.txt',
                 'PG3_2538_event.nxs', # Don't need to check all of the PG3 files
                 'PG3_9829_event.nxs',
                 'REF_M_9684_event.nxs',
@@ -43,7 +41,9 @@ EXPECTED_EXT = '.expected'
 
 BANNED_REGEXP = [r'SANS2D\d+.log$',
                  r'SANS2D00000808_.+.txt$',
-                 r'.*_reduction.log$']
+                 r'.*_reduction.log$',
+                 r'.+_characterization_\d+_\d+_\d+.*\.txt',
+                 r'.+_d\d+_\d+_\d+_\d+.cal']
 
 def useDir(direc):
     """Only allow directories that aren't test output or 
