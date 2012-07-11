@@ -24,14 +24,17 @@ class LoadAndCheckBase(stresstesting.MantidStressTest):
         """Returns the name of the nexus workspace file"""
         raise NotImplementedError("Implement get_nexus_workspace_filename")
           
-    @abstractmethod
     def get_expected_number_of_periods(self):
         return 1
         
-    @abstractmethod
     def get_integrated_reference_workspace_filename(self):
         """Returns the name of the benchmark file used for end-of-test comparison."""
-        raise NotImplementedError("Implement get_nexus_workspace_filename")
+        if self.enable_reference_result_checking():
+            # Must have a reference result file if reference result checking is required
+            raise NotImplementedError("Implement get_nexus_workspace_filename")
+        
+    def enable_reference_result_checking(self):
+        return True
     
     def do_check_workspace_shape(self, ws1, ws2):
         self.assertTrue(ws1.getNumberHistograms(), ws2.getNumberHistograms())
@@ -55,13 +58,18 @@ class LoadAndCheckBase(stresstesting.MantidStressTest):
             # Loop through each workspace in the group and apply some simple comaprison checks.
             for i in range(0, a.size()):
                 self.do_check_workspace_shape(a[i], b[i])
-            Integration(InputWorkspace=a[0], OutputWorkspace=self.__comparison_out_workspace_name)
+            if self.enable_reference_result_checking():
+                Integration(InputWorkspace=a[0], OutputWorkspace=self.__comparison_out_workspace_name)
         else:
             self.do_check_workspace_shape(a, b)
-            Integration(InputWorkspace=a[0], OutputWorkspace=self.__comparison_out_workspace_name)
+            if self.enable_reference_result_checking():
+                Integration(InputWorkspace=a[0], OutputWorkspace=self.__comparison_out_workspace_name)
         
     def validate(self):
-        return self.__comparison_out_workspace_name, self.get_integrated_reference_workspace_filename()
+        if self.enable_reference_result_checking():
+            return self.__comparison_out_workspace_name, self.get_integrated_reference_workspace_filename()
+        else:
+            return True
 
     
     
