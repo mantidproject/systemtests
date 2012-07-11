@@ -63,7 +63,7 @@ class LoadAndCheckBase(stresstesting.MantidStressTest):
         else:
             self.do_check_workspace_shape(a, b)
             if self.enable_reference_result_checking():
-                Integration(InputWorkspace=a[0], OutputWorkspace=self.__comparison_out_workspace_name)
+                Integration(InputWorkspace=a, OutputWorkspace=self.__comparison_out_workspace_name)
         
     def validate(self):
         if self.enable_reference_result_checking():
