@@ -39,3 +39,30 @@ class EQSANSProcessedEff(stresstesting.MantidStressTest):
         self.disableChecking.append('Axes')
         return "EQSANS_1466_event_Iq", 'EQSANSProcessedEff.nxs'
 
+class EQSANSComputeEff(stresstesting.MantidStressTest):
+    def runTest(self):
+        """
+            System test for sensitivity correction calculation
+        """
+        self.cleanup()
+        # Note that the EQSANS Reducer does the transmission correction by default,
+        # so we are also testing the EQSANSTransmission algorithm
+        mtd.settings['default.facility'] = 'SNS'
+        SetupEQSANSReduction(UseConfig=False, UseConfigMask=False, 
+                             SensitivityFile="EQSANS_4061_event.nxs", 
+                             BeamCenterX=89.675, BeamCenterY=129.693, 
+                             ReductionProperties="_reduction")
+        ComputeSensitivity(Filename="EQSANS_4061_event.nxs", 
+                           ReductionProperties="_reduction", 
+                           OutputWorkspace="sensitivity")
+                
+    def validate(self):
+        # Be more tolerant with the output, mainly because of the errors.
+        # The following tolerance check the errors up to the third digit.   
+        self.tolerance = 0.001
+        self.disableChecking.append('Instrument')
+        self.disableChecking.append('Sample')
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Axes')
+        return "sensitivity", 'EQSANSComputeEff.nxs'
+
