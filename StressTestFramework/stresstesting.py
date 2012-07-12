@@ -331,6 +331,16 @@ class MantidStressTest(object):
         
         if not value:
             raise Exception(msg)
+            
+    def assertEqual(self, value, expected, msg=""):
+        """
+        Check that a value is equal to the expected result
+        """
+        if msg != "": msg += " "
+        msg += "Expected %g == %g" % (value, expected)
+        
+        if not value == expected:
+            raise Exception(msg)
         
     def assertDelta(self, value, expected, delta, msg=""):
         """

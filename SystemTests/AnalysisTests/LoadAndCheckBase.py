@@ -53,8 +53,8 @@ class LoadAndCheckBase(stresstesting.MantidStressTest):
 
         #raise NotImplementedError()
         if(isinstance(a,mantid.api._api.WorkspaceGroup)):
-            self.assertTrue(a.size() == b.size())
-            self.assertTrue(a.size() == n_periods)
+            self.assertEqual(a.size(), b.size())
+            self.assertEqual(a.size(), n_periods)
             # Loop through each workspace in the group and apply some simple comaprison checks.
             for i in range(0, a.size()):
                 self.do_check_workspace_shape(a[i], b[i])
