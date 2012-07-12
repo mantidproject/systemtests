@@ -145,6 +145,10 @@ class SeriesAndConjoinFilesTest(stresstesting.MantidStressTest):
     ref_files  = ['PG3_9829_reference.gsa', 'PG3_9830_reference.gsa']
     data_files = ['PG3_9829_event.nxs', 'PG3_9830_event.nxs']
 
+    def requiredMemoryMB(self):
+        """Requires 3Gb"""
+        return 3000
+
     def requiredFiles(self):
         files = [self.cal_file, self.char_file]
         files.extend(self.ref_files)
