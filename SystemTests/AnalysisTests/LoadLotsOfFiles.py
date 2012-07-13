@@ -43,7 +43,9 @@ BANNED_REGEXP = [r'SANS2D\d+.log$',
                  r'SANS2D00000808_.+.txt$',
                  r'.*_reduction.log$',
                  r'.+_characterization_\d+_\d+_\d+.*\.txt',
-                 r'.+_d\d+_\d+_\d+_\d+.cal']
+                 r'.+_d\d+_\d+_\d+_\d+.cal',
+                 r'.*Grouping\.xml'
+                 ]
 
 def useDir(direc):
     """Only allow directories that aren't test output or 
@@ -109,8 +111,21 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
         """Do all of the real work of loading and testing the file"""
         print "----------------------------------------"
         print "Loading '%s'" % filename
-        wksp = Load(filename)
+        from mantid.api import Workspace
+        # Output can be a tuple if the Load algorithm has extra output properties
+        # but the output workspace should always be the first argument
+        outputs = Load(filename) 
+        if type(outputs) == tuple:
+            wksp = outputs[0]
+        else:
+            wksp = outputs
+
+        if not isinstance(wksp, Workspace):
+            print "Unexpected output type from Load algorithm: Type found=%s" % str(type(outputs))
+            return False
+
         if wksp is None:
+            print 'Load returned None'
             return False
 
         # generic checks
