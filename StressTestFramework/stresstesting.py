@@ -938,7 +938,7 @@ class MantidFrameworkConfig:
         self.__userPropsFile = mtd.settings.getUserFilename()
         self.__userPropsFileBackup  = self.__userPropsFile + ".bak"
         self.__userPropsFileSystest = self.__userPropsFile + ".systest"
-        self.__copyFile(self.__userPropsFile, self.__userPropsFileBackup)
+        self.__moveFile(self.__userPropsFile, self.__userPropsFileBackup)
 
         # Up the log level so that failures can give useful information
         mtd.settings['logging.loggers.root.level'] = self.__loglevel
