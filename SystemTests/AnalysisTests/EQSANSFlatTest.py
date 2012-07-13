@@ -27,7 +27,7 @@ class EQSANSFlatTest(stresstesting.MantidStressTest):
             It is used to verify that the complete reduction chain works
             and reproduces reference results.
         """
-        EQSANS()
+        EQSANS(True)
         DataPath(DATADIR)
         SolidAngle()
         DarkCurrent("5704")
