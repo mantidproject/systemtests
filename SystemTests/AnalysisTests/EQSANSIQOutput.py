@@ -130,6 +130,8 @@ class EQSANSDQOutput(stresstesting.MantidStressTest):
                   0.00360243,0.00364245,0.003671,0,0,0,0.00375495,0,0,0,0]
         dq = mtd['EQSANS_1466_event_Iq'].readDx(0)
         diff = [math.fabs(dq_ref[i]-dq[i])<0.0001 for i in range(7,100)]
-        #for i in range(len(dq)):
-        #    print i, dq[i], dq_ref[i], math.fabs(dq_ref[i]-dq[i])<0.0001
-        return reduce(lambda x,y:x and y, diff)
+        output = reduce(lambda x,y:x and y, diff)
+        if not output:
+            for i in range(len(dq)):
+                print i, dq[i], dq_ref[i], math.fabs(dq_ref[i]-dq[i])<0.0001
+        return output
