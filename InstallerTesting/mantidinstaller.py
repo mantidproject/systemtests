@@ -54,28 +54,28 @@ def scriptfailure(txt, installer=None):
     sys.exit(1)
 
 
-def get_installer(nsis=True):
+def get_installer(do_install=True, nsis=True):
     """
     Creates the correct class for the current platform
-    
+        @param do_install :: True if installation is to be performed
         @param nsis :: If True (default) the Windows installer is created for the NSIS style
     """
     system = platform.system()
     if system == 'Windows':
         if nsis:
-            return NSISInstaller()
+            return NSISInstaller(do_install)
         else:
-            return MSIInstaller()
+            return MSIInstaller(do_install)
     elif system == 'Linux':
         dist = platform.dist()
         if dist[0] == 'Ubuntu':
-            return DebInstaller()
+            return DebInstaller(do_install)
         elif dist[0] == 'redhat' and (dist[1].startswith('5.') or dist[1].startswith('6.')):
-            return RPMInstaller()
+            return RPMInstaller(do_install)
         else:
             scriptfailure('Unknown Linux flavour: %s' % str(dist))
     elif system == 'Darwin':
-        return DMGInstaller()
+        return DMGInstaller(do_install)
     else:
         raise scriptfailure("Unsupported platform")
 
@@ -101,10 +101,12 @@ class MantidInstaller(object):
     mantidPlotPath = None
     no_uninstall = False
 
-    def __init__(self, filepattern):
+    def __init__(self, do_install, filepattern):
         """Initialized with a pattern to 
         find a path to an installer
         """
+        if not do_install:
+            return
         # Glob for packages
         matches = glob.glob(os.path.abspath(filepattern))
         if len(matches) > 0: 
@@ -140,8 +142,8 @@ class NSISInstaller(MantidInstaller):
     to install Mantid
     """
 
-    def __init__(self):
-        MantidInstaller.__init__(self, 'Mantid-*-win*.exe')
+    def __init__(self, do_install):
+        MantidInstaller.__init__(self, do_install, 'Mantid-*-win*.exe')
         self.mantidPlotPath = 'C:/MantidInstall/bin/MantidPlot.exe'
         
     def do_install(self):
@@ -164,8 +166,8 @@ class MSIInstaller(MantidInstaller):
     """Uses an MSI installer to install Mantid
     """
 
-    def __init__(self):
-        MantidInstaller.__init__(self, 'mantid-*.msi')
+    def __init__(self, do_install):
+        MantidInstaller.__init__(self, do_install, 'mantid-*.msi')
         self.mantidPlotPath = 'C:/MantidInstall/bin/MantidPlot.exe'
         
     def do_install(self):
@@ -183,8 +185,8 @@ class DebInstaller(MantidInstaller):
     """Uses a deb package to install mantid
     """
 
-    def __init__(self):
-        MantidInstaller.__init__(self, 'mantid_[0-9]*.deb')
+    def __init__(self, do_install):
+        MantidInstaller.__init__(self, do_install, 'mantid_[0-9]*.deb')
         self.mantidPlotPath = '/opt/Mantid/bin/MantidPlot'
         
     def do_install(self):
@@ -199,11 +201,11 @@ class DebInstaller(MantidInstaller):
         run('sudo dpkg --purge %s' % package_name)
 
 class RPMInstaller(MantidInstaller):
-    """Uses a deb package to install mantid
+    """Uses a rpm package to install mantid
     """
 
-    def __init__(self):
-        MantidInstaller.__init__(self, 'mantid*.rpm')
+    def __init__(self, do_install):
+        MantidInstaller.__init__(self, do_install, 'mantid*.rpm')
         package = os.path.basename(self.mantidInstaller)
         if 'mantidnightly' in package:
             self.mantidPlotPath = '/opt/mantidnightly/bin/MantidPlot'
@@ -233,8 +235,8 @@ class RPMInstaller(MantidInstaller):
 class DMGInstaller(MantidInstaller):
     """Uses an OS X dmg file to install mantid
     """
-    def __init__(self):
-        MantidInstaller.__init__(self, 'mantid-*.dmg')
+    def __init__(self, do_install):
+        MantidInstaller.__init__(self, do_install, 'mantid-*.dmg')
         self.mantidPlotPath = '/Applications/MantidPlot.app/Contents/MacOS/MantidPlot'
         
     def do_install(self):

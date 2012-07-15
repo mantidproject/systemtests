@@ -16,7 +16,7 @@ installs it, runs system tests and produces an xml report file SystemTestsReport
 '''
 
 try:
-    opt, argv = getopt(sys.argv[1:],'nohvR')
+    opt, argv = getopt(sys.argv[1:],'nohvR:')
 except:
     opt = [('-h','')]
 
@@ -55,7 +55,7 @@ testRunLogPath = parentDir + '/logs/testsRun.log'
 testRunErrPath = parentDir + '/logs/testsRun.err'
 
 log('Starting system tests')
-installer = get_installer(useNSISWindowsInstaller)
+installer = get_installer(doInstall, useNSISWindowsInstaller)
 
 # Install the found package
 if doInstall:
