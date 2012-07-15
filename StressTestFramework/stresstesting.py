@@ -940,6 +940,9 @@ class MantidFrameworkConfig:
         self.__userPropsFileSystest = self.__userPropsFile + ".systest"
         self.__moveFile(self.__userPropsFile, self.__userPropsFileBackup)
 
+        # Make sure we only save these keys here
+        mtd.settings.reset();
+
         # Up the log level so that failures can give useful information
         mtd.settings['logging.loggers.root.level'] = self.__loglevel
         # Set the correct search path
