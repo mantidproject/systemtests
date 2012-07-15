@@ -42,7 +42,7 @@ for option, arg in opt:
         out2stdout = True
     if option == '-v':
         useNSISWindowsInstaller = True
-    if option == '-R':
+    if option == '-R' and arg != "":
         test_regex = arg
 
 # The log file for this script
