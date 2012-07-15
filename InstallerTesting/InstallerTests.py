@@ -16,7 +16,7 @@ installs it, runs system tests and produces an xml report file SystemTestsReport
 '''
 
 try:
-    opt,argv = getopt(sys.argv[1:],'nohv')
+    opt, argv = getopt(sys.argv[1:],'nohvR')
 except:
     opt = [('-h','')]
 
@@ -28,17 +28,22 @@ if ('-h','') in opt:
     print "       -o Output to the screen instead of log files"
     print "       -h Display the usage"
     print "       -v Run the newer version (NSIS) of the windows installer"
+    print "       -R Optionally only run the test matched by the regex"
     sys.exit(0)
 
 doInstall = True
 useNSISWindowsInstaller = False
-if ('-n','') in opt:
-    doInstall = False
+test_regex = None
 out2stdout = False
-if ('-o','') in opt:
-    out2stdout = True
-if ('-v','') in opt:
-    useNSISWindowsInstaller = True
+for option, arg in opt:
+    if option == '-n':
+        doInstall = False
+    if option == '-o':
+        out2stdout = True
+    if option == '-v':
+        useNSISWindowsInstaller = True
+    if option == '-R':
+        test_regex = arg
 
 # The log file for this script
 parentDir = os.path.abspath('..').replace('\\','/')
@@ -85,6 +90,8 @@ log("Running system tests. Log files are: logs/testsRun.log and logs/testsRun.er
 try:
     #Ensure we use the right Mantid if 2 are installed
     run_test_cmd = "python runSystemTests.py --loglevel=information --mantidpath=%s" % mantidPlotDir
+    if test_regex is not None:
+        run_test_cmd += " -R " + test_regex
     if out2stdout:
         p = subprocess.Popen(run_test_cmd, shell=True) # no PIPE: print on screen for debugging
         p.wait()
