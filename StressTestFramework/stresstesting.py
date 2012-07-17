@@ -841,12 +841,8 @@ class MantidFrameworkConfig:
             raise RuntimeError("MANTIDPATH not found.")
         else:
             sys.path.append(directory)
-        if sys.platform == 'win32':
-            if not os.path.isfile(os.path.join(directory, "MantidPlot.exe")):
-                raise RuntimeError("Did not find MantidPlot.exe in %s" % directory)
-        else:
-            if not os.path.isfile(os.path.join(directory, "MantidPlot")):
-                raise RuntimeError("Did not find MantidPlot in %s" % directory)
+        if not os.path.isfile(os.path.join(directory, "MantidFramework.py")):
+            raise RuntimeError("Did not find Mantid (MantidFramework.py) in %s" % directory)
 
         self.__sourceDir = self.__locateSourceDir(sourceDir)
 
