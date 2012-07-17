@@ -1,16 +1,32 @@
 import stresstesting
-from mantidsimple import RenameWorkspace, LoadNexus
 import os
+from abc import ABCMeta, abstractmethod
 
+from mantidsimple import *
+
+# For debugging only.
+from mantid.api import AnalysisDataService
+
+# Import our workflows.
 from inelastic_indirect_reducer import IndirectReducer
 from inelastic_indirect_reduction_steps import CreateCalibrationWorkspace
 from IndirectEnergyConversion import resolution
 from IndirectEnergyConversion import slice
-from IndirectDataAnalysis import elwin
-
-from abc import ABCMeta, abstractmethod
+from IndirectDataAnalysis import elwin, msdfit
 
 '''
+- TOSCA only supported by "Reduction" (the Energy Transfer tab of C2E).
+- OSIRIS/IRIS supported by all tabs / interfaces.
+- VESUVIO is not supported by any interface as of yet.
+
+For diagrams on the intended work flow of the IDA and Indirect parts of the
+C2E interface, please see:
+
+- http://www.mantidproject.org/IDA
+- http://www.mantidproject.org/Indirect
+
+System test class hierarchy as shown below:
+
 stresstesting.MantidStressTest
  |
  +--ISISIndirectInelasticBase
@@ -83,7 +99,7 @@ class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Instrument')
         self.disableChecking.append('Axes')
-        
+
         for reference_file, result in zip(self.get_reference_files(),
                                           self.result_names):
             wsName = "RefFile"
@@ -98,6 +114,11 @@ class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
                 return False
         
         return True
+
+    def get_temp_dir_path(self, filename):
+        '''Given a filename, prepends the system test temporary directory
+        and returns the full path.'''
+        return os.path.join(mtd.settings['defaultsave.directory'], filename)
 
 
 #==============================================================================
@@ -420,54 +441,109 @@ class IRISDiagnostics(ISISIndirectInelasticDiagnostics):
         
 
 #==============================================================================
-class ISISIndirectInelasticElwin(ISISIndirectInelasticBase):
-    '''A base class for the ISIS indirect inelastic Elwin tests
+class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
+    '''A base class for the ISIS indirect inelastic Elwin/MSD Fit tests
     
-    The workflow is defined in the _run() method, simply
-    define an __init__ method and set the following properties
-    on the object
+    The output of Elwin is usually used with MSDFit and so we plug one into
+    the other in this test.
     '''
     __metaclass__ = ABCMeta # Mark as an abstract class
     
     def _run(self):
         '''Defines the workflow for the test'''
-        result = elwin(self.files,
-                       self.eRange,
-                       Save=False,
-                       Verbose=False,
-                       Plot=False)
-        self.result_names = [result[0][0], result[1][0]]
-                                  
+
+        elwin_results = elwin(self.files,
+                              self.eRange,
+                              Save=False,
+                              Verbose=False,
+                              Plot=False)
+        
+        int_ws_list = [elwin_results[1][0], elwin_results[1][1]]
+        int_files = [self.get_temp_dir_path(filename) + ".nxs" 
+                     for filename in int_ws_list]
+
+        # Save the EQ2 results from Elwin to put into MSDFit.
+        for ws, filename in zip(int_ws_list, int_files):
+            SaveNexusProcessed(Filename=filename,
+                               InputWorkspace=ws)
+
+        msdfit_result = msdfit(inputs=int_files,
+                               startX=self.startX,
+                               endX=self.endX,
+                               Save=False,
+                               Verbose=True,
+                               Plot=False)
+
+        # @TODO: MSDFit has some other, as yet unfinalised, workspaces as its
+        #        output.  We need to test these too, eventually.
+
+        # Annoyingly, MSDFit eats the EQ2 workspaces we feed it, so let's
+        # reload them for checking against the reference files later.
+        for ws, filename in zip(int_ws_list, int_files):
+            LoadNexusProcessed(Filename=filename,
+                               OutputWorkspace=ws)
+
+        # Clean up the intermediate files.
+        for filename in int_files:
+            os.remove(filename)
+
+        # We're interested in the intermediate Elwin results as well as the
+        # final MSDFit result.
+        self.result_names = [elwin_results[0][0], #EQ1
+                             elwin_results[0][1], #EQ1
+                             elwin_results[1][0], #EQ2
+                             elwin_results[1][1], #EQ2
+                             msdfit_result]
+        
     def _validate_properties(self):
         """Check the object properties are in an expected state to continue"""
         
-        if type(self.files) != list and len(self.files) != 1:
-            raise RuntimeError("files should be a list of exactly 1 "
-                               "value")
-        if type(self.eRange) != list and len(self.eRange) != 2:
+        if type(self.files) != list or len(self.files) != 2:
+            raise RuntimeError("files should be a list of exactly 2 "
+                               "strings")
+        if type(self.eRange) != list or len(self.eRange) != 2:
             raise RuntimeError("eRange should be a list of exactly 2 "
                                "values")
+        if type(self.startX) != float:
+            raise RuntimeError("startX should be a float")
+        if type(self.endX) != float:
+            raise RuntimeError("endX should be a float")
 
 #------------------------- OSIRIS tests ---------------------------------------
 
-class OSIRISElwin(ISISIndirectInelasticElwin):
+class OSIRISElwinAndMSDFit(ISISIndirectInelasticElwinAndMSDFit):
 
     def __init__(self):
-        ISISIndirectInelasticElwin.__init__(self)
-        self.files = ['osi97935_graphite002_red.nxs']
+        ISISIndirectInelasticElwinAndMSDFit.__init__(self)
+        self.files = ['osi97935_graphite002_red.nxs',
+                      'osi97936_graphite002_red.nxs']
         self.eRange = [-0.02,0.02]
+        self.startX = 0.208716
+        self.endX = 3.162844
 
     def get_reference_files(self):
-        return ['II.OSIRISElwinEQ1.nxs', 'II.OSIRISElwinEQ2.nxs']
+        return ['II.OSIRISElwinEQ1.97935.nxs',
+                'II.OSIRISElwinEQ1.97936.nxs',
+                'II.OSIRISElwinEQ2.97935.nxs',
+                'II.OSIRISElwinEQ2.97936.nxs',
+                'II.OSIRISMSDFit.nxs']
 
 #------------------------- IRIS tests -----------------------------------------
 
-class IRISElwin(ISISIndirectInelasticElwin):
+class IRISElwinAndMSDFit(ISISIndirectInelasticElwinAndMSDFit):
 
     def __init__(self):
-        ISISIndirectInelasticElwin.__init__(self)
-        self.files = ['irs53664_graphite002_red.nxs']
+        ISISIndirectInelasticElwinAndMSDFit.__init__(self)
+        self.files = ['irs53664_graphite002_red.nxs',
+                      'irs53665_graphite002_red.nxs']
         self.eRange = [-0.02,0.02]
+        self.startX = 0.313679
+        self.endX = 3.285377
 
     def get_reference_files(self):
-        return ['II.IRISElwinEQ1.nxs', 'II.IRISElwinEQ2.nxs']
+        return ['II.IRISElwinEQ1.53664.nxs',
+                'II.IRISElwinEQ1.53665.nxs',
+                'II.IRISElwinEQ2.53664.nxs',
+                'II.IRISElwinEQ2.53665.nxs',
+                'II.IRISMSDFit.nxs']
+
