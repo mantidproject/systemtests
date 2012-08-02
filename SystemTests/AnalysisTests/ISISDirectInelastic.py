@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import Load, AddSampleLog, WorkspaceProxy
+from mantidsimple import *
 
 from DirectEnergyConversion import setup_reducer
 
@@ -186,7 +186,7 @@ class MAPSReduction(ISISDirectInelasticReduction):
   def get_reference_file(self):
     return "MAPSReduction.nxs"
 
-#------------------------- MAPS tests -------------------------------------------------
+#------------------------- MERLIN tests -------------------------------------------------
 
 class MERLINReduction(ISISDirectInelasticReduction):
 
@@ -209,3 +209,54 @@ class MERLINReduction(ISISDirectInelasticReduction):
     
   def get_reference_file(self):
     return "MERLINReduction.nxs"
+
+#------------------------- LET tests -------------------------------------------------
+
+class LETReduction(stresstesting.MantidStressTest):
+
+  def requiredMemoryMB(self):
+      """Far too slow for managed workspaces. They're tested in other places. Requires 2Gb"""
+      return 2000
+
+  def runTest(self):
+      """
+      Run the LET reduction with event NeXus files
+      """
+      import dgreduce
+      dgreduce.setup('LET')
+      white_run = 'LET00005545.raw'
+      sample_run = 'LET00006278.nxs'
+      ei = 7.0
+      ebin = [-1,0.002,0.95]
+      map_file = 'rings_103'
+      
+      white_ws = 'wb_wksp'
+      LoadRaw(Filename=white_run,OutputWorkspace=white_ws)
+      sample_ws = 'w1'
+      monitors_ws = sample_ws + '_monitors'
+      LoadEventNexus(Filename=sample_run,OutputWorkspace=sample_ws,
+                     SingleBankPixelsOnly='0',LoadMonitors='1',
+                     MonitorsAsEvents='1')
+      ConjoinWorkspaces(InputWorkspace1=sample_ws, InputWorkspace2=monitors_ws)
+
+      energy = ei
+      emin = 0.2*energy   #minimum energy is with 80% energy loss
+      lam = (81.81/energy)**0.5
+      lam_max = (81.81/emin)**0.5
+      tsam = 252.82*lam*25   #time at sample
+      tmon2 = 252.82*lam*23.5 #time to monitor 6 on LET
+      tmax = tsam+(252.82*lam_max*4.1) #maximum time to measure inelastic signal to
+      t_elastic = tsam+(252.82*lam*4.1)   #maximum time of elastic signal
+      tbin = [int(tmon2),1.6,int(tmax)]
+      Rebin(InputWorkspace=sample_ws,OutputWorkspace=sample_ws, Params=tbin, PreserveEvents='1')
+      energybin = [ebin[0]*energy,ebin[1]*energy,ebin[2]*energy]
+      energybin = [ '%.4f' % elem for elem in energybin ]  
+      ebinstring = str(energybin[0])+','+str(energybin[1])+','+str(energybin[2])
+
+      reduced_ws = dgreduce.arb_units(white_ws, sample_ws, energy, ebinstring, map_file, det_cal_file='det_corrected7.dat',
+                                      bleed=False, norm_method='current', 
+                                      detector_van_range=[0.5,200],bkgd_range=[int(t_elastic),int(tmax)])
+
+  def validate(self):
+      return "reduced_ws", "LETReduction.nxs"
+
