@@ -4,8 +4,7 @@ import os
 import re
 import stresstesting
 
-BANNED_FILES = ['4to1.map',
-                '992 Descriptions.txt',
+BANNED_FILES = ['992 Descriptions.txt',
                 'BioSANS_dark_current.xml',
                 'BioSANS_empty_cell.xml',
                 'BioSANS_empty_trans.xml',
@@ -13,11 +12,11 @@ BANNED_FILES = ['4to1.map',
                 'BioSANS_flood_data.xml',
                 'BioSANS_sample_trans.xml',
                 'BioSANS_test_data.xml',
+                'det_corrected7.dat',
                 'eqsans_configuration.1463',
                 'FLAT_CELL.061',
                 'batch_input.csv',
                 'mar11015.msk',
-                'mari_res.map',
                 'MASK.094AA',
                 'MASKSANS2D_094i_RKH.txt',
                 'MASKSANS2D.091A',
@@ -29,7 +28,6 @@ BANNED_FILES = ['4to1.map',
                 'PG3_9829_event.nxs',
                 'REF_M_9684_event.nxs',
                 'REF_M_9709_event.nxs',
-                'rings_113.map',
                 'SANS2D_periodTests.csv',
                 'SANS2D_992_91A.csv',
                 'testCansas1DMultiEntry.xml',
@@ -44,8 +42,8 @@ BANNED_REGEXP = [r'SANS2D\d+.log$',
                  r'.*_reduction.log$',
                  r'.+_characterization_\d+_\d+_\d+.*\.txt',
                  r'.+_d\d+_\d+_\d+_\d+.cal',
-                 r'.*Grouping\.xml'
-                 ]
+                 r'.*Grouping\.xml',
+                 r'.*\.map']
 
 def useDir(direc):
     """Only allow directories that aren't test output or 
