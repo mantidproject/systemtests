@@ -10,9 +10,8 @@ from mantid.api import AnalysisDataService
 # Import our workflows.
 from inelastic_indirect_reducer import IndirectReducer
 from inelastic_indirect_reduction_steps import CreateCalibrationWorkspace
-from IndirectEnergyConversion import resolution
-from IndirectEnergyConversion import slice
-from IndirectDataAnalysis import elwin, msdfit
+from IndirectEnergyConversion import resolution, slice
+from IndirectDataAnalysis import elwin, msdfit, fury, furyfitSeq
 
 '''
 - TOSCA only supported by "Reduction" (the Energy Transfer tab of C2E).
@@ -546,4 +545,84 @@ class IRISElwinAndMSDFit(ISISIndirectInelasticElwinAndMSDFit):
                 'II.IRISElwinEQ2.53664.nxs',
                 'II.IRISElwinEQ2.53665.nxs',
                 'II.IRISMSDFit.nxs']
+        
+
+#==============================================================================
+class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
+    '''A base class for the ISIS indirect inelastic Fury/FuryFit tests
+    
+    The output of Elwin is usually used with MSDFit and so we plug one into
+    the other in this test.
+    '''
+    __metaclass__ = ABCMeta # Mark as an abstract class
+    
+    def _run(self):
+        '''Defines the workflow for the test'''
+
+        fury_ws = fury(self.samples, 
+                       self.resolution, 
+                       self.rebin, 
+                       Save=False, 
+                       Verbose=False, 
+                       Plot=False)
+
+        """TODO: Move Fury code to Python so that we can call it here."""
+
+        # Test FuryFit Sequential
+        furyfitSeq_ws = furyfitSeq(fury_ws[0],
+                        self.func,
+                        self.ftype, 
+                        self.startx, 
+                        self.endx,
+                        Save=False,
+                        Plot='None',
+                        Verbose=False)
+
+        self.result_names = [fury_ws[0],
+                             furyfitSeq_ws.getName()]
+        
+    def _validate_properties(self):
+        """Check the object properties are in an expected state to continue"""
+        # TODO!
+        pass
+
+#------------------------- OSIRIS tests ---------------------------------------
+
+class OSIRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
+
+    def __init__(self):
+        ISISIndirectInelasticFuryAndFuryFit.__init__(self)
+        # Fury
+        self.samples = ['osi97935_graphite002_red.nxs']
+        self.resolution = 'osi97935_graphite002_res.nxs'
+        self.rebin = '-0.400000,0.002000,0.400000'
+        # Fury Seq Fit
+        self.func = r'name=LinearBackground,A0=0,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp(-(x/Tau)),Intensity=0.304185,Tau=0;ties=(f1.Intensity=1-f0.A0)'
+        self.ftype = '1E_s'
+        self.startx = 0.022861
+        self.endx = 0.118877
+
+    def get_reference_files(self):
+        return ['II.OSIRISFury.nxs',
+                'II.OSIRISFuryFitSeq.nxs']
+
+#------------------------- IRIS tests -----------------------------------------
+
+class IRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
+
+    def __init__(self):
+        ISISIndirectInelasticFuryAndFuryFit.__init__(self)
+        # Fury
+        self.samples = ['irs53664_graphite002_red.nxs']
+        self.resolution = 'irs53664_graphite002_res.nxs'
+        self.rebin = '-0.400000,0.002000,0.400000'
+        # Fury Seq Fit
+        self.func = r'name=LinearBackground,A0=0,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp(-(x/Tau)),Intensity=0.355286,Tau=0;ties=(f1.Intensity=1-f0.A0)'
+        self.ftype = '1E_s'
+        self.startx = 0.013717
+        self.endx = 0.169171
+
+    def get_reference_files(self):
+        return ['II.IRISFury.nxs',
+                'II.IRISFuryFitSeq.nxs']
 
