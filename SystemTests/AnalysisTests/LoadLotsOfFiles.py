@@ -195,4 +195,4 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
             raise RuntimeError("Failed to load %d of %d files" \
                                    % (len(failed), len(files)))
         else:
-            print "Succesfully loaded %d files" % len(files)
+            print "Successfully loaded %d files" % len(files)
