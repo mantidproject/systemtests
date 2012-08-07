@@ -1,5 +1,6 @@
 import stresstesting
 import os
+import sys
 from abc import ABCMeta, abstractmethod
 
 from mantidsimple import *
@@ -596,6 +597,13 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
 
 class OSIRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
 
+    def skipTests(self):
+        " We skip this test if the system is OS X."
+        if sys.platform == 'darwin':
+          return True
+        else:
+          return False
+
     def __init__(self):
         ISISIndirectInelasticFuryAndFuryFit.__init__(self)
         # Fury
@@ -615,6 +623,13 @@ class OSIRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
 #------------------------- IRIS tests -----------------------------------------
 
 class IRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
+
+    def skipTests(self):
+        "We skip this test if the system is OS X."
+        if sys.platform == 'darwin':
+          return True
+        else:
+          return False
 
     def __init__(self):
         ISISIndirectInelasticFuryAndFuryFit.__init__(self)
