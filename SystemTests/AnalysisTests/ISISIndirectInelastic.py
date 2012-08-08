@@ -597,13 +597,6 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
 
 class OSIRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
 
-    def skipTests(self):
-        " We skip this test if the system is OS X."
-        if sys.platform == 'darwin':
-          return True
-        else:
-          return False
-
     def __init__(self):
         ISISIndirectInelasticFuryAndFuryFit.__init__(self)
         # Fury
@@ -611,7 +604,7 @@ class OSIRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
         self.resolution = 'osi97935_graphite002_res.nxs'
         self.rebin = '-0.400000,0.002000,0.400000'
         # Fury Seq Fit
-        self.func = r'name=LinearBackground,A0=0,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp(-(x/Tau)),Intensity=0.304185,Tau=0;ties=(f1.Intensity=1-f0.A0)'
+        self.func = r'name=LinearBackground,A0=0,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp(-(x/Tau)),Intensity=0.304185,Tau=100;ties=(f1.Intensity=1-f0.A0)'
         self.ftype = '1E_s'
         self.startx = 0.022861
         self.endx = 0.118877
@@ -624,13 +617,6 @@ class OSIRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
 
 class IRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
 
-    def skipTests(self):
-        "We skip this test if the system is OS X."
-        if sys.platform == 'darwin':
-          return True
-        else:
-          return False
-
     def __init__(self):
         ISISIndirectInelasticFuryAndFuryFit.__init__(self)
         # Fury
@@ -638,7 +624,7 @@ class IRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
         self.resolution = 'irs53664_graphite002_res.nxs'
         self.rebin = '-0.400000,0.002000,0.400000'
         # Fury Seq Fit
-        self.func = r'name=LinearBackground,A0=0,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp(-(x/Tau)),Intensity=0.355286,Tau=0;ties=(f1.Intensity=1-f0.A0)'
+        self.func = r'name=LinearBackground,A0=0,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp(-(x/Tau)),Intensity=0.355286,Tau=100;ties=(f1.Intensity=1-f0.A0)'
         self.ftype = '1E_s'
         self.startx = 0.013717
         self.endx = 0.169171
