@@ -143,7 +143,7 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
             # groups have no histograms
             #    and take no memory
             pass
-        elif id == "IMDEventWorkspace":
+        elif isinstance(wksp, IMDEventWorkspace):
             # IMDEventWorkspace have no histograms
             pass
         else:
