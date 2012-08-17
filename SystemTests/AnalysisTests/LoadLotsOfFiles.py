@@ -110,6 +110,7 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
         print "----------------------------------------"
         print "Loading '%s'" % filename
         from mantid.api import Workspace
+        from mantid.api import IMDEventWorkspace
         # Output can be a tuple if the Load algorithm has extra output properties
         # but the output workspace should always be the first argument
         outputs = Load(filename) 
