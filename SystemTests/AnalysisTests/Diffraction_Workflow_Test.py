@@ -9,8 +9,8 @@ from mantidsimple import *
 class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
     
     def requiredMemoryMB(self):
-        """ Require about 2GB free """
-        return 2000
+        """ Require about 4GB free """
+        return 4000
     
     def runTest(self):
         import platform
@@ -116,9 +116,6 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         self.assertDelta( w.signalAt(20),  337.71, 10, "Peak 2")
         self.assertDelta( w.signalAt(30),  195.548, 10, "Peak 3")
 
-        #Clean-up to release memory
-        DeleteWorkspace(Workspace=ws)      
-        
         # Now do the same peak finding with Q in the sample frame
         ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')
         FindPeaksMD(InputWorkspace='TOPAZ_3132_QSample',PeakDistanceThreshold='0.12',MaxPeaks='200',OutputWorkspace='peaks_QSample')
