@@ -37,9 +37,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         
         # Convert to Q space
         ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_MD2',LorentzCorrection='0',
-                OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150')
-        #Clean-up to release memory
-        DeleteWorkspace(Workspace=ws)       
+                OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150') 
         # Find peaks (Reduced number of peaks so file comparison with reference does not fail with small differences)
         FindPeaksMD(InputWorkspace=ws+'_MD2',MaxPeaks='20',OutputWorkspace=ws+'_peaksLattice')
         # 3d integration to centroid peaks
@@ -118,6 +116,9 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         self.assertDelta( w.signalAt(20),  337.71, 10, "Peak 2")
         self.assertDelta( w.signalAt(30),  195.548, 10, "Peak 3")
 
+        #Clean-up to release memory
+        DeleteWorkspace(Workspace=ws)      
+        
         # Now do the same peak finding with Q in the sample frame
         ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')
         FindPeaksMD(InputWorkspace='TOPAZ_3132_QSample',PeakDistanceThreshold='0.12',MaxPeaks='200',OutputWorkspace='peaks_QSample')
