@@ -43,7 +43,7 @@ class DirectInelasticDiagnostic2(MantidStressTest):
         red_man["DetVanRatioVariation"] = 1.1
         red_man["PsdBleed"] = False
         red_man["MaxFramerate"] = 0.01
-        red_man["IgnoredPixels"] = 80
+        red_man["IgnoredPixels"] = 80.0
         # Things needed to run vanadium reduction
         red_man["IncidentBeamNormalisation"] = "ToMonitor"
         red_man["HardMaskWorkspace"] = ""
