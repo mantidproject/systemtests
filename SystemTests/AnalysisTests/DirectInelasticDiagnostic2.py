@@ -12,9 +12,6 @@ def getNamedParameter(ws, name):
     return ws.getInstrument().getNumberParameter(name)[0]
 
 class DirectInelasticDiagnostic2(MantidStressTest):
-    def requiredMemory(self):
-        """ Requires 4 GB """ 
-        return 4000
     
     def runTest(self):
         red_man = PropertyManager()
