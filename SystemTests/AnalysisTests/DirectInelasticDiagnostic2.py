@@ -13,6 +13,11 @@ def getNamedParameter(ws, name):
 
 class DirectInelasticDiagnostic2(MantidStressTest):
     
+    def requiredMemoryMB(self):
+        """Requires 4Gb"""
+        return 4000
+
+    
     def runTest(self):
         red_man = PropertyManager()
         red_man_name = "__dgs_reduction_properties"
