@@ -23,6 +23,11 @@ class LoadAndCheckBase(stresstesting.MantidStressTest):
     def get_nexus_workspace_filename(self):
         """Returns the name of the nexus workspace file"""
         raise NotImplementedError("Implement get_nexus_workspace_filename")
+        
+    @abstractmethod
+    def get_expected_instrument_name(self):
+        """Returns the name of the instrument"""
+        raise NotImplementedError("Implement get_expected_instrument_name")
           
     def get_expected_number_of_periods(self):
         return 1
@@ -35,11 +40,20 @@ class LoadAndCheckBase(stresstesting.MantidStressTest):
         
     def enable_reference_result_checking(self):
         return True
+
+    def enable_instrument_checking(self):
+        return True        
+       
     
     def do_check_workspace_shape(self, ws1, ws2):
         self.assertTrue(ws1.getNumberHistograms(), ws2.getNumberHistograms())
         self.assertTrue(len(ws1.readX(0)) == len(ws2.readX(0)))
         self.assertTrue(len(ws1.readY(0)) == len(ws2.readY(0)))
+
+    def do_check_instrument_applied(self, ws1, ws2):
+        instrument_name = self.get_expected_instrument_name()   
+        self.assertTrue(ws1.getInstrument().getName() == instrument_name)
+        self.assertTrue(ws2.getInstrument().getName() == instrument_name)       
     
     def runTest(self):
         Load(Filename=self.get_nexus_workspace_filename(), OutputWorkspace='nexus')
@@ -58,10 +72,14 @@ class LoadAndCheckBase(stresstesting.MantidStressTest):
             # Loop through each workspace in the group and apply some simple comaprison checks.
             for i in range(0, a.size()):
                 self.do_check_workspace_shape(a[i], b[i])
+            if self.enable_instrument_checking():
+                self.do_check_instrument_applied(a[i], b[i])
             if self.enable_reference_result_checking():
                 Integration(InputWorkspace=a[0], OutputWorkspace=self.__comparison_out_workspace_name)
         else:
             self.do_check_workspace_shape(a, b)
+            if self.enable_instrument_checking():
+                self.do_check_instrument_applied(a, b)           
             if self.enable_reference_result_checking():
                 Integration(InputWorkspace=a, OutputWorkspace=self.__comparison_out_workspace_name)
         

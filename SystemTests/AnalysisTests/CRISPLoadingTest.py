@@ -20,3 +20,6 @@ class CRISPLoadingTest(LoadAndCheckBase):
     
     def get_integrated_reference_workspace_filename(self):
         return "CSP85423_1Integrated.nxs"
+        
+    def get_expected_instrument_name(self):
+        return "CRISP" 

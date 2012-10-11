@@ -12,3 +12,6 @@ class INTERLoadingTest(LoadAndCheckBase):
     
     def get_integrated_reference_workspace_filename(self):
         return "INTER00007709Integrated.nxs"
+
+    def get_expected_instrument_name(self):
+        return "INTER" 

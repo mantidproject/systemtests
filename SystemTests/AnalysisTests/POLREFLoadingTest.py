@@ -15,3 +15,6 @@ class POLREFLoadingTest(LoadAndCheckBase):
     
     def get_integrated_reference_workspace_filename(self):
         return "POLREF00004699_1Integrated.nxs"
+
+    def get_expected_instrument_name(self):
+        return "POLREF"   
