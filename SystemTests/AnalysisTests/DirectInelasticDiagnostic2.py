@@ -35,31 +35,13 @@ class DirectInelasticDiagnostic2(MantidStressTest):
         red_man["ErrorBarCriterion"] = 0.0
         red_man["MedianTestLow"] = 0.1
         red_man["MedianTestHigh"] = 2.0
-        red_man["BackgroundCheck"] = True
         red_man["SamBkgMedianTestLow"] = 0.0
         red_man["SamBkgMedianTestHigh"] = 1.5
         red_man["SamBkgErrorbarCriterion"] = 3.3
         red_man["RejectZeroBackground"] = True
-        red_man["BackgroundTofStart"] = getNamedParameter(sample, 
-                                                          "bkgd-range-min")
-        red_man["BackgroundTofEnd"] = getNamedParameter(sample, 
-                                                        "bkgd-range-max")
-        # Ones that just need setting, but won't run
-        red_man["DetVanRatioVariation"] = 1.1
-        red_man["PsdBleed"] = False
-        red_man["MaxFramerate"] = 0.01
-        red_man["IgnoredPixels"] = 80.0
         # Things needed to run vanadium reduction
         red_man["IncidentBeamNormalisation"] = "ToMonitor"
-        red_man["HardMaskWorkspace"] = ""
-        red_man["DetVanIntRangeLow"] = MAX_DBL()
-        red_man["DetVanIntRangeHigh"] = MAX_DBL()
         red_man["DetVanIntRangeUnits"] = "Energy"
-        red_man["TofRangeOffset"] = 0.0
-        red_man["MonitorIntRangeLow"] = getNamedParameter(sample,
-                                                          'norm-mon1-min')
-        red_man["MonitorIntRangeHigh"] = getNamedParameter(sample,
-                                                           'norm-mon1-max')
 
         diag_mask = DgsDiagnose(DetVanWorkspace=detvan, SampleWorkspace=sample,
                                 ReductionProperties=red_man_name)
