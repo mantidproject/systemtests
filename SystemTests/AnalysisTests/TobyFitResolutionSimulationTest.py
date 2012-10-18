@@ -19,6 +19,9 @@ class TobyFitResolutionSimulationTest(MantidStressTest):
 
     _success = False
 
+    def skipTests(self):
+        return True
+
     def requiredMemoryMB(self):
         return 6000
 
