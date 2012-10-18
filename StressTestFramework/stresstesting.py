@@ -515,8 +515,15 @@ class PythonTestRunner(object):
         '''
         Spawn a new process and run the given command within it
         '''
-        proc = subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
-        std_out, std_err = proc.communicate()
+
+        proc = subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, bufsize=-1)
+        std_out = ""
+        std_err = ""
+        for line in proc.stdout:
+            print line,
+            std_out += line
+        proc.wait()
+
         return proc.returncode, std_out, std_err 
     
     def start(self, pycode):

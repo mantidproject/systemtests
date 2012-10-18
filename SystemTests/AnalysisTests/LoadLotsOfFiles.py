@@ -88,7 +88,7 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
             myFiles = os.listdir(direc)
             for filename in myFiles:
                 (good, filename) = useFile(direc, filename)
-                print "***", good, filename
+                #print "***", good, filename
                 if good:
                     files[filename] = os.path.getsize(filename)
         return sorted(files, key=lambda key: files[key], reverse=True)
@@ -102,8 +102,21 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
         if os.path.getsize(expected) <= 0: #non-zero length
             return True
 
-        # TODO Everything else
-        return False
+        print "Found an expected file '%s' file" % expected
+        expectedfile = open(expected)
+        tests = expectedfile.readlines()
+        failed = [] # still run all of the tests
+        for test in tests:
+            test = test.strip()
+            result = eval(test)
+            if not (result == True):
+                failed.append((test, result))
+        if len(failed) > 0:
+            for item in failed:
+                print "  Failed test '%s' returned '%s' instead of 'True'" % (item[0], item[1])
+            return False
+        return True
+
 
     def __loadAndTest__(self, filename):
         """Do all of the real work of loading and testing the file"""
