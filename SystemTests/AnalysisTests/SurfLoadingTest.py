@@ -17,7 +17,7 @@ class SurfLoadingTest(LoadAndCheckBase):
         return "SRF92132_1Integrated.nxs"
         
     def get_expected_instrument_name(self):
-        return "Surf" 
+        return "SURF" 
 
     def enable_instrument_checking(self):
-        return False # No IDF in Mantid
+        return True # No IDF in Mantid
