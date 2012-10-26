@@ -364,7 +364,6 @@ class PEARL_Mode_trans(PEARL_Reduction):
 		res = PEARL_Reduction.doValidation(self)
 		if not res:
 			return False
-		self.disableChecking.append('Instrument')
 		self.validate = self.validateNoAtten
 		return self.validateWorkspaceToNeXus()
 
