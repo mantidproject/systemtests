@@ -51,10 +51,9 @@ class TobyFitResolutionSimulationTest(MantidStressTest):
         # Crystal mosaic
         eta_sig = 4.0
 
-        data_dir = '/home/dmn58364/Scripts/inelastic/tobyfit/'
         fake_data = CreateSimulationWorkspace(Instrument='MERLIN',
                                               BinParams=bins,UnitX='DeltaE',
-                                              DetectorTableFilename=data_dir+'MER04466.raw')
+                                              DetectorTableFilename='MER06398.raw')
 
         ##
         ## Required log entries, can be taken from real ones by placing an instrument parameter of the same
