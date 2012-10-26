@@ -109,7 +109,7 @@ class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
                 raise RuntimeError("Should supply a NeXus file: %s" % 
                                    reference_file)
             
-            if not self.validateWorkspaces([wsName, result]):
+            if not self.validateWorkspaces([result, wsName]):
                 print str([reference_file, result]) + " do not match."
                 return False
         
