@@ -464,16 +464,17 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
                               Verbose=False,
                               Plot=False)
         
-        int_ws_list = [elwin_results[1][0], elwin_results[1][1]]
+        int_ws_list = [elwin_results[0][0], elwin_results[0][1],
+                       elwin_results[1][0], elwin_results[1][1]]
         int_files = [self.get_temp_dir_path(filename) + ".nxs" 
                      for filename in int_ws_list]
 
-        # Save the EQ2 results from Elwin to put into MSDFit.
+        # Save the EQ1 & EQ2 results from Elwin to put into MSDFit.
         for ws, filename in zip(int_ws_list, int_files):
             SaveNexusProcessed(Filename=filename,
                                InputWorkspace=ws)
-
-        msdfit_result = msdfit(inputs=int_files,
+        
+        msdfit_result = msdfit(inputs=int_files[2:],
                                startX=self.startX,
                                endX=self.endX,
                                Save=False,
