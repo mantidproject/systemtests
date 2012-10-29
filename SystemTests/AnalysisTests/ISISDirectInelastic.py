@@ -258,5 +258,6 @@ class LETReduction(stresstesting.MantidStressTest):
                                       detector_van_range=[0.5,200],bkgd_range=[int(t_elastic),int(tmax)])
 
   def validate(self):
+      self.disableChecking.append('Instrument') # Disable parameter map checking
       return "reduced_ws", "LETReduction.nxs"
 
