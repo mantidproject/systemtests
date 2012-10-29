@@ -1,2 +1,0 @@
-wksp.id() == "EventWorkspace"
-wksp.getNumberEvents() == 17926980
