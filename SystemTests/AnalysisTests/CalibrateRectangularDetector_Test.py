@@ -19,8 +19,7 @@ def _skip_test():
 class PG3Calibration(stresstesting.MantidStressTest):
 
     def skipTests(self):
-        return True
-        #return _skip_test()
+        return _skip_test()
 
     def requiredFiles(self):
         files = ["PG3_2538_event.nxs"] 
