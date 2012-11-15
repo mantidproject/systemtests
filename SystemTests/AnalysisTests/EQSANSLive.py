@@ -13,12 +13,24 @@ class EQSANSLive(stresstesting.MantidStressTest):
         # so we are also testing the EQSANSTransmission algorithm
         mtd.settings['default.facility'] = 'SNS'
 
-        SetupEQSANSReduction(UseConfigTOFCuts=True, UseConfigMask=True, BeamCenterX=89.675, BeamCenterY=129.693,
+        SetupEQSANSReduction(UseConfigTOFCuts=True, 
+                             UseConfigMask=True, 
+                             BeamCenterX=89.675, 
+                             BeamCenterY=129.693,
+                             PreserveEvents=False,
+                             NormaliseToBeam=True,
+                             NormaliseToMonitor=False,
                              SensitivityFile="EQSANS_sensitivity.nxs",
-                             SetupReducer=True, TransmissionValue="1.0",
+                             CorrectForFlightPath=False,
+                             SetupReducer=True,
+                             SolidAngleCorrection=False,
+                             TransmissionValue="1.0",
                              ReductionProperties="_reduction")
-        EQSANSReduce(Filename="EQSANS_1466_event.nxs", ReductionProcess=True, PostProcess=True,
-                ReductionProperties="_reduction", OutputWorkspace="EQSANS_1466_event_Iq")  
+        EQSANSReduce(Filename="EQSANS_1466_event.nxs", 
+                     ReductionProcess=True, 
+                     PostProcess=True,
+                     ReductionProperties="_reduction", 
+                     OutputWorkspace="EQSANS_1466_event_Iq")  
                 
     def cleanup(self):
         for ws in ["EQSANS_1466_event_Iq", "EQSANS_1466_event", "EQSANS_1466_event_evt"]:
