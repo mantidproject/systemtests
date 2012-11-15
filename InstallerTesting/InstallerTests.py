@@ -88,8 +88,8 @@ except Exception, err:
 
 log("Running system tests. Log files are: logs/testsRun.log and logs/testsRun.err")
 try:
-    #Ensure we use the right Mantid if 2 are installed
-    run_test_cmd = "python runSystemTests.py --loglevel=information --mantidpath=%s" % mantidPlotDir
+    # Pick the correct Mantid along with the bundled python on windows
+    run_test_cmd = "%s runSystemTests.py --loglevel=information --mantidpath=%s" % (installer.python_cmd, mantidPlotDir)
     if test_regex is not None:
         run_test_cmd += " -R " + test_regex
     if out2stdout:

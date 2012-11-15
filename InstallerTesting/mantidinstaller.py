@@ -100,6 +100,7 @@ class MantidInstaller(object):
     mantidInstaller = None
     mantidPlotPath = None
     no_uninstall = False
+    python_cmd = "python"
 
     def __init__(self, do_install, filepattern):
         """Initialized with a pattern to 
@@ -145,6 +146,7 @@ class NSISInstaller(MantidInstaller):
     def __init__(self, do_install):
         MantidInstaller.__init__(self, do_install, 'Mantid-*-win*.exe')
         self.mantidPlotPath = 'C:/MantidInstall/bin/MantidPlot.exe'
+        self.python_cmd = "C:/MantidInstall/bin/python.exe"
         
     def do_install(self):
         """
@@ -169,6 +171,7 @@ class MSIInstaller(MantidInstaller):
     def __init__(self, do_install):
         MantidInstaller.__init__(self, do_install, 'mantid-*.msi')
         self.mantidPlotPath = 'C:/MantidInstall/bin/MantidPlot.exe'
+        self.python_cmd = "C:/MantidInstall/bin/python.exe"
         
     def do_install(self):
         """Uses msiexec to run the install
