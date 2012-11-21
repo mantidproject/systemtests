@@ -45,7 +45,8 @@ BANNED_REGEXP = [r'SANS2D\d+.log$',
                  r'.*Grouping\.xml',
                  r'.*\.map',
                  r'.*\.irf',
-                 r'.*\.hkl']
+                 r'.*\.hkl',
+                 r'EVS\*\.raw']
 
 def useDir(direc):
     """Only allow directories that aren't test output or 
