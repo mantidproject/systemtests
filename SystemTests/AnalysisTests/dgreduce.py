@@ -82,6 +82,45 @@ def setup(instname):
 		print 'Instrument name not defined'
 		return
 
+        
+def set_cal_file(ws='',cal_file_name=''):
+    """ -- Does not yet work properly!!!! Do not use
+    Set up a workspace, used for keeping the calibration file and copying the detectors information 
+    into any workspace loaded from the disk
+    
+    Used to avoid multiple loading of large asci calibration dat file
+    
+    Usage:
+    >>set_cal_file(ws,cal_file_name)
+    where:
+    ws            -- the workspace name or ws pointer
+    cal_file_name -- the name of the existing cal file
+    
+    if uses with empty arguments, clears usage of existing cal file and cal workspace
+    """
+    
+    global reducer    
+    # clear existing workspace 
+    if (len(cal_file_name)==0) : 
+        if type(reducer.det_cal_file_ws) == WorkspaceProxy :
+            deleteWorkspace(reducer.det_cal_file_ws.getName());
+        reducer.det_cal_file_ws=None
+        return
+    
+    if type(ws) == str:
+        pWs = mtd[ws];
+    else : 
+        pWs = ws;
+        ws  = pWs.getName()
+        
+    # stuped but simplest way to get an reduced size workspace with full integral
+    targWSName =ws+'Int'
+#    Integrate(ws,targWSName,pWs.getAxis(0).getMin(),pWS..getAxis(0).max());
+    
+    LoadDetectorInfo(targWSName, cal_file_name,RelocateDets=True)
+    reducer.det_cal_file_ws = mtd[targWSName];
+                
+    
 def help(*args):
 	print 'available keywords for dgreduce with default values'
 	print 'norm_method- normalistion monitor-1,monitor-2,uamph'
@@ -976,7 +1015,6 @@ def abs_units(wb_run,sample_run,mono_van,wb_mono,samp_rmm,samp_mass,ei_guess,reb
 		reducer.map_file =None
 		map_file = ""
 		print 'one2one selected'
-		
 	else:
 		fileName, fileExtension = os.path.splitext(map_file)
 		if (not fileExtension):
@@ -1106,9 +1144,9 @@ def abs_units(wb_run,sample_run,mono_van,wb_mono,samp_rmm,samp_mass,ei_guess,reb
 		reducer.map_file = monovan_mapfile	
 		deltaE_wkspace_monovan = reducer.convert_to_energy(mono_van, ei_guess, wb_mono)
         
-		absnorm_factor = getAbsNormalizationFactor(deltaE_wkspace_monovan.getName(),str(reducer.monovan_integr_range[0]),str(reducer.monovan_integr_range[1]))
+		(absnorm_factorL,absnorm_factor,absnorm_factorP) = getAbsNormalizationFactor(deltaE_wkspace_monovan.getName(),str(reducer.monovan_integr_range[0]),str(reducer.monovan_integr_range[1]))        
 		
-	print 'Absolute correction factor =',absnorm_factor
+	print 'Absolute correction factor =',absnorm_factor,' Libisis: ',absnorm_factorL,' Puasonian: ',absnorm_factorP    
 	CreateSingleValuedWorkspace(OutputWorkspace='AbsFactor',DataValue=absnorm_factor)
 	end_time=time.time()
 	results_name=str(sample_run)+'.spe'
@@ -1342,6 +1380,14 @@ def getAbsNormalizationFactor(deltaE_wkspace,min,max):
     
     @returns the value of monovan absolute normalization factor. 
              deletes monovan workspace (deltaE_wkspace) if abs norm factor was calculated successfully
+    
+    Detailed explanation:
+     The algorithm takes the monochromatic vanadium workspace normalized by WB vanadium and calculates 
+     average modified monochromatic vanadium (MV) integral considering that the efficiency of detectors 
+     are different and accounted for by dividing each MV value by corresponding WBV value, 
+     the signal on a detector has poison distribution and the error for a detector is the square 
+     root of correspondent signal on a detector.
+     Error for WBV considered negligebly small wrt the error on MV
     """
     global reducer,van_mass
     Integration(InputWorkspace=deltaE_wkspace,OutputWorkspace='van_int',RangeLower=min,RangeUpper=max,IncludePartialBins='1')
@@ -1351,8 +1397,13 @@ def getAbsNormalizationFactor(deltaE_wkspace,min,max):
     nhist = data_ws.getNumberHistograms()
    #print nhist
 
-    average_value = 0.0
-    weight_sum = 0.0
+    signal1_sum = 0.0
+    weight1_sum = 0.0   
+    signal2_sum = 0.0
+    weight2_sum = 0.0   
+    signal3_sum = 0.0
+    weight3_sum = 0.0   
+    
     ic=0;
     izerc=0;
     for i in range(nhist):
@@ -1368,46 +1419,71 @@ def getAbsNormalizationFactor(deltaE_wkspace,min,max):
         
         if signal != signal:	#ignore NaN
             continue
-        if (error<=0):          # ignore Inf (0 in error are probably 0 in sign
+        if ((error<=0) or (signal<=0)):          # ignore Inf (0 in error are probably 0 in sign
             izerc+=1
             continue
-            
+        # statistics which minimizes the value sum(n_i-n)^2/Sigma_i -- this what Libisis had
         weight = 1.0/error
-        average_value += signal * weight
-        weight_sum += weight
-        ic += 1
+        signal1_sum += signal * weight
+        weight1_sum += weight   
+        # statistics which minimizes the value sum(n_i-n)^2/Sigma_i^2
+        weight = 1.0/(error*error)
+        signal2_sum += signal * weight
+        weight2_sum += weight            
+        # statistics which assumes puassonian distribution with Err=Sqrt(signal) and calculates 
+        # the function: N_avrg = 1/(DetEfficiency_avrg^-1)*sum(n_i*DetEfficiency_i^-1)
+        # where the DetEfficiency = WB_signal_i/WB_average WB_signal_i is the White Beam Vanadium 
+        # signal on i-th detector and the WB_average -- average WB vanadium signal. 
+        # n_i is the modified signal 
+        err_sq      = error*error
+        weight      = err_sq/signal
+        signal3_sum += err_sq
+        weight3_sum += weight
+        
+        ic += 1       
         #print 'signal value =' ,signal
         #print 'error value =' ,error        
-        #print 'average ',average_value        
+        #print 'average ',signal_sum        
    #---------------- Loop finished
    
-    integral_monovan=average_value / weight_sum
+    integral_monovanLibISIS=signal1_sum / weight1_sum
+    integral_monovanSigSq  =signal2_sum / weight2_sum    
+    integral_monovanPuason =signal3_sum / weight3_sum        
+    #integral_monovan=signal_sum /(wbVan_sum)
     van_multiplier = (float(reducer.van_rmm)/float(van_mass))
-    absnorm_factor = integral_monovan * van_multiplier
+    absnorm_factorLibISIS = integral_monovanLibISIS * van_multiplier
+    absnorm_factorSigSq   = integral_monovanSigSq   * van_multiplier    
+    absnorm_factorPuason  = integral_monovanPuason  * van_multiplier    
     #print 'Monovan integral :' ,integral_monovan        
     
-    if ei_monovan >= 200.0:
-        xsection = 421.0
-    else:
-        xsection = 400.0 + (ei_monovan/10.0)
+    if ei_monovan >= 210.0:  
+        xsection = 421  # vanadium cross-section in mBarn/sR (402 mBarn/Sr) (!!!modified to fit high energy limit?!!!)
+    else: # old textbook cross-section for vanadium for ei=20mEv
+        xsection = 400 + (ei_monovan/10)  
 
-    absnorm_factor /= xsection
-    sample_multiplier = (float(reducer.sample_mass)/float(reducer.sample_rmm))
-    absnorm_factor= absnorm_factor *sample_multiplier
+    absnorm_factorLibISIS /= xsection
+    absnorm_factorSigSq  /= xsection    
+    absnorm_factorPuason /= xsection        
     
-    if (absnorm_factor !=absnorm_factor)|(izerc!=0):    # It is an error, print diagnostics:
-        if (absnorm_factor !=absnorm_factor):
-            print '-----------> Absolute normalization factor is NaN <--------------------------------------------------'
+    sample_multiplier = (float(reducer.sample_mass)/float(reducer.sample_rmm))
+    absnorm_factorLibISIS= absnorm_factorLibISIS *sample_multiplier
+    absnorm_factorSigSq  = absnorm_factorSigSq *sample_multiplier
+    absnorm_factorPuason = absnorm_factorPuason *sample_multiplier
+    
+    if (absnorm_factorLibISIS !=absnorm_factorLibISIS)|(izerc!=0):    # It is an error, print diagnostics:
+        if (absnorm_factorLibISIS !=absnorm_factorLibISIS):
+            print '--------> Absolute normalization factor is NaN <----------------------------------------------'
         else:
-            print '-----------> Warning, Monovanadium has zero spectra <------------------------------------------------'		
-        print '-----------> Processing workspace: ',deltaE_wkspace
-        print '-----------> Monovan Integration range : min=',min,' max=',max
-        print '-----------> Calculated: ',ic,' spectra with average value: ',average_value, 'and total weight: ',weight_sum
-        print '-----------> Dropped: ',izerc,' empty spectra'
-        print '-----------> Van multiplier: ',van_multiplier,'  sample multiplier: ',sample_multiplier, 'and xsection: ',xsection		
-        print '-----------------------------------------------------------------------------------------------------'	
+            print '--------> Warning, Monovanadium has zero spectra <--------------------------------------------'		
+        print '--------> Processing workspace: ',deltaE_wkspace
+        print '--------> Monovan Integration range : min=',min,' max=',max
+        print '--------> Summarized: ',ic,' spectra with total value: ',signal2_sum, 'and total weight: ',weight2_sum
+        print '--------> Dropped: ',izerc,' empty spectra'
+        print '--------> Van multiplier: ',van_multiplier,'  sample multiplier: ',sample_multiplier, 'and xsection: ',xsection		
+        print '--------> Abs norm factors: LibISIS: ',absnorm_factorLibISIS,' Sigma^2: ',absnorm_factorSigSq,' Puasonian: ',absnorm_factorPuason
+        print '----------------------------------------------------------------------------------------------'        
     else:
         DeleteWorkspace(deltaE_wkspace)
     DeleteWorkspace(data_ws)
-    return absnorm_factor
+    return (absnorm_factorLibISIS,absnorm_factorSigSq,absnorm_factorPuason)
     
