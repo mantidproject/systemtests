@@ -354,9 +354,6 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
         self.assertTrue(math.fabs(delta)<0.001)
                 
     def test_spreader_transmission(self):
-        print "SKIPPING test_spreader_transmission()"
-        return
-    
         GPSANS()
         DataPath(TEST_DIR)
         DirectBeamCenter("BioSANS_empty_cell.xml")
