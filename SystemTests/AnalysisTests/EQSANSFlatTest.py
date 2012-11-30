@@ -5,19 +5,16 @@ from mantidsimple import *
 from reduction.instruments.sans.sns_command_interface import *
 import os
 
-DATADIR = os.path.join(os.path.expanduser("~"),'data','eqsans')
-OUTPUTDIR = os.path.join(os.path.expanduser("~"),'data','output')
-
 class EQSANSFlatTest(stresstesting.MantidStressTest):
     def requiredFiles(self):
         files = []
-        files.append(os.path.join(DATADIR,"EQSANS_5704_event.nxs"))
-        files.append(os.path.join(DATADIR,"EQSANS_5734_event.nxs"))
-        files.append(os.path.join(DATADIR,"EQSANS_5732_event.nxs"))
-        files.append(os.path.join(DATADIR,"EQSANS_5738_event.nxs"))
-        files.append(os.path.join(DATADIR,"EQSANS_5729_event.nxs"))
-        files.append(os.path.join(DATADIR,"EQSANS_5737_event.nxs"))
-        files.append(os.path.join(DATADIR,"EQSANS_5703_event.nxs"))
+        files.append("/SNS/EQSANS/IPTS-5636/0/5704/NeXus/EQSANS_5704_event.nxs")
+        files.append("/SNS/EQSANS/IPTS-5636/0/5734/NeXus/EQSANS_5734_event.nxs")
+        files.append("/SNS/EQSANS/IPTS-5636/0/5732/NeXus/EQSANS_5732_event.nxs")
+        files.append("/SNS/EQSANS/IPTS-5636/0/5738/NeXus/EQSANS_5738_event.nxs")
+        files.append("/SNS/EQSANS/IPTS-5636/0/5729/NeXus/EQSANS_5729_event.nxs")
+        files.append("/SNS/EQSANS/IPTS-5636/0/5737/NeXus/EQSANS_5737_event.nxs")
+        files.append("/SNS/EQSANS/IPTS-5636/0/5703/NeXus/EQSANS_5703_event.nxs")
         return files
     
     def runTest(self):
@@ -34,7 +31,6 @@ class EQSANSFlatTest(stresstesting.MantidStressTest):
         MonitorNormalization()
         AzimuthalAverage(n_bins=100, n_subpix=1, log_binning=False)
         IQxQy(nbins=100)
-        OutputPath(OUTPUTDIR)
         UseConfigTOFTailsCutoff(True)
         PerformFlightPathCorrection(True)
         UseConfigMask(True)
