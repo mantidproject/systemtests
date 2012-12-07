@@ -65,17 +65,32 @@ class VesuvioTests(unittest.TestCase):
         self.assertAlmostEqual(-25611027.229559898, evs_raw.readY(0)[1], places=DIFF_PLACES)
         self.assertAlmostEqual(43777.688780918717, evs_raw.readY(63)[1188], places=DIFF_PLACES)
 
-    def _run_load(self, runs, spectra, diff_opt):
+    def test_using_ip_file_adjusts_instrument_and_attaches_parameters(self):
+        self._run_load("14188", "3", "Single","IP0005.dat")
+        
+        # Check some data
+        evs_raw = mtd[self.ws_name]
+        det0 = evs_raw.getDetector(0)
+        param = det0.getNumberParameter("t0")
+        self.assertEqual(1, len(param))
+        self.assertAlmostEqual(-0.4157, param[0],places=4)
+
+    def _run_load(self, runs, spectra, diff_opt, ip_file=""):
         LoadVesuvio(RunNumbers=runs,OutputWorkspace=self.ws_name,
-            SpectrumList=spectra,DifferenceType=diff_opt)
+            SpectrumList=spectra,DifferenceType=diff_opt,InstrumentParFile=ip_file)
 
         self._do_ads_check(self.ws_name)
-        if spectra == "3-134":
-            self._do_size_check(self.ws_name, 132)
-        elif spectra == "135-198":
-            self._do_size_check(self.ws_name, 64)
-        else:
-            raise ValueError("Unknown spectra set given %s" % str(spectra))
+
+        def to_min_max(str_param):
+            if "-" in str_param:
+                elements = str_param.split("-")
+                return (int(elements[0]), int(elements[1]))
+            else:
+                return (int(str_param), int(str_param))
+
+        min,max = to_min_max(spectra)
+        expected_size = max - min + 1
+        self._do_size_check(self.ws_name, expected_size)
 
     def _do_ads_check(self, name):
         self.assertTrue(name in mtd)
@@ -130,6 +145,7 @@ class VesuvioTests(unittest.TestCase):
     def _do_test_temp_raw_workspaces_not_left_around(self):
         self.assertTrue("__loadraw_evs" not in mtd) 
         self.assertTrue("__loadraw_evs_monitors" not in mtd)
+
 
 #====================================================================================
 
