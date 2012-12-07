@@ -24,6 +24,26 @@ class HFIRTrans(stresstesting.MantidStressTest):
         self.disableChecking.append('Axes')
         return "BioSANS_test_data_Iq", 'HFIRTrans.nxs'
 
+class HFIRTrans(stresstesting.MantidStressTest):
+    def runTest(self):
+        config = ConfigService.Instance()
+        config["facilityName"]='HFIR'
+        GPSANS()
+        DirectBeamCenter("BioSANS_empty_cell.xml")
+        TimeNormalization()
+        SetTransmission(0.522296, 0.009134)
+        AzimuthalAverage(binning="0.01,0.001,0.11")
+        AppendDataFile("BioSANS_test_data.xml")
+        Reduce1D()
+
+    def validate(self):
+        self.tolerance = 0.00001
+        self.disableChecking.append('Instrument')
+        self.disableChecking.append('Sample')
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Axes')
+        return "BioSANS_test_data_Iq", 'HFIRTrans.nxs'
+
 class HFIRTransmissionDarkCurrent(stresstesting.MantidStressTest):
     def runTest(self):
         config = ConfigService.Instance()

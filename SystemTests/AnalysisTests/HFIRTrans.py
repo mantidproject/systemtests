@@ -6,9 +6,6 @@ from reduction.instruments.sans.hfir_command_interface import *
 
 class HFIRTrans(stresstesting.MantidStressTest):
     def runTest(self):
-        """
-            System test for sensitivity correction
-        """
         mtd.settings['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
@@ -27,11 +24,27 @@ class HFIRTrans(stresstesting.MantidStressTest):
         self.disableChecking.append('Axes')
         return "BioSANS_test_data_Iq", 'HFIRTrans.nxs'
 
+class HFIRTransValue(stresstesting.MantidStressTest):
+    def runTest(self):
+        mtd.settings['default.facility'] = 'HFIR'
+        HFIRSANS()
+        DirectBeamCenter("BioSANS_empty_cell.xml")
+        TimeNormalization()
+        SetTransmission(0.522296, 0.009134)
+        AzimuthalAverage(binning="0.01,0.001,0.11")
+        AppendDataFile("BioSANS_test_data.xml")
+        Reduce1D()
+
+    def validate(self):
+        self.tolerance = 0.00001
+        self.disableChecking.append('Instrument')
+        self.disableChecking.append('Sample')
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Axes')
+        return "BioSANS_test_data_Iq", 'HFIRTrans.nxs'
+
 class HFIRTransmissionDarkCurrent(stresstesting.MantidStressTest):
     def runTest(self):
-        """
-            System test for sensitivity correction
-        """
         mtd.settings['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
@@ -53,9 +66,6 @@ class HFIRTransmissionDarkCurrent(stresstesting.MantidStressTest):
 
 class HFIRTransmissionDirectBeamCenter(stresstesting.MantidStressTest):
     def runTest(self):
-        """
-            System test for sensitivity correction
-        """
         mtd.settings['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
@@ -77,9 +87,6 @@ class HFIRTransmissionDirectBeamCenter(stresstesting.MantidStressTest):
 
 class HFIRTransmissionBeamSpreader(stresstesting.MantidStressTest):
     def runTest(self):
-        """
-            System test for sensitivity correction
-        """
         mtd.settings['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
