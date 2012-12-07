@@ -3,6 +3,18 @@ import os
 from mantid.simpleapi import *
 from IndirectImport import is_supported_f2py_platform
 
+def _cleanup_files(dirname, filenames):
+    """
+       Attempts to remove each filename from
+       the given directory
+    """
+    for filename in filenames:
+        path = os.path.join(dirname, filename)
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+
 class QLresTest(stresstesting.MantidStressTest):
     
     def skipTests(self):
@@ -34,6 +46,12 @@ class QLresTest(stresstesting.MantidStressTest):
     def validate(self):
         return 'irs26176_graphite002_QLr_Fit','ISISIndirectBayes_QlresTest.nxs'
 
+    def cleanup(self):
+        filenames = ['irs26176_graphite002_QLr.lpt','irs26176_graphite002_QLr.ql1',
+                     'irs26176_graphite002_QLr.ql2','irs26176_graphite002_QLr.ql3',
+                     'irs26176_graphite002_QLr_Parameters.nxs']
+        _cleanup_files(config['defaultsave.directory'], filenames)
+        
 #========================================================================
 class ResNormTest(stresstesting.MantidStressTest):
     
@@ -61,6 +79,10 @@ class ResNormTest(stresstesting.MantidStressTest):
 
     def validate(self):
         return 'irs26173_graphite002_ResNorm_Fit','ISISIndirectBayes_ResNormTest.nxs'
+
+    def cleanup(self):
+        filenames = ['irs26173_graphite002_resnrm.lpt']
+        _cleanup_files(config['defaultsave.directory'], filenames)
 
 #=========================================================================
 class QuestTest(stresstesting.MantidStressTest):
@@ -92,6 +114,11 @@ class QuestTest(stresstesting.MantidStressTest):
 
     def validate(self):
         return 'irs26176_graphite002_Qst_Fit','ISISIndirectBayes_QuestTest.nxs'
+
+    def cleanup(self):
+        filenames = ['irs26176_graphite002_Qst.lpt','irs26176_graphite002_Qss.ql2',
+                     'irs26176_graphite002_Qsb.ql1']
+        _cleanup_files(config['defaultsave.directory'], filenames)
 
 #=============================================================================
 class QSeTest(stresstesting.MantidStressTest):
@@ -125,6 +152,11 @@ class QSeTest(stresstesting.MantidStressTest):
     def validate(self):
         return 'irs26176_graphite002_QSe_Fit','ISISIndirectBayes_QSeTest.nxs'
 
+    def cleanup(self):
+        filenames = ['irs26176_graphite002_QSe_Parameters.nxs', 'irs26176_graphite002_Qse.qse',
+                     'irs26176_graphite002_Qse.lpt']
+        _cleanup_files(config['defaultsave.directory'], filenames)
+        
 #=============================================================================
 class QLDataTest(stresstesting.MantidStressTest):
     
@@ -157,6 +189,12 @@ class QLDataTest(stresstesting.MantidStressTest):
     def validate(self):
         return 'irs26176_graphite002_QLd_Fit','ISISIndirectBayes_QLDataTest.nxs'
 
+    def cleanup(self):
+        filenames = ['irs26176_graphite002_QLd.lpt','irs26176_graphite002_QLd.ql1',
+                     'irs26176_graphite002_QLd.ql2','irs26176_graphite002_QLd.ql3',
+                     'irs26176_graphite002_QLd_Parameters.nxs']
+        _cleanup_files(config['defaultsave.directory'], filenames)
+
 #=============================================================================
 class JumpCETest(stresstesting.MantidStressTest):
     
@@ -183,6 +221,9 @@ class JumpCETest(stresstesting.MantidStressTest):
     def validate(self):
         return 'irs26176_graphite002_QLr_CEfit_FW11','ISISIndirectBayes_JumpCETest.nxs'
 
+    def cleanup(self):
+        filenames = ['irs26176_graphite002_QLr_CEfit_FW11.lpt']
+        _cleanup_files(config['defaultsave.directory'], filenames)
 
 #=============================================================================
 class JumpSSTest(stresstesting.MantidStressTest):
@@ -208,5 +249,9 @@ class JumpSSTest(stresstesting.MantidStressTest):
 
     def validate(self):
         return 'irs26176_graphite002_QLr_SSfit_FW11','ISISIndirectBayes_JumpSSTest.nxs'
+
+    def cleanup(self):
+        filenames = ['irs26176_graphite002_QLr_SSfit_FW11.lpt']
+        _cleanup_files(config['defaultsave.directory'], filenames)
 
 #=============================================================================
