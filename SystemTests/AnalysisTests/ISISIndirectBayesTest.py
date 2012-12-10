@@ -44,6 +44,7 @@ class QLresTest(stresstesting.MantidStressTest):
         Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
 
     def validate(self):
+        self.tolerance = 1e-4 
         return 'irs26176_graphite002_QLr_Fit','ISISIndirectBayes_QlresTest.nxs'
 
     def cleanup(self):
@@ -78,6 +79,7 @@ class ResNormTest(stresstesting.MantidStressTest):
         Main.ResNormRun(vname,rname,erange,nbin,verbOp,plotOp,saveOp)
 
     def validate(self):
+        self.tolerance = 1e-4 
         return 'irs26173_graphite002_ResNorm_Fit','ISISIndirectBayes_ResNormTest.nxs'
 
     def cleanup(self):
@@ -113,6 +115,7 @@ class QuestTest(stresstesting.MantidStressTest):
         Main.QuestRun(sname,rname,nbs,erange,nbins,fitOp,loopOp,verbOp,plotOp,saveOp)
 
     def validate(self):
+        self.tolerance = 1e-1 
         return 'irs26176_graphite002_Qst_Fit','ISISIndirectBayes_QuestTest.nxs'
 
     def cleanup(self):
@@ -150,6 +153,7 @@ class QSeTest(stresstesting.MantidStressTest):
         Main.QLRun('QSe',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
 
     def validate(self):
+        self.tolerance = 1e-1 
         return 'irs26176_graphite002_QSe_Fit','ISISIndirectBayes_QSeTest.nxs'
 
     def cleanup(self):
@@ -187,6 +191,7 @@ class QLDataTest(stresstesting.MantidStressTest):
         Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
 
     def validate(self):
+        self.tolerance = 1e-4 
         return 'irs26176_graphite002_QLd_Fit','ISISIndirectBayes_QLDataTest.nxs'
 
     def cleanup(self):
@@ -219,6 +224,7 @@ class JumpCETest(stresstesting.MantidStressTest):
         Main.JumpRun(sname,'CE','QLr','FW11',cropOp,qrange,verbOp,plotOp,saveOp)
 
     def validate(self):
+        self.tolerance = 1e-5 
         return 'irs26176_graphite002_QLr_CEfit_FW11','ISISIndirectBayes_JumpCETest.nxs'
 
     def cleanup(self):
@@ -248,6 +254,7 @@ class JumpSSTest(stresstesting.MantidStressTest):
         Main.JumpRun(sname,'SS','QLr','FW11',cropOp,qrange,verbOp,plotOp,saveOp)
 
     def validate(self):
+        self.tolerance = 1e-5 
         return 'irs26176_graphite002_QLr_SSfit_FW11','ISISIndirectBayes_JumpSSTest.nxs'
 
     def cleanup(self):
