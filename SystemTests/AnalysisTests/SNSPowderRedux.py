@@ -28,7 +28,7 @@ class PG3Analysis(stresstesting.MantidStressTest):
                            CharacterizationRunsFile=self.char_file,
                            LowResRef=15000, RemovePromptPulseWidth=50,
                            Binning=-0.0004, BinInDspace=True, FilterBadPulses=True,
-                           SaveAs="gsas", OutputDirectory=savedir,
+                           SaveAs="gsas and fullprof and pdfgetn", OutputDirectory=savedir,
                            NormalizeByCurrent=True, FinalDataUnits="dSpacing")
 
 
