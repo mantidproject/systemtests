@@ -22,7 +22,7 @@ import numpy
 
 
 from mantid.api import *
-sys.path.append("/home/ruth/GIT_MantidBuild/bin/")
+#sys.path.append("/home/ruth/GIT_MantidBuild/bin/")
 from mantid.simpleapi import *
 
 class ReduceOneSCD_Run( stresstesting.MantidStressTest):
