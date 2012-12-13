@@ -7,7 +7,8 @@ import random
 import mantid
 from mantid.simpleapi import *
 #from mantidsimple import *
-
+#TODO premultiply cases, fix up.. Maybe not needed Cause Conv cell was "Nigglied"
+#TODO: SWitch cases, if use approx inequality, may get error cause low level code  [does Not](does) premult but when it [should](should not)
 class Peak2ConvCell_Test(stresstesting.MantidStressTest):
    conventionalUB=numpy.zeros(shape=(3,3))
    Cubic=[1,3,5]
@@ -307,16 +308,18 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
       nneg=0
       if len(List)<6:
          return List
+      has90=False
       for i in range(3,6):       
         if math.fabs(List[i]-90)<.00001:
            nneg  =nneg+1
+           has90=True
         elif List[i] <90:
            npos=npos+1
         else:
            nneg=nneg+1
-      over90=True
-      if nneg < npos:
-         over90= False  
+      over90=False
+      if nneg > npos or has90:
+         over90= True  
       
       for i in range(3,6):
          if  List[i]>90 and not over90:
@@ -506,39 +509,41 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
         if sides[0] == sides[1]:
            if sides[1]==sides[2]:
               X="Cubic"
-              Z1=self.Cubic
+              Z1=list(self.Cubic)
            else:
               X="Tetragonal"
-              Z1=self.Tetr
+              Z1=list(self.Tetr)
         elif sides[0]==sides[2]:
            X="Tetragonal"
-           Z1=self.Tetr
+           Z1=list(self.Tetr)
         elif  sides[1]==sides[2]:
            X="Tetragonal"           
-           Z1=self.Tetr
+           Z1=list(self.Tetr)
         else:
            X="Orthorhombic"
-           Z1=self.Orth
+           Z1=list(self.Orth)
         if C=='A' or C =='B':
            C ='C'
       elif Xtal=='H':
         if Center =='I':
            C ='R'
            X='Rhombohedral'
-           Z1=self.Hex
+           Z1=list(self.Hex)
         else:
           C='P'
           X="Hexagonal"
-          Z1=self.Hex
+          Z1=list(self.Hex)
       else:#Monoclinic
          X="Monoclinic"
-         Z1=self.Mon
+         Z1=list(self.Mon)
          C=Center
          LL=[math.cos(LatNiggle[5]/180*math.pi)*LatNiggle[0]*LatNiggle[1], math.cos(LatNiggle[4]/180*math.pi)*LatNiggle[0]*LatNiggle[2],math.cos(LatNiggle[3]/180*math.pi)*LatNiggle[2]*LatNiggle[1]]
         
          if C=='A' or C =='B':
            C ='C'
-         else:#'I':
+           
+         if C=='C' or C=='I':#'I':
+            
            Z1=self.AppendForms( LatNiggle[2]*LatNiggle[2]<4*math.fabs(LL[2]), 'C',C,[10,14,39], Z1)
            Z1=self.AppendForms( LatNiggle[0]*LatNiggle[0]<4*math.fabs(LL[1]), 'C',C,[20,25,41], Z1)
            
@@ -565,6 +570,8 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
       print "standardized lists="
       print List1
       print List2 
+      self.assertEqual(len(List1a),6,"Not the correct number of Xtal parameters")
+      self.assertEqual(len(List2),6,"Not the correct number of Xtal parameters")
       Var=["a","b","c","alpha","beta","gamma"]      
       self.assertDelta( List1[0],List2[0],tolerance, message +"for "+Var[0])                
       self.assertDelta( List1[1],List2[1],tolerance, message +"for "+Var[1])              
@@ -608,7 +615,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
      
          
    def XchangeSides( self, Lat1, s1,s2):
-      Lat=Lat1
+      Lat=list(Lat1)
       if s1<0 or s2<0 or s1>=3 or s2>2 or s1==s2:
          return Lat
       sav=Lat[s1]
@@ -636,24 +643,29 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                i2=i2+1
            else:
                Res=SelectCellWithForm(Peaks, FormXtal[i1],True)
+               print ["#i1,orig indexed,Sel Res=",i1,nOrigIndexed,Res]
                if Res[0] > .85* nOrigIndexed:
                  CopySample(Peaks,"Temp",CopyMaterial="0",CopyEnvironment="0",CopyName="0",CopyShape="0",CopyLattice="1")
                  OrLat= mtd["Temp"].sample().getOrientedLattice()                  
                  Lat1= [OrLat.a(),OrLat.b(),OrLat.c(),OrLat.alpha(),OrLat.beta(),OrLat.gamma()]
                  Lat1 = self.FixLatParams(Lat1)
+                 print ["Formnum,Lat1,Lat0",i1,Lat1,Lat0]
                  if  math.fabs(Lat0[0]-Lat1[0])<tolerance and math.fabs(Lat0[1]-Lat1[1])<tolerance and math.fabs(Lat0[2]-Lat1[2])<tolerance:
-                     print ["Formnum,Lat1,Lat0",i1,Lat1,Lat0]
+                     
                      for i in range(3):
                         if math.fabs(Lat0[3]-Lat1[3])<tolerance and math.fabs(Lat0[4]-Lat1[4])<tolerance and math.fabs(Lat0[5]-Lat1[5])<tolerance:
                            break
-                        if Lat0[0]>Lat1[0]-.0001:
+                        if Lat1[0]>Lat1[1]-.0001:
                            Lat1=self.XchangeSides( Lat1,0,1)
+                           print ["a",Lat1]
                         if math.fabs(Lat0[3]-Lat1[3])<tolerance and math.fabs(Lat0[4]-Lat1[4])<tolerance and math.fabs(Lat0[5]-Lat1[5])<tolerance:
                            break
-                        if Lat0[1]>Lat1[2]-.0001:
+                        if Lat1[1]>Lat1[2]-.0001:
                            Lat1=self.XchangeSides( Lat1,1,2)
+                           print ["b",Lat1]
                         if math.fabs(Lat0[3]-Lat1[3])<tolerance and math.fabs(Lat0[4]-Lat1[4])<tolerance and math.fabs(Lat0[5]-Lat1[5])<tolerance:
                            break
+                        print ["c",Lat1]
                      if math.fabs(Lat0[3]-Lat1[3])<tolerance and math.fabs(Lat0[4]-Lat1[4])<tolerance and math.fabs(Lat0[5]-Lat1[5])<tolerance:                          
                           return Lat1
                  i1=i1+1
@@ -671,9 +683,9 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
       Inst= mtd["Sws"].getInstrument()
       startA = 2
       side1Ratios =[1.0,1.2,3.0,8.0]
-      alphas =[20,50,80,110,140]
+      alphas =[20,50,80,140,110]
       xtal=['M','O','H']
-      centerings=['I','P','F','C','A','B']
+      centerings=['A','I','P','F','C','B']
       error=[0,.05,.1,.15]
       Npeaks=150
       for Error in error:
@@ -720,19 +732,14 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                   OrLat= mtd["Sws"].sample().getOrientedLattice()
                   
                   Lat1= [OrLat.a(),OrLat.b(),OrLat.c(),OrLat.alpha(),OrLat.beta(),OrLat.gamma()]
-                  print Lat1
                   print "       --- conv latt,Calc Convlatt------"
                   Lat1=self.FixLatParams(Lat1)
+                  print Lat1
                   Lat0=self.FixLatParams(Lat0)
                   print Lat1
                   print Lat0
                   self.MatchXtlparams( Lat1, Lat0, .03, "Niggli values do not match")
-                  #self.assertDelta( OrLat.a(),Lat0[0],.03,"Niggli a values do not match")
-                  #self.assertDelta( OrLat.b(),Lat0[1],.03,"Niggli b values do not match")
-                  #self.assertDelta( OrLat.c(),Lat0[2],.03,"Niggli c values do not match")
-                  #self.assertDelta( OrLat.alpha(),Lat0[3],.03,"Niggli alpha values do not match")
-                  #self.assertDelta( OrLat.beta(),Lat0[4],.03,"Niggli beta values do not match")
-                  #self.assertDelta( OrLat.gamma(),Lat0[5],.03,"Niggli gamma values do not match")
+                 
                   
                   #Now see if the conventional cell is in list
                   XtalCenter1= self.Xlate(Xtal,Center,Sides,Lat0) #get proper strings for SelectCellOfType
@@ -749,7 +756,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                   Lat1=self.FixLatParams(Lat1)
                   print Lat1                 
                   print "------------------------------------------------------------------"
-                  #self.MatchXtlparams( Lat1, Lat0, .03, "Conventional lattice parameter do not match")
+                  self.MatchXtlparams( Lat1, Lat0, .03, "Conventional lattice parameter do not match")
                   self.assertTrue( len(Lat1)>4,"Conventional values do not match")
                   #self.assertDelta( OrLat.b(),Lat0[1],.03,"Conventional b values do not match")
                   #self.assertDelta( OrLat.c(),Lat0[2],.03,"Conventional c values do not match")
@@ -765,7 +772,6 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
 #Peaks=mtd["AbcD"]      
    
 #x=Peak2ConvCell_Test() 
-#print x.CalcNiggliUB(2,2,2,140,140,140,'M','I') 
 #print x.XchangeSides([1,2,3,20,30,40],2,0)
 #x.runTest()
 #M=matrix([[  0.00000000e+00 , 5.00000000e-01, 5.00000000e-01],[  5.00000000e-01, 5.00000000e-01 , -6.84982935e-17],[ -7.77861913e-01,  1.81985117e-01 , -5.95876796e-01]])
