@@ -58,7 +58,7 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
 
 
       instrument_name           = "TOPAZ"
-      calibration_file_1        = "/home/ruth/ISAW_ALL/InstrumentInfo/SNS/TOPAZ/TOPAZ_2011_02_16.DetCal"
+      calibration_file_1        = "TOPAZ_2011_02_16.DetCal"
       calibration_file_2        = None
  #data_directory            = params_dictionary[ "data_directory" ]
  
@@ -228,8 +228,7 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
                     CellType=cell_type, Centering=centering, 
                     Apply=True, Tolerance=tolerance )
          # UNCOMMENT the line below to get new output values if an algorithm changes
-         #SaveIsawPeaks( InputWorkspace=peaks_ws, AppendFile=False, 
-         #        Filename=run_conventional_integrate_file )
+         #SaveIsawPeaks( InputWorkspace=peaks_ws, AppendFile=False, Filename=run_conventional_integrate_file )
          SaveIsawUB( InputWorkspace=peaks_ws, Filename=self.run_conventional_matrix_file )
          self.saved = True
         
@@ -242,6 +241,8 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
       s1 = mtd["XX1"].sample()
       
       LoadIsawPeaks(OutputWorkspace="PeaksP", Filename=os.path.join(os.path.dirname(__file__), 'ReferenceResults',"3132_Orthorhombic_P.integrate"))
+      LoadIsawUB(InputWorkspace=peaks_ws,Filename=os.path.join(os.path.dirname(__file__), 'ReferenceResults',"3132_Orthorhombic_P.mat"))
+      IndexPeaks( PeaksWorkspace=peaks_ws, Tolerance=tolerance )
       CreateSingleValuedWorkspace(OutputWorkspace="XX2",DataValue="3")
       LoadIsawUB(InputWorkspace="XX2",Filename=os.path.join(os.path.dirname(__file__), 'ReferenceResults',"3132_Orthorhombic_P.mat"))  
       
@@ -254,7 +255,8 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
       self.assertDelta( ol.alpha(), ol.alpha(), 0.4, "Correct lattice angle alpha value not found.")
       self.assertDelta( ol.beta(), ol.beta(), 0.4, "Correct lattice angle beta value not found.")
       self.assertDelta( ol.gamma(), ol.gamma(), 0.4, "Correct lattice angle gamma value not found.")
-      self.ComparePeaks(peaks_ws, mtd['PeaksP'],.01)
+      
+      self.ComparePeaks( peaks_ws, mtd['PeaksP'],.01)
       
       print '\nReduced run ' + str(run) + ' in ' + str(end_time - start_time) + ' sec'
       print ["output directory=",self.output_directory]
