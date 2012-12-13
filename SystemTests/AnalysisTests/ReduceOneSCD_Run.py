@@ -2,33 +2,25 @@
 #
 # Version 2.0, modified to work with Mantid's new python interface.
 #
-# This script will reduce one SCD run.  The configuration file name and
-# the run to be processed must be specified as the first two command line 
-# parameters.  This script is intended to be run in parallel using the 
-# ReduceSCD_Parallel.py script, after this script and configuration file has 
-# been tested to work properly for one run. This script will load, find peaks,
+# This script will reduce one SCD run.  The configuration  is set up in the 
+# first few lines in the method runTest.  This script will load, find peaks,
 # index and integrate either found or predicted peaks for the specified run.  
 # Either sphere integration or the Mantid PeakIntegration algorithms are 
 # currently supported, but it may be updated to support other integration 
 # methods.  Users should make a directory to hold the output of this script, 
-# and must specify that output directory in the configuration file that 
-# provides the parameters to this script.
+# and must specify that output directory with the other configuration 
+#information.
 #
-# NOTE: All of the parameters that the user must specify are listed with 
-# instructive comments in the sample configuration file: ReduceSCD.config.
 #
 import os
 import sys
 import shutil
 import time
-#import ReduceDictionary
-#sys.path.append("/opt/mantidnightly/bin")
-#sys.path.append("/opt/Mantid/bin")
-#sys.path.append("/home/dennis/GIT_MantidBuild/bin/")
+
 import stresstesting
 import numpy
 
-#from mantidsimple import *
+
 from mantid.api import *
 sys.path.append("/home/ruth/GIT_MantidBuild/bin/")
 from mantid.simpleapi import *
@@ -38,8 +30,8 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
    
    def requiredMemoryMB(self):
        """ Require about 12GB free """
-       return 12000
-       
+       return 6000
+      
    def ComparePeaks( self, Peaks1,Peaks2,tolerance):
        N=Peaks1.getNumberPeaks()
        self.assertEqual(Peaks2.getNumberPeaks(),N,"Peaks workspaces have different sizes")
@@ -218,7 +210,7 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
 #
 # Save the final integrated peaks, using the Niggli reduced cell.  
 # This is the only file needed, for the driving script to get a combined
-# result.
+# result.(UNComment to get new values if algorithms change)
 #
 #      SaveIsawPeaks( InputWorkspace=peaks_ws, AppendFile=False, 
 #               Filename=run_niggli_integrate_file )
@@ -235,6 +227,7 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
          SelectCellOfType( PeaksWorkspace=peaks_ws, 
                     CellType=cell_type, Centering=centering, 
                     Apply=True, Tolerance=tolerance )
+         # UNCOMMENT the line below to get new output values if an algorithm changes
          #SaveIsawPeaks( InputWorkspace=peaks_ws, AppendFile=False, 
          #        Filename=run_conventional_integrate_file )
          SaveIsawUB( InputWorkspace=peaks_ws, Filename=self.run_conventional_matrix_file )
@@ -275,4 +268,5 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
       x=1
       
    def requiredFiles(self):
-      return ["XXX",os.path.join(os.path.dirname(__file__), 'ReferenceResults',"3132_Orthorhombic_P.integrate"),os.path.join(os.path.dirname(__file__), 'ReferenceResults',"3132_Orthorhombic_P.mat")]
+   
+      return [os.path.join(os.path.dirname(__file__), 'ReferenceResults',"3132_Orthorhombic_P.integrate"),os.path.join(os.path.dirname(__file__), 'ReferenceResults',"3132_Orthorhombic_P.mat")]
