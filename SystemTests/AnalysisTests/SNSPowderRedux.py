@@ -13,9 +13,9 @@ class PG3Analysis(stresstesting.MantidStressTest):
 
     def requiredFiles(self):
         files = [self.ref_file, self.cal_file, self.char_file] 
-        files.append("/SNS/PG3/IPTS-2767/0/PG3_4844_event.nxs") # /SNS/PG3/IPTS-2767/0/
-        files.append("/SNS/PG3/IPTS-2767/0/PG3_4866_event.nxs") # /SNS/PG3/IPTS-2767/0/
-        files.append("/SNS/PG3/IPTS-2767/0/PG3_5226_event.nxs") # /SNS/PG3/IPTS-2767/0/
+        files.append("/SNS/PG3/IPTS-2767/0/4844/NeXus/PG3_4844_event.nxs") # /SNS/PG3/IPTS-2767/0/
+        files.append("/SNS/PG3/IPTS-2767/0/4866/NeXus/PG3_4866_event.nxs") # /SNS/PG3/IPTS-2767/0/
+        files.append("/SNS/PG3/IPTS-2767/0/5226/NeXus/PG3_5226_event.nxs") # /SNS/PG3/IPTS-2767/0/
         return files
 
     def runTest(self):
@@ -48,7 +48,7 @@ class PG3StripPeaks(stresstesting.MantidStressTest):
 
     def requiredFiles(self):
         files = [self.ref_file, self.cal_file]
-        files.append("/SNS/PG3/IPTS-2767/0/PG3_4866_event.nxs") # vanadium
+        files.append("/SNS/PG3/IPTS-2767/0/4866/NeXus/PG3_4866_event.nxs") # vanadium
         return files
 
     def runTest(self):
@@ -143,7 +143,7 @@ class SeriesAndConjoinFilesTest(stresstesting.MantidStressTest):
     cal_file   = "PG3_FERNS_d4832_2011_08_24.cal"
     char_file  = "PG3_characterization_2012_02_23-HR-ILL.txt"
     ref_files  = ['PG3_9829_reference.gsa', 'PG3_9830_reference.gsa']
-    data_files = ['/SNS/PG3/IPTS-6604/0/9829/PG3_9829_event.nxs', '/SNS/PG3/IPTS-6604/0/9830/NeXus/PG3_9830_event.nxs']
+    data_files = ['/SNS/PG3/IPTS-6604/0/9829/NeXus/PG3_9829_event.nxs', '/SNS/PG3/IPTS-6604/0/9830/NeXus/PG3_9830_event.nxs']
 
     def requiredMemoryMB(self):
         """Requires 3Gb"""
