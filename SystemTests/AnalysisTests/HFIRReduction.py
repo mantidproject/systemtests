@@ -26,3 +26,50 @@ class HFIRReduction(stresstesting.MantidStressTest):
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Axes')
         return "BioSANS_test_data_Iq", "HFIRReduction.nxs"
+
+class HFIRAbsoluteScalingReference(stresstesting.MantidStressTest):
+    """
+        Test absolute scaling using a reference data set
+    """
+    
+    def runTest(self):
+        mtd.settings['default.facility'] = 'HFIR'
+        HFIRSANS()
+        SolidAngle(detector_tubes=True)
+        MonitorNormalization()
+        AzimuthalAverage(binning="0.01,0.001,0.2")
+        SetBeamCenter(16.39, 95.53)
+        SetDirectBeamAbsoluteScale('BioSANS_empty_trans.xml')
+        AppendDataFile(["BioSANS_test_data.xml"])
+        Reduce()
+        
+    def validate(self):
+        self.disableChecking.append('Instrument')
+        self.disableChecking.append('Sample')
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Axes')
+        return "BioSANS_test_data_Iq", "HFIRAbsoluteScalingReference.nxs"
+
+class HFIRAbsoluteScalingReference(stresstesting.MantidStressTest):
+    """
+        Test absolute scaling using a reference data set
+    """
+    
+    def runTest(self):
+        mtd.settings['default.facility'] = 'HFIR'
+        HFIRSANS()
+        SolidAngle(detector_tubes=True)
+        MonitorNormalization()
+        AzimuthalAverage(binning="0.01,0.001,0.2")
+        SetBeamCenter(16.39, 95.53)
+        SetAbsoluteScale(1.680537663117948)
+        AppendDataFile(["BioSANS_test_data.xml"])
+        Reduce()
+        
+    def validate(self):
+        self.disableChecking.append('Instrument')
+        self.disableChecking.append('Sample')
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Axes')
+        return "BioSANS_test_data_Iq", "HFIRAbsoluteScalingReference.nxs"
+
