@@ -463,18 +463,17 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
                               Save=False,
                               Verbose=False,
                               Plot=False)
-        
-        int_ws_list = [elwin_results[0][0], elwin_results[0][1],
-                       elwin_results[1][0], elwin_results[1][1]]
+
         int_files = [self.get_temp_dir_path(filename) + ".nxs" 
-                     for filename in int_ws_list]
+                     for filename in elwin_results]
 
         # Save the EQ1 & EQ2 results from Elwin to put into MSDFit.
-        for ws, filename in zip(int_ws_list, int_files):
+        for ws, filename in zip(elwin_results, int_files):            
             SaveNexusProcessed(Filename=filename,
                                InputWorkspace=ws)
-        
-        msdfit_result = msdfit(inputs=int_files[2:],
+            
+
+        msdfit_result = msdfit(inputs=int_files,
                                startX=self.startX,
                                endX=self.endX,
                                Save=False,
@@ -486,22 +485,20 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
 
         # Annoyingly, MSDFit eats the EQ2 workspaces we feed it, so let's
         # reload them for checking against the reference files later.
-        for ws, filename in zip(int_ws_list, int_files):
+        for ws, filename in zip(elwin_results, int_files):
             LoadNexusProcessed(Filename=filename,
                                OutputWorkspace=ws)
 
         # Clean up the intermediate files.
         for filename in int_files:
             os.remove(filename)
-
+        
         # We're interested in the intermediate Elwin results as well as the
         # final MSDFit result.
-        self.result_names = [elwin_results[0][0], #EQ1
-                             elwin_results[0][1], #EQ1
-                             elwin_results[1][0], #EQ2
-                             elwin_results[1][1], #EQ2
+        self.result_names = [elwin_results[0], #EQ1
+                             elwin_results[1], #EQ2
                              msdfit_result]
-        
+
     def _validate_properties(self):
         """Check the object properties are in an expected state to continue"""
         
@@ -528,11 +525,10 @@ class OSIRISElwinAndMSDFit(ISISIndirectInelasticElwinAndMSDFit):
         self.startX = 0.208716
         self.endX = 3.162844
 
+	
     def get_reference_files(self):
-        return ['II.OSIRISElwinEQ1.97935.nxs',
-                'II.OSIRISElwinEQ1.97936.nxs',
-                'II.OSIRISElwinEQ2.97935.nxs',
-                'II.OSIRISElwinEQ2.97936.nxs',
+        return ['II.OSIRISElwinEQ1.nxs',
+                'II.OSIRISElwinEQ2.nxs',
                 'II.OSIRISMSDFit.nxs']
 
 #------------------------- IRIS tests -----------------------------------------
@@ -547,11 +543,10 @@ class IRISElwinAndMSDFit(ISISIndirectInelasticElwinAndMSDFit):
         self.startX = 0.313679
         self.endX = 3.285377
 
+		
     def get_reference_files(self):
-        return ['II.IRISElwinEQ1.53664.nxs',
-                'II.IRISElwinEQ1.53665.nxs',
-                'II.IRISElwinEQ2.53664.nxs',
-                'II.IRISElwinEQ2.53665.nxs',
+        return ['II.IRISElwinEQ1.nxs',
+                'II.IRISElwinEQ2.nxs',
                 'II.IRISMSDFit.nxs']
         
 
