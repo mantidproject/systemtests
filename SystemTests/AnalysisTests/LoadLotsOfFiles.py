@@ -5,6 +5,7 @@ import re
 import stresstesting
 
 BANNED_FILES = ['992 Descriptions.txt',
+                'BASIS_AutoReduction_Mask.xml',
                 'BioSANS_dark_current.xml',
                 'BioSANS_empty_cell.xml',
                 'BioSANS_empty_trans.xml',
