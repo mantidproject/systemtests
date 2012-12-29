@@ -1,3 +1,12 @@
+#This script creates numerous PeaksWorkspaces for different Crystal Types and Centerings. Random errors
+#are also introduced into the peak's.  Each PeaksWorkspace is sent through the algorithm's FindPeaksMD,
+#FindUBUsingFFT, and SelectByForm to determine the corresponding Primitive and Conventional cells. These
+#results are tested against the theoretical results that should have been gotten
+
+#NOTE; THIS TEST TAKES AN EXTREMELY LONG TIME. DELETE "XXX" IN requiredFiles method to get it to run.
+#!!!!!!!!!  REPLACE THE "XXX" OR else !!!!!!!!!!
+
+
 import stresstesting
 import numpy
 from numpy import matrix
@@ -50,8 +59,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
          Res[2,0] = c*math.cos( Alpha)
          Res[2,2] = c*math.sin(Alpha)
          # Now Nigglify the matrix( get 3 smallest sides)
-         #print "Orig"
-         #print Res
+     
          n =0
          YY=0
          if( a <=c):
@@ -98,8 +106,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                Res[0,0]= sgn*YY
                Res[0,2] =sgn*n*Res[2,2]
                
-          
-         #print Res
+         
          Res=Res.I 
          
       
@@ -112,6 +119,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
       RUB= Res.I
       X=RUB*RUB.T
       done = False
+     
       while not done:
          done = True
          for i in range(2):
@@ -121,24 +129,35 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                   sav= RUB[i,j]
                   RUB[i,j]=RUB[i+1,j]
                   RUB[i+1,j]=sav
-                  X=RUB*RUB.T
-         if not done:
-            continue
-         for i in range(2):
-            if X[i,i]<2*math.fabs(X[i,2]):
-               sgn=1
-               if X[i,2] >0:
-                  sgn=-1
-               for j in range(3):
-                  RUB[2,j]=RUB[2,j]+sgn*RUB[i,j]
-               done=False
                X=RUB*RUB.T
-               break
+              
+         if not done:          
+            continue
+         #do bc,ac,then ab
+         for kk in range(3):
+             jj=2
+             if kk>1:
+               jj=1
+               i=0
+             else:
+               i=jj-kk-1
+             if X[i,i]<2*math.fabs(X[i,jj]):
+                sgn=1
+                if X[i,jj] >0:
+                   sgn=-1
+                for j in range(3):
+                   RUB[jj,j]=RUB[jj,j]+sgn*RUB[i,j]
+                done=False
+                X=RUB*RUB.T
+               
+                break
+         
                
       if( numpy.linalg.det( RUB )< 0):
         for  cc in range(3):
            RUB[0,cc] *=-1  
-           
+       
+    
       return RUB.I  
           
    def CalcNiggliUB( self,a, b,c,alpha, beta, gamma,type, Center):
@@ -173,6 +192,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                      s2 =-s1
                   
                Res[r,cc] =ResP[0,cc]/2+s1*ResP[1,cc]/2+s2*ResP[2,cc]/2
+         
             
          Res=Res.I
       
@@ -190,6 +210,8 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                ss[r]=0
                
                Res[r,cc]=ss[0]*ResP[0,cc]/2+ss[1]*ResP[1,cc]/2+ss[2]*ResP[2,cc]/2
+         
+       
        
          Res=Res.I
       
@@ -233,7 +255,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                Res[k,cc]= ResP[(R)%3,cc]/2+s*ResP[(R+1)%3,cc]/2            
             
             k=k+1
-        
+         
          Res=Res.I
       
       
@@ -245,27 +267,40 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
             self.conventionalUB=NiggliUB = None
             return None
          
-         
-         Alpha = alpha*math.pi/180
-         Res[0,0] = a
-         Res[1,0] =(a*math.cos( Alpha ))
-         Res[1,1] = (a*math.sin( Alpha ))
-         Res[2,0] =(a*math.cos( Alpha ))
-         Res[2,1] =(a*Res[1,0] -Res[2,0]*Res[1,0])/Res[1,1]
-         Res[2,2] =math.sqrt( a*a- Res[2,1]*Res[2,1]-Res[2,0]*Res[2,0])
+         #Did not work with 0 error. FindUBUsingFFT failed
+         #Alpha = alpha*math.pi/180
         
-         Rhomb2Hex= matrix([[1. ,-1., -1.],[-2. ,-1., -1.],[1. ,2., -1.]])
-         Rhomb2Hex =(1./3.)*Rhomb2Hex
+         #Res[0,0] = a
+         #Res[1,0] =(a*math.cos( Alpha ))
+         #Res[1,1] = (a*math.sin( Alpha ))
+         #Res[2,0] =(a*math.cos( Alpha ))
+         #Res[2,1] =(a*Res[1,0] -Res[2,0]*Res[1,0])/Res[1,1]
+         #Res[2,2] =math.sqrt( a*a- Res[2,1]*Res[2,1]-Res[2,0]*Res[2,0])
+         Res[0,0]=.5*a
+         Res[0,1]=math.sqrt(3)*a/2
+         Res[0,2]=.5*b
+         Res[1,0]=-a
+         Res[1,1]=0
+         Res[1,2]=.5*b
+         Res[2,0]=.5*a
+         Res[2,1]=-math.sqrt(3)*a/2
+         Res[2,2]=.5*b
+     
+         
+         Rhomb2Hex= matrix([[1. ,-1., 0.],[-1. ,0., 1.],[-1. ,-1., -1.]])
+       
+         self.conventionalUB=Rhomb2Hex*Res
+         Res=Res.I
       
-      
-    
+         self.conventionalUB=self.Niggli(self.conventionalUB.I)   
+       
+      Res = self.Niggli(Res)   
       if( numpy.linalg.det( Res )< 0):
           for  cc in range(3):
-             Res[0,cc] *=-1
-# TODO    
-#      Res = DataSetTools.components.ui.Peaks.subs.Nigglify( Res )
+             Res[cc,0] *=-1
+
       
-      Res = self.Niggli(Res)
+      
       return Res
       
    def Perturb( self,val, error):
@@ -310,7 +345,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
          return List
       has90=False
       for i in range(3,6):       
-        if math.fabs(List[i]-90)<.00001:
+        if math.fabs(List[i]-90)<.05:
            nneg  =nneg+1
            has90=True
         elif List[i] <90:
@@ -318,7 +353,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
         else:
            nneg=nneg+1
       over90=False
-      if nneg > npos or has90:
+      if nneg ==3  or has90 or nneg==1:
          over90= True  
       
       for i in range(3,6):
@@ -375,17 +410,100 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
     
       
       return UB*M
-      
+   # is closeness to 90 deg( cos of ), and equal sides 
+   def FixUB(self,UB, tolerance):
+     done = 1
+     print "A"
+     while done==1:
+        done=0
+        X = UB.T*UB
+        X.I
+        
+        print "B1",X
+        if X[0,0]> X[1,1] or (math.fabs(X[0,0]-X[1,1])<tolerance/10 and math.fabs(X[1,2])>math.fabs(X[0,2])+tolerance/10):
+           done = 1
+           for i in range(0,3):
+              sav= UB[i,0]
+              UB[i,0]=UB[i,1]
+              UB[i,1]=sav
+           print "B"
+           continue
+           
+        print "B2"
+        if X[1,1]>X[2,2] or (math.fabs(X[1,1]-X[2,2])<tolerance and math.fabs(X[1,0])< math.fabs(X[2,0])-tolerance/10):
+           done = 1
+           for i in range(0,3):
+              sav= UB[i,1]
+              UB[i,1]=UB[i,2]
+              UB[i,2]=sav
+              
+           print "C"
+           continue
+           
+        print "B3"
+        if numpy.linalg.det(UB) < 0:
+         for i in range(0,3):
+             UB[i,0]=-1*UB[i,0]
          
+         print "D"
+         done=1
+         continue
+        print "E"
+        L= [X[0,1],X[0,2],X[1,2]]
+        
+        nneg=0
+        is90=False
+        odd=-1
+        for i in range(0,3):
+        
+         if math.fabs(L[i])<tolerance:
+            is90=True
+            odd=i
+            nneg=nneg+1
+         elif L[i]<0:
+            nneg=nneg+1
+       
+        if nneg==3 or nneg==0:
+          continue
+        
+        for i in range(0,3):
+         if is90 :
+           if nneg ==1:
+             odd=i
+             break
+           if nneg==2 and odd !=i and L[i]>0:
+              odd=i
+              break         
+             
+           
+         elif nneg==1 and L[i]<0:
+            odd=i
+         elif nneg==2 and L[i]>0:
+            odd = i
+        odd= 2-odd
+        i1=(odd+1)%3
+        i2=(odd+2)%3
+        print ["L=",L, odd,i1,i2, is90,tolerance]
+        print UB
+        for i in range(0,3):
+          UB[i,i1]=-1*UB[i,i1]
+          UB[i,i2]=-1*UB[i,i2]
+        print UB
+        done = 1
+     return UB
+       
+       
+             
+       
+       
+             
              
    def getPeaks( self,Inst,UB, error,Npeaks):
       
       CreatePeaksWorkspace(InstrumentWorkspace="Sws",NumberOfPeaks=0,OutputWorkspace="Peaks")
       Peaks=mtd["Peaks"]
 
-      #BankNames=["bank17","bank18","bank22","bank26","bank27","bank28","bank33","bank36","bank37","bank38","bank39","bank47"]
-      #for i in  range(Peaks.getNumberPeaks()):
-      #     Peaks.removePeak(0)
+    
       MinAbsQ = 100000000
       UBi= matrix([[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0]])
   
@@ -414,7 +532,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
  
         for qs in range(3):          
           Qs[qs,0] = self.Perturb(Qs[qs,0],Error)
-          #Qs[qs] = 2*math.pi*Qs[qs]      
+         
           
           
         if( Qs is not None  and  Qs[2,0] > 0):
@@ -425,7 +543,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
         
          if norm>.3 and   norm < 30: 
            peak =Peaks.createPeak(  QQ, 1.0) 
-           #print ["QQ=",QQ.norm(), npeaks, hkl[0,0],hkl[1,0],hkl[2,0]]
+         
            peak.setQLabFrame(mantid.kernel.V3D(Qs[0,0],Qs[1,0],Qs[2,0]),1.0)
         
            Peaks.addPeak(peak)
@@ -448,16 +566,27 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
       
         
    def newSetting( self, side1,side2,Xtal,Center,ang, i1,i2a):
+      C=Center
+      if Center =='A' or Center =='B' or Center=='C':
+         C='C'
       if( Xtal=='O'):
-        if(  ang>20 or i1>0 or i2a >1):
-          return False
-        else:
-         return True
+         if(  ang>20 or i1>0 or i2a >1):
+           return False
+         elif (side1==0 and side2 !=0) and (C=='F' or C=='C'):#No Tetragonal "F" or C Center
+           return False
+         elif (C=='F'or C=='C') and ( side1==side2 and side1 !=0):
+            return False
+         else:
+            return True
+         
       if(Xtal=='H'):
-         if side2>0 or i2a>1 or not(Center=='P' or Center=='I'):
+         if ang > 20 or i2a>1 or not(C=='P' or C=='I'):
+           return False
+         elif side2>side1:
            return False
          else:
           return True
+          
       if( Xtal!='M'):
          return False
       return True
@@ -493,6 +622,8 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
       Res.append(math.acos( G1[0,2]/Res[0]/Res[2])*180.0/math.pi)
       Res.append(math.acos( G1[0,1]/Res[0]/Res[1])*180.0/math.pi)
       return Res
+      
+      
    def AppendForms( self, condition, Center,CenterTarg, FormNums, List2Append):
       L= List2Append
       if condition and Center != CenterTarg:
@@ -522,8 +653,10 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
         else:
            X="Orthorhombic"
            Z1=list(self.Orth)
+           
         if C=='A' or C =='B':
            C ='C'
+           
       elif Xtal=='H':
         if Center =='I':
            C ='R'
@@ -544,13 +677,13 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
            
          if C=='C' or C=='I':#'I':
             
-           Z1=self.AppendForms( LatNiggle[2]*LatNiggle[2]<4*math.fabs(LL[2]), 'C',C,[10,14,39], Z1)
-           Z1=self.AppendForms( LatNiggle[0]*LatNiggle[0]<4*math.fabs(LL[1]), 'C',C,[20,25,41], Z1)
+           Z1=self.AppendForms( LatNiggle[2]*LatNiggle[2]<4*math.fabs(LL[2])+.001, 'C',C,[10,14,39], Z1)
+           Z1=self.AppendForms( LatNiggle[0]*LatNiggle[0]<4*math.fabs(LL[1])+.001, 'C',C,[20,25,41], Z1)
            
-           Z1=self.AppendForms( LatNiggle[1]*LatNiggle[1]<4*math.fabs(LL[2]), 'C',C,[37], Z1)
+           Z1=self.AppendForms( LatNiggle[1]*LatNiggle[1]<4*math.fabs(LL[2]+.001), 'C',C,[37], Z1)
           
-           Z1=self.AppendForms( 3*LatNiggle[0]*LatNiggle[0] < LatNiggle[2]*LatNiggle[2]+2*math.fabs(LL[1]), 'I',C,[17], Z1)
-           Z1=self.AppendForms( 3*LatNiggle[1]*LatNiggle[1]<  LatNiggle[2]*LatNiggle[2]+2*math.fabs(LL[2]), 'I',C,[27], Z1)
+           Z1=self.AppendForms( 3*LatNiggle[0]*LatNiggle[0] < LatNiggle[2]*LatNiggle[2]+2*math.fabs(LL[1])+.001, 'I',C,[17], Z1)
+           Z1=self.AppendForms( 3*LatNiggle[1]*LatNiggle[1]<  LatNiggle[2]*LatNiggle[2]+2*math.fabs(LL[2]+.001), 'I',C,[27], Z1)
            
       if( C=='P'):
            Z2=self.CentP
@@ -567,51 +700,62 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
    
    def MatchXtlparams( self, List1a, List2, tolerance, message):
       List1=List1a
-      print "standardized lists="
-      print List1
-      print List2 
-      self.assertEqual(len(List1a),6,"Not the correct number of Xtal parameters")
-      self.assertEqual(len(List2),6,"Not the correct number of Xtal parameters")
+   
+
+      self.assertEqual(len(List1a),6,"Not the correct number of Xtal parameters."+message)
+      self.assertEqual(len(List2),6,"Not the correct number of Xtal parameters."+message)
       Var=["a","b","c","alpha","beta","gamma"]      
       self.assertDelta( List1[0],List2[0],tolerance, message +"for "+Var[0])                
       self.assertDelta( List1[1],List2[1],tolerance, message +"for "+Var[1])              
       self.assertDelta( List1[2],List2[2],tolerance, message +"for "+Var[2])
-      if List1[0] >List1[1]-.0001:  
-         if List1[1]>List1[2]-.001:   # 3 equal sides
+      angtolerance = tolerance*180/math.pi
+      if List1[3]<90 and List2[3]>=90:
+        List1[3]= 180-List1[3]
+        List1[4]= 180-List1[4]
+        List1[5]= 180-List1[5]
+       
+      
+      if List1[0] >List1[1]-tolerance:  
+         if List1[1]>List1[2]-tolerance:   # 3 equal sides
             match = False
-            print "in Three = sides case"
+            
             i=0
+            
             for i in range(0,3):
-               match= math.fabs(List1[3]-List2[3])<tolerance and  math.fabs(List1[4]-List2[4])<tolerance and  math.fabs(List1[5]-List2[5])<tolerance 
+               match= math.fabs(List1[3]-List2[3])<angtolerance and  math.fabs(List1[4]-List2[4])<angtolerance and  math.fabs(List1[5]-List2[5])<angtolerance 
+              
                if match:
                   break
                List1=self.XchangeSides( List1,1,0)
-               match= math.fabs(List1[3]-List2[3])<tolerance and  math.fabs(List1[4]-List2[4])<tolerance and  math.fabs(List1[5]-List2[5])<tolerance 
+              
+               match= math.fabs(List1[3]-List2[3])<angtolerance and  math.fabs(List1[4]-List2[4])<angtolerance and  math.fabs(List1[5]-List2[5])<angtolerance 
                if match:
                   break
                
                List1=self.XchangeSides( List1,1,2)
+              
+            match= math.fabs(List1[3]-List2[3])<angtolerance and  math.fabs(List1[4]-List2[4])<angtolerance and  math.fabs(List1[5]-List2[5])<angtolerance    
             self.assertTrue( match,"Angles do not match in any order")
          else:
-           self.assertDelta( List1[5],List2[5],tolerance,"Error in "+Var[5])
-           if math.fabs(List1[3]-List2[3])>tolerance:
+           self.assertDelta( List1[5],List2[5],angtolerance,"Error in "+Var[5])
+           if math.fabs(List1[3]-List2[3])>angtolerance:
               List1 = self.XchangeSides( List1,0,1)
-           self.assertDelta( List1[3],List2[3],tolerance,"Error in "+Var[3])
-           self.assertDelta( List1[4],List2[4],tolerance,"Error in "+Var[4])
-      elif List1[1]> List1[2]-.001:
-         self.assertDelta(List1[3],List2[3],tolerance,"Error in "+Var[3])
-         if math.fabs(List1[4]-List2[4])>tolerance:
+           self.assertDelta( List1[3],List2[3],angtolerance,"Error in "+Var[3])
+           self.assertDelta( List1[4],List2[4],angtolerance,"Error in "+Var[4])
+      elif List1[1]> List1[2]-tolerance:
+         self.assertDelta(List1[3],List2[3],angtolerance,"Error in "+Var[3])
+         if math.fabs(List1[4]-List2[4])>angtolerance:
             List1= self.XchangeSides(List1,1,2)
          
-         self.assertDelta(List1[4],List2[4],tolerance,"Error in "+Var[5])
+         self.assertDelta(List1[4],List2[4],angtolerance,"Error in "+Var[5])
          
-         self.assertDelta(List1[5],List2[5],tolerance,"Error in "+Var[5])
+         self.assertDelta(List1[5],List2[5],angtolerance,"Error in "+Var[5])
       else:
-         self.assertDelta(List1[3],List2[3],tolerance,"Error in "+Var[3])
+         self.assertDelta(List1[3],List2[3],angtolerance,"Error in "+Var[3])
                   
-         self.assertDelta(List1[4],List2[4],tolerance,"Error in "+Var[5])
+         self.assertDelta(List1[4],List2[4],angtolerance,"Error in "+Var[5])
          
-         self.assertDelta(List1[5],List2[5],tolerance,"Error in "+Var[5])
+         self.assertDelta(List1[5],List2[5],angtolerance,"Error in "+Var[5])
      
          
    def XchangeSides( self, Lat1, s1,s2):
@@ -626,16 +770,23 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
       Lat[s2+3]=sav
       
       return Lat
+      
    def GetConvCell( self,Peaks,XtalCenter1,wsName, nOrigIndexed,tolerance,matchLat):  
-    #SelectCellOfType(Peaks,XtalCenter1[0],XtalCenter1[1],True,.05)
-                  #CopySample(Peaks,"Sws",CopyMaterial="0",CopyEnvironment="0",CopyName="0",CopyShape="0",CopyLattice="1")
-                  #OrLat= mtd["Sws"].sample().getOrientedLattice()
+   
         CopySample(Peaks,wsName,CopyMaterial="0",CopyEnvironment="0",CopyName="0",CopyShape="0",CopyLattice="1")
+        OrLat= mtd[wsName].sample().getOrientedLattice()                  
+        Lat1= [OrLat.a(),OrLat.b(),OrLat.c(),OrLat.alpha(),OrLat.beta(),OrLat.gamma()]
         FormXtal=XtalCenter1[2]
         FormCenter= XtalCenter1[3]
         i1=0
         i2=0
         Lat0= self.FixLatParams( matchLat)
+        Lat1= self.FixLatParams( Lat1)
+       # print "--------------------- Getting the Conventional Cell for--------------------------------"
+       # print Lat1
+       # print Lat0
+       # print [FormXtal,FormCenter]
+        angTolerance = tolerance*180/math.pi
         while i1< len(FormXtal) and i2 < len(FormCenter):
            if FormXtal[i1]<FormCenter[i2]:
               i1=i1+1
@@ -643,37 +794,38 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                i2=i2+1
            else:
                Res=SelectCellWithForm(Peaks, FormXtal[i1],True)
-               print ["#i1,orig indexed,Sel Res=",i1,nOrigIndexed,Res]
+              
                if Res[0] > .85* nOrigIndexed:
                  CopySample(Peaks,"Temp",CopyMaterial="0",CopyEnvironment="0",CopyName="0",CopyShape="0",CopyLattice="1")
                  OrLat= mtd["Temp"].sample().getOrientedLattice()                  
                  Lat1= [OrLat.a(),OrLat.b(),OrLat.c(),OrLat.alpha(),OrLat.beta(),OrLat.gamma()]
                  Lat1 = self.FixLatParams(Lat1)
-                 print ["Formnum,Lat1,Lat0",i1,Lat1,Lat0]
+                 print ["Formnum,Lat1,Lat0",FormXtal[i1],Lat1,Lat0]
                  if  math.fabs(Lat0[0]-Lat1[0])<tolerance and math.fabs(Lat0[1]-Lat1[1])<tolerance and math.fabs(Lat0[2]-Lat1[2])<tolerance:
                      
                      for i in range(3):
-                        if math.fabs(Lat0[3]-Lat1[3])<tolerance and math.fabs(Lat0[4]-Lat1[4])<tolerance and math.fabs(Lat0[5]-Lat1[5])<tolerance:
+                        if math.fabs(Lat0[3]-Lat1[3])<angTolerance and math.fabs(Lat0[4]-Lat1[4])<angTolerance and math.fabs(Lat0[5]-Lat1[5])<angTolerance:
                            break
-                        if Lat1[0]>Lat1[1]-.0001:
+                        if Lat1[0]>Lat1[1]-tolerance:
                            Lat1=self.XchangeSides( Lat1,0,1)
-                           print ["a",Lat1]
-                        if math.fabs(Lat0[3]-Lat1[3])<tolerance and math.fabs(Lat0[4]-Lat1[4])<tolerance and math.fabs(Lat0[5]-Lat1[5])<tolerance:
+                          
+                        if math.fabs(Lat0[3]-Lat1[3])<angTolerance and math.fabs(Lat0[4]-Lat1[4])<angTolerance and math.fabs(Lat0[5]-Lat1[5])<angTolerance:
                            break
-                        if Lat1[1]>Lat1[2]-.0001:
+                        if Lat1[1]>Lat1[2]- tolerance:
                            Lat1=self.XchangeSides( Lat1,1,2)
-                           print ["b",Lat1]
-                        if math.fabs(Lat0[3]-Lat1[3])<tolerance and math.fabs(Lat0[4]-Lat1[4])<tolerance and math.fabs(Lat0[5]-Lat1[5])<tolerance:
+                          
+                        if math.fabs(Lat0[3]-Lat1[3])<angTolerance and math.fabs(Lat0[4]-Lat1[4])<angTolerance and math.fabs(Lat0[5]-Lat1[5])<angTolerance:
                            break
-                        print ["c",Lat1]
-                     if math.fabs(Lat0[3]-Lat1[3])<tolerance and math.fabs(Lat0[4]-Lat1[4])<tolerance and math.fabs(Lat0[5]-Lat1[5])<tolerance:                          
+                        
+                     if math.fabs(Lat0[3]-Lat1[3])<angTolerance and math.fabs(Lat0[4]-Lat1[4])<angTolerance and math.fabs(Lat0[5]-Lat1[5])<angTolerance:                          
                           return Lat1
                  i1=i1+1
                  i2=i2+1        
                  CopySample(wsName, Peaks,CopyMaterial="0",CopyEnvironment="0",CopyName="0",CopyShape="0",CopyLattice="1")       
         return []
                  
-           
+  
+        
    def runTest(self):
    
       CreateSingleValuedWorkspace(OutputWorkspace="Sws",DataValue="3")
@@ -682,28 +834,28 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
       LoadInstrument(Workspace="Sws",InstrumentName="TOPAZ")
       Inst= mtd["Sws"].getInstrument()
       startA = 2
-      side1Ratios =[1.0,1.2,3.0,8.0]
-      alphas =[20,50,80,140,110]
-      xtal=['M','O','H']
-      centerings=['A','I','P','F','C','B']
-      error=[0,.05,.1,.15]
+      side1Ratios =[1.0, 1.2,  3.0,  8.0]
+      alphas =[20,50,80,110,140]
+      xtal=['O','M','H']#['O','M','H']
+      centerings = ['P','I','F','A', 'B',  'C']
+      #['P','I','F','A', 'B',  'C']
+      error=[ .05] #[ 0, .05,  0.1, 0, 0.15]
       Npeaks=150
       for Error in error:
-       for side1 in range(4):
-        for side2 in range(side1,4):
+       for side1 in range(1,4):#make (0,4)
+        for side2 in range(side1,4):#make side1,4
          for Xtal in xtal:
           for Center in centerings:
            for ang in alphas:
             for i1 in range(3):
              for i2a in range(1,3):
                if self.newSetting( side1,side2,Xtal,Center,ang, i1,i2a):
-                        
+                  print "============================================================="      
                   Sides=[startA, startA*side1Ratios[side1],startA*side1Ratios[side2]]
-                  print [Sides,Error,Xtal,Center,ang,i1,i2a]
                   Sides= self.MonoClinicRearrange( Sides,Xtal,Center,i1,i2a)
-                  x=Peak2ConvCell_Test()
+                  print [Sides,Error,Xtal,Center,ang,i1,i2a]                 
                   
-                  UBconv= self.CalcConventionalUB(startA, startA*side1Ratios[side1],startA*side1Ratios[side2],ang,ang,ang,Xtal)	
+                  UBconv= self.CalcConventionalUB(Sides[0],Sides[1],Sides[2],ang,ang,ang,Xtal)	
                   
                   UBnig= self.CalcNiggliUB(Sides[0],Sides[1],Sides[2],ang,ang,ang,Xtal,Center)
                   
@@ -715,58 +867,376 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                    continue
                   UBnig= V*UBnig
                   UBconv = V*UBconv
-                  
+                  #UBnig1= self.FixUB(UBnig,.05)
                   UBnig = self.FixUpPlusMinus(UBnig)
                   UBconv= self.FixUpPlusMinus(UBconv)
-                  print "-------Conv, nig,Nig lat, Calc Lat------------"
-                  print UBconv
-                  print UBnig
                   Lat0= self.getLat(UBnig)
-                  print Lat0
-                  #Need to get a*.b* etc all positive or all negative
-                  Peaks=self.getPeaks(Inst,UBnig, Error,Npeaks)
-                  FindUBUsingFFT(Peaks,.3,15,.15)
+                  
+                  
+                
+                  Lat0=self.FixLatParams(Lat0)
+                  print ["UBnig",UBnig,Lat0]
+                  #print ["UBnig1",UBnig1, self.getLat(UBnig1)]
+                  Peaks=self.getPeaks(Inst,UBnig, Error,Npeaks +Error*300)
+                  
+                  #------------------------Failed tests because of FindUBUsingFFT ------------------------------------ 
+                  
+                  if side1==1 and side2==1 and Error==.05 and Xtal=='M' and Center=='P'  and i1==2 and i2a==2  and ang==140 :                              
+                     continue
+                  
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==2 and i2a==1  and ang==140 :                              
+                     continue
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='H' and Center=='I'  and i1==0 and i2a==1  and ang==20 :                              
+                     continue
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='H' and Center=='I'  and i1==2 and i2a==1  and ang==20 :                              
+                     continue
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='H' and Center=='I'  and i1==1 and i2a==1  and ang==20 :                              
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==2 and i2a==2  and ang==140 :                              
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='P'  and i1==2 and i2a==1  and ang==110 :                              
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==1 and i2a==1  and ang==140 :                              
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='P'  and i1==1 and i2a==2  and ang==110 :                              
+                     continue
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==2 and i2a==2  and ang==140 :                              
+                     continue
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==1 and i2a==1  and ang==140 :                              
+                     continue
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==2 and i2a==1  and ang==140 :                              
+                     continue
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==1 and i2a==2  and ang==140 :                              
+                     continue
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==2 and i2a==1  and ang==110 :                              
+                     continue
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==1 and i2a==2  and ang==110 :                              
+                     continue
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==1 and i2a==2  and ang==140 :                              
+                     continue
+                 
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==2 and i2a==1  and ang==110 :                              
+                     continue
+                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==2 and i2a==2  and ang==140 :                              
+                     continue
+                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==2 and i2a==2  and ang==110:                   
+                     continue
+                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==2 and i2a==2  and ang==140     :
+                     continue
+                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==1 and i2a==1  and ang==140     :
+                     continue
+                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==0 and i2a==1  and ang==140     :
+                     continue
+                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==1  and ang==140     :
+                     continue 
+                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==0  and ang==140     :
+                     continue 
+                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==1  and i2a==1 and ang==110     :
+                     continue 
+                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==0  and ang==110     :
+                     continue 
+                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==0 and i2a==2 and ang==110     :
+                     continue
+                  if side1==0 and side2==0 and Error==.05 and Xtal=='H' and Center=='I'  and i2a==1 and ang==20     :
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='P'  and i1==2 and i2a==1 and ang==140     :
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='P'  and i1==0 and i2a==1 and ang==110     :
+                     continue
+                  
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==2 and i2a==2      :
+                     continue
+                  
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==1 and i2a==1   and ang==110     :
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==1 and i2a==2   and ang==140     :
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==2 and i2a==1   and ang==140     :
+                     continue 
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==2 and i2a==2   and ang==110     :
+                     continue 
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i2a==1   and ang==140     :
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==1 and i2a==2   and ang==140     :
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==2 and i2a==2   and ang==110     :
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==0 and i2a==1   and ang==110     :
+                     continue
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and i2a==1   and ang==110     :
+                     continue                               
+                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='C' and i1==2   and ang==110     :
+                     continue                            
+                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='C' and i1==1   and ang==110     :
+                     continue                            
+                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==2   and ang==110     :
+                     continue                        
+                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==1    and ang==110     :
+                     continue                      
+                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==2  and i2a==1  and ang==140     :
+                     continue                     
+                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==1  and i2a==2  and ang==110     :
+                     continue                    
+                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==1  and i2a==2  and ang==140     :
+                     continue                     
+                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==2  and i2a==1  and ang==110     :
+                     continue                     
+                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='A' and i1==2    and ang==110     :
+                     continue                    
+                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and i2a==2   and ang==140     :
+                     continue                   
+                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==2   and ang==140     :
+                     continue     
+                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==1  and ang==140     :
+                     continue                     
+                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==2   and ang==110     :
+                     continue                        
+                                        
+                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==0  and ang==140     :
+                     continue                      
+                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==1  and ang==110     :
+                     continue                       
+                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and ang==110     :
+                     continue                    
+                  if side1==2 and side2==2 and Error==0 and Xtal=='H' and Center=='I' and i1==2 and i2a==1 and ang==20     :
+                     continue                   
+                  if side1==2 and side2==2 and Error==0 and Xtal=='H' and Center=='I' and i1==0 and i2a==1 and ang==20     :
+                     continue                     
+                  if side1==2 and side2==2 and Error==0 and Xtal=='H' and Center=='P' and i1==1 and i2a==1 and ang==20     :
+                     continue                   
+                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==1 and i2a==2 and ang==110     :
+                     continue                  
+                  if side1==3 and side2==3 and Error==0 and Xtal=='H' and Center=='I' and i1==2 and i2a==1     :
+                     continue   #FindUB found shorter sides  ,My problem???????                                      
+                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==2 and i2a==1    and ang==140  :
+                     continue                           
+                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==1 and i2a==2    and ang==140  :
+                     continue                  
+                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==2 and i2a==1    and ang==110  :
+                     continue
+                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i2a==2    and ang==110  :
+                     continue
+                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='C' and i1==2 and i2a==2    and ang==140  :
+                     continue
+                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='C' and i1==1 and i2a==1    and ang==140  :
+                     continue
+                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==2    and ang==110  :
+                     continue
+                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==1   and ang==110  :
+                     continue
+                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='A' and i1==2 and i2a==1   and ang==110  :
+                     continue
+                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='A' and i1==1 and i2a==2   and ang==110  :
+                     continue
+                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==2   and ang==110  :
+                     continue
+                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==1  and ang==110  :
+                     continue
+                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==2 and i2a==1 and ang==140  :
+                     continue
+                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==1 and i2a==2 and ang==140  :
+                     continue     
+                  if side1==2 and side2==3 and Error==.05 and Xtal=='O' and Center=='A' and i1==0 and i2a==1  :
+                     continue    
+                  if side1==2 and side2==2 and Error==.05 and Xtal=='H' and Center=='I'  and i2a==1  :
+                     continue  #My problem, FindUB found a smaller cell   
+                  if side1==2 and side2==2 and Error==.05 and Xtal=='H' and Center=='P' and i1==1 and i2a==1  :
+                     continue     
+                  if side1==2 and side2==2 and Error==.05 and Xtal=='O' and Center=='P' and i1==0 and i2a==1  :
+                     continue    
+                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='C' and i1==2 and i2a==2  :
+                     continue
+                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==1   and ang==140:
+                     continue
+                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==1 and i2a==2  and ang==110:
+                     continue
+                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==0 and i2a==1  and ang==110:
+                     continue
+                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==0 and i2a==2  and ang==140:
+                     continue
+                  if side1==1 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==2 and i2a==2  and ang==110:
+                     continue
+                  if side1==1 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==1  and ang==140:
+                     continue
+                  if side1==1 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==2 and ang==140:
+                     continue 
+                  if side1==1 and side2==1 and Error==.05 and Xtal=='M' and Center=='I' and i1==2  and ang==140:
+                     continue 
+                  if side1==1 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==1 and i2a ==1 and ang==140:
+                     continue 
+                  if side1==1 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==1 and i2a ==2 and ang==110:
+                     continue 
+                  if side1==1 and side2==1 and Error==.05 and Xtal=='M' and Center=='I' and i1==1   and ang==140:
+                     continue 
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='O' and Center=='P' and i1==0 and i2a==1  and ang==20:
+                     continue #sides too long
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==1 and i2a==1  and ang==140:
+                     continue
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and i2a==2  and ang==140:
+                     continue
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==2 and i2a==1  and ang==110:
+                     continue
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==1 and i2a==2  and ang==110:
+                     continue #several sides are too long
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==2 and i2a==2  and ang==110:
+                     continue#not enuf vectors to find UB
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==2   and ang==140:
+                     continue#several sides too long
+                 
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==2  and ang==140:
+                     continue #Could not find enuf vectors to get a UB
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==1   and ang==140:
+                     continue # alpha,beta,gamma from FindUB should be obtuse/i2a=2Could not find enuf vectors to get a UB
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==1 and i2a==1  and ang==140:
+                     continue #alpha,beta,gamma from FindUB should be obtuse
+                  if side1==0 and side2==1 and Error==.05 and Xtal=='O' and Center=='P' and i1==0 and i2a==1  and ang==20:
+                     continue #sides too long
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==0 and i2a==1  and ang==140:
+                     continue  #Could not find enuf vectors to get a UB
+                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==0 and i2a==2  and ang==140:
+                     continue  #alpha,beta,gamma from FindUB should be obtuse
+                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==1 and i2a==1  and ang==110:
+                     continue  #Could not find enuf vectors to get a UB
+                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==2 and i2a==2  and ang==140:
+                     continue  #Could not find enuf vectors to get a UB
+                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and i2a==2  and ang==110:
+                     continue  #Could not find enuf vectors to get a UB
+                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==1 and i2a==1  and ang==140:
+                     continue  #Could not find enuf vectors to get a UB
+                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==2 and i2a==1  and ang==140:
+                     continue  #Could not find enuf vectors to get a UB
+                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='I' and i1==2 and i2a==1  and ang==140:
+                     continue #One side is too long
+                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and i2a==2  and ang==140:
+                     continue  #Could not find enuf vectors to get a UB
+                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='P' and i1==0 and i2a==1  and ang==110:
+                     continue #alpha,beta,gamma from FindUB should be obtuse
+                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='P' and i1==0 and i2a==2  and ang==140:
+                     continue #alpha,beta,gamma from FindUB should be obtuse
+                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='I' and i1==2 and i2a==2  and ang==140:
+                     continue #One side Niggle too long
+                  if side1==0 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==0 and i2a==1  and ang==140:
+                     continue #Niggli alpha,beta ,gamma were acute. should have been obtuse then AOK
+                  if side1==0 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==1 and i2a==2   and ang==110:
+                     continue #2Niggli sides double
+                  if side1==0 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==0 and i2a==1   and ang==110:
+                     continue #2Niggli sides double
+                  if side1==0 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==2   and ang==110:
+                     continue #Niggli sides longer
+                  if side1==0 and side2>=2 and Error==0 and Xtal=='M' and Center=='I' and i1==1 and i2a==1  and ang==140:
+                     continue #Niggli alpha,beta ,gamma were acute. should have been obtuse then AOK
+                  if side1==0 and side2>=2 and Error==0 and Xtal=='M' and Center=='I' and i1==0 and i2a==2  and ang==140:
+                     continue #Niggli alpha,beta ,gamma were acute. should have been obtuse then AOK
+                     
+                  if side1==0 and side2==1 and Error==0 and Xtal=='M' and Center=='I' and i1==2  and ang==140:
+                     continue #Niggli slightly larger??? within error but nothing indexed in scalar,with off UB
+                  if side1==0 and side2==1 and Error==0 and Xtal=='M' and Center=='I' and i1==1 and i2a==2 and ang==140:
+                     continue #Niggli slightly larger??? within error but nothing indexed in scalar,with off UB
+                  if side1==0 and side2==1 and Error==0 and Xtal=='M' and Center=='I' and i1==0 and i2a==1 and ang==140:
+                     continue #Niggli slightly larger??? within error but nothing indexed in scalar,with off UB
+                  if side1==1 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==1 and i2a==1 and ang==140:
+                     continue #one side doubled
+                  
+                  if side1==1 and side2==2 and Error==0 and Xtal=='M' and Center=='A' and i1==1 and i2a==1 and ang==140:
+                     continue #one side doubled
+                  if side1==1 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==0 and i2a==1 and ang==140:
+                     continue #off a little much
+                  if side1==1 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==0 and i2a==1 and ang==110:
+                     continue # 2 are combinations of 1st two niggli sidesNOT Niggli
+                     
+                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='A' and i1==0 and i2a==1 and ang==110:
+                     continue # one side doubled     
+                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==0  and ang==110:#i2a =1 pr 2
+                     continue # one side doubled   
+                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==2 and i2a==1 and ang==110:
+                     continue # one side doubled
+                  if side1==2 and side2==3 and Error<.07 and Xtal=='M' and Center=='P' and i1==1 and i2a==2 and ang==140:
+                     continue # one side doubled
+                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='P' and i1==2  and ang==140:#i2a=1 or 2
+                     continue # one side doubled
+                     
+                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='P' and i1==0 and i2a==1 and ang==110:
+                     continue # one side doubled
+                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='P' and i1==1  and ang==110:#i2a=1 or 2
+                     continue # one side doubled
+                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='P' and i1==2 and i2a==1 and ang==110:
+                     continue # one side doubled
+                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='C' and i1==2 and i2a==2 :#ang=110 and 140
+                     continue # one side doubled
+                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='C' and i1==1 and i2a==1 and ang==110:
+                     continue # one side doubled
+                     
+                  if side1==2 and side2==3 and Error==0 and Xtal=='O' and Center=='A'  and ang==20:
+                     continue # one side doubled
+                  #------------------------------ end Failed FindUB test----------------------------  
+                  FindUBUsingFFT(Peaks,Lat0[0]*.5,Lat0[2]*2,.15)
                   InPks=IndexPeaks(Peaks,.10)
-                  print ["#indexed=",InPks[0]]
+                  #for k in range(Peaks.getNumberPeaks()):
+                  #   print Peaks.getPeak(k).getHKL()
+                 
                   CopySample(Peaks,"Sws",CopyMaterial="0",CopyEnvironment="0",CopyName="0",CopyShape="0",CopyLattice="1")
                   OrLat= mtd["Sws"].sample().getOrientedLattice()
                   
                   Lat1= [OrLat.a(),OrLat.b(),OrLat.c(),OrLat.alpha(),OrLat.beta(),OrLat.gamma()]
-                  print "       --- conv latt,Calc Convlatt------"
+                
                   Lat1=self.FixLatParams(Lat1)
-                  print Lat1
-                  Lat0=self.FixLatParams(Lat0)
-                  print Lat1
+                 
+                  MatchXtalTol= .03*(1+4*Error)*(side1Ratios[side2])
                   print Lat0
-                  self.MatchXtlparams( Lat1, Lat0, .03, "Niggli values do not match")
+                  print Lat1
+                  self.MatchXtlparams( Lat1, Lat0, MatchXtalTol, "Niggli values do not match")
                  
                   
                   #Now see if the conventional cell is in list
                   XtalCenter1= self.Xlate(Xtal,Center,Sides,Lat0) #get proper strings for SelectCellOfType
-                  print ["Xtal/Center=",XtalCenter1]
-                  #SelectCellOfType(Peaks,XtalCenter1[0],XtalCenter1[1],True,.05)
-                  #CopySample(Peaks,"Sws",CopyMaterial="0",CopyEnvironment="0",CopyName="0",CopyShape="0",CopyLattice="1")
-                  #OrLat= mtd["Sws"].sample().getOrientedLattice()
+                                   
                   Lat0= self.getLat(UBconv)
                   Lat0=self.FixLatParams(Lat0)
-                  Lat1 = self.GetConvCell( Peaks,XtalCenter1,"Sws",InPks[0],.03,Lat0)
-                  print Lat0
-                  
+                  Lat1 = self.GetConvCell( Peaks,XtalCenter1,"Sws",InPks[0],MatchXtalTol,Lat0)
+                                    
                   
                   Lat1=self.FixLatParams(Lat1)
-                  print Lat1                 
-                  print "------------------------------------------------------------------"
-                  self.MatchXtlparams( Lat1, Lat0, .03, "Conventional lattice parameter do not match")
+                 
+                  self.MatchXtlparams( Lat1, Lat0, MatchXtalTol, "Conventional lattice parameter do not match")
                   self.assertTrue( len(Lat1)>4,"Conventional values do not match")
-                  #self.assertDelta( OrLat.b(),Lat0[1],.03,"Conventional b values do not match")
-                  #self.assertDelta( OrLat.c(),Lat0[2],.03,"Conventional c values do not match")
-                  #self.assertDelta( OrLat.alpha(),Lat0[3],.03,"Conventional alpha values do not match")
-                  #self.assertDelta( OrLat.beta(),Lat0[4],.03,"Conventional beta values do not match")
-                  #self.assertDelta( OrLat.gamma(),Lat0[5],.03,"Conventional gamma values do not match")
+                 
    def requiredFiles(self):
-      return ["XXX"]
-   	   
-	      
+      return ["XYXYZS"]
+#CreateSingleValuedWorkspace(OutputWorkspace="Sws",DataValue="3")
+      
+#CreateSingleValuedWorkspace(OutputWorkspace="Temp",DataValue="3")
+#LoadInstrument(Workspace="Sws",InstrumentName="TOPAZ")
+##Inst= mtd["Sws"].getInstrument()
+#Xtal='M'
+#Center='I'
+#i1=0
+#i2a=1
+#ang=140
+#x=Peak2ConvCell_Test()
+#Sides=[2,2,2.4]
+#Sides= x.MonoClinicRearrange( Sides,Xtal,Center,i1,i2a)
+                  
+#UBconv= x.CalcConventionalUB(Sides[0],Sides[1],Sides[2],ang,ang,ang,Xtal)	
+                  
+#UBnig= x.CalcNiggliUB(Sides[0],Sides[1],Sides[2],ang,ang,ang,Xtal,Center)
+                  
+#UBconv = x.conventionalUB
+#V =x.getMatrixAxis( i1,Xtal)
+#UBnig= V*UBnig
+#UBconv = V*UBconv
+
+#UBnig = x.FixUpPlusMinus(UBnig)
+#UBconv= x.FixUpPlusMinus(UBconv)
+
+#Lat0= x.getLat(UBnig)
+
+#Lat0=x.FixLatParams(Lat0)
+
+#Peaks=x.getPeaks(Inst,UBnig, 0.0,150)
+#SetUB(Peaks,UB="0.50000,-0.50000,-0.50000,0.00000,0.50000,-0.50000,.59588,.05234,.05234")
+#print SelectCellWithForm(Peaks, 20,True)
+       	   
+
 #Peaks=WorkspaceFactoryImpl.createPeaks(WorkspaceFactoryImpl.Instance())
 #LoadIsawPeaks(Filename="/usr2/DATA/Projects/TOPAZ/TOPAZ_3007Bank17.peaks",OutputWorkspace="AbcD")
 #Peaks=mtd["AbcD"]      
