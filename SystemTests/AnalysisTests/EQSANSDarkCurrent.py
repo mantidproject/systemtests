@@ -52,7 +52,8 @@ class EQSANSDarkCurrentWorkflow(stresstesting.MantidStressTest):
         mtd.settings['default.facility'] = 'SNS'
         SetupEQSANSReduction(UseConfig=False,
                              PreserveEvents=True,
-                             NormaliseToBeam=False,
+                             Normalisation="Charge",
+                             BeamCenterMethod="Value",
                              BeamCenterX=96.29,
                              BeamCenterY=126.15,
                              DarkCurrentFile="EQSANS_4061_event.nxs",

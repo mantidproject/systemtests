@@ -50,6 +50,7 @@ class EQSANSComputeEff(stresstesting.MantidStressTest):
         mtd.settings['default.facility'] = 'SNS'
         SetupEQSANSReduction(UseConfig=False, UseConfigMask=False, 
                              SensitivityFile="EQSANS_4061_event.nxs", 
+                             BeamCenterMethod="Value",
                              BeamCenterX=89.675, BeamCenterY=129.693, 
                              ReductionProperties="_reduction")
         ComputeSensitivity(Filename="EQSANS_4061_event.nxs", 

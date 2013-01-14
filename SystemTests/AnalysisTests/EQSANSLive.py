@@ -15,11 +15,11 @@ class EQSANSLive(stresstesting.MantidStressTest):
 
         SetupEQSANSReduction(UseConfigTOFCuts=True, 
                              UseConfigMask=True, 
+                             BeamCenterMethod="Value",
                              BeamCenterX=89.675, 
                              BeamCenterY=129.693,
                              PreserveEvents=False,
-                             NormaliseToBeam=True,
-                             NormaliseToMonitor=False,
+                             Normalisation="BeamProfileAndCharge",
                              SensitivityFile="EQSANS_sensitivity.nxs",
                              CorrectForFlightPath=False,
                              SetupReducer=True,

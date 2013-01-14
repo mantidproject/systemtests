@@ -20,7 +20,8 @@ class EQSANSNormalisationNoFlux(stresstesting.MantidStressTest):
         mtd.settings['default.facility'] = 'SNS'
         ws = "__eqsans_normalisation_test"
         
-        EQSANSLoad(Filename="EQSANS_1466_event.nxs", OutputWorkspace=ws, PreserveEvents=False)
+        EQSANSLoad(Filename="EQSANS_1466_event.nxs", OutputWorkspace=ws, 
+                   PreserveEvents=False, LoadMonitors=False)
         EQSANSNormalise(InputWorkspace=ws, NormaliseToBeam=False)
         SumSpectra(InputWorkspace=ws, OutputWorkspace="eqsans_no_flux")
         
@@ -47,7 +48,8 @@ class EQSANSNormalisationDefault(stresstesting.MantidStressTest):
         mtd.settings['default.facility'] = 'SNS'
         ws = "__eqsans_normalisation_test"
         
-        EQSANSLoad(Filename="EQSANS_1466_event.nxs", OutputWorkspace=ws, PreserveEvents=False)
+        EQSANSLoad(Filename="EQSANS_1466_event.nxs", OutputWorkspace=ws, 
+                   PreserveEvents=False, LoadMonitors=False)
         EQSANSNormalise(InputWorkspace=ws,NormaliseToBeam=True)
         SumSpectra(InputWorkspace=ws, OutputWorkspace="eqsans_default_flux")
         
@@ -77,7 +79,8 @@ class EQSANSNormalisationInputFlux(stresstesting.MantidStressTest):
         parentDir = os.path.abspath('..')
         spectrum_file = os.path.join(parentDir, "Data", "eqsans_beam_flux.txt")
         
-        EQSANSLoad(Filename="EQSANS_1466_event.nxs", OutputWorkspace=ws, PreserveEvents=False)
+        EQSANSLoad(Filename="EQSANS_1466_event.nxs", OutputWorkspace=ws, 
+                   PreserveEvents=False, LoadMonitors=False)
         EQSANSNormalise(InputWorkspace=ws,NormaliseToBeam=True,BeamSpectrumFile=spectrum_file)
         SumSpectra(InputWorkspace=ws, OutputWorkspace="eqsans_input_flux")
   
