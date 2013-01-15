@@ -33,7 +33,6 @@ class EQSANSBeamCenter(stresstesting.MantidStressTest):
         self.disableChecking.append('Sample')
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Axes')
-        print AnalysisDataService.getObjectNames()
         return "EQSANS_4061_event_frame2_Iq", 'EQSANSBeamCenter.nxs'
 
 class EQSANSBeamCenterEvent(EQSANSBeamCenter):
