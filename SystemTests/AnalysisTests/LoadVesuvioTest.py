@@ -22,48 +22,60 @@ class VesuvioTests(unittest.TestCase):
 
         # Check some data
         evs_raw = mtd[self.ws_name]
-        self.assertAlmostEqual(843675.4580568932, evs_raw.readY(0)[1], places=DIFF_PLACES)
-        self.assertAlmostEqual(154711.85462469794, evs_raw.readY(131)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.10578008404756822, evs_raw.readY(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.012473899398724836, evs_raw.readE(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.019430710038363164, evs_raw.readY(131)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.0089329377485360718, evs_raw.readE(131)[1188], places=DIFF_PLACES)
 
     def test_consecutive_runs_with_back_scattering_spectra_gives_expected_numbers(self):
         self._run_load("14188-14190", "3-134", "Double")
 
         # Check some data
         evs_raw = mtd[self.ws_name]
-        self.assertAlmostEqual(11669506.890067935, evs_raw.readY(0)[1], places=DIFF_PLACES)
-        self.assertAlmostEqual(2906821.9049028009, evs_raw.readY(131)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.16459533916997771, evs_raw.readY(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.0054835169773849151, evs_raw.readE(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.04106419502927916, evs_raw.readY(131)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.0039458033851850569, evs_raw.readE(131)[1188], places=DIFF_PLACES)
 
     def test_non_consecutive_runs_with_back_scattering_spectra_gives_expected_numbers(self):
         self._run_load("14188,14190", "3-134", "Double")
 
         # Check some data
         evs_raw = mtd[self.ws_name]
-        self.assertAlmostEqual(7049905.3576081544, evs_raw.readY(0)[1], places=DIFF_PLACES)
-        self.assertAlmostEqual(-935544.50673137605, evs_raw.readY(131)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.2228557076076223, evs_raw.readY(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.0074247283506022844, evs_raw.readE(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(-0.02965284101745258, evs_raw.readY(131)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.005338637434321317, evs_raw.readE(131)[1188], places=DIFF_PLACES)
 
     def test_load_with_forward_scattering_spectra_produces_correct_workspace(self):
         self._run_load("14188", "135-198", "Single")
 
         # Check some data
         evs_raw = mtd[self.ws_name]
-        self.assertAlmostEqual(-7874182.0009550452, evs_raw.readY(0)[1], places=DIFF_PLACES)
-        self.assertAlmostEqual(-244186.74077558052, evs_raw.readY(63)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(-0.98848024168979975, evs_raw.readY(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.020413830523102618, evs_raw.readE(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(-0.030630421989159107, evs_raw.readY(63)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.020413830523102618, evs_raw.readE(0)[1], places=DIFF_PLACES)
 
     def test_consecutive_runs_with_forward_scattering_spectra_gives_expected_numbers(self):
         self._run_load("14188-14190", "135-198", "Single")
 
         # Check some data
         evs_raw = mtd[self.ws_name]
-        self.assertAlmostEqual(-56441823.199241638, evs_raw.readY(0)[1], places=DIFF_PLACES)
-        self.assertAlmostEqual(-41421.057527974248, evs_raw.readY(63)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(-0.79635325645330823, evs_raw.readY(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.0090021341424403132, evs_raw.readE(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(-0.00058496015876685625, evs_raw.readY(63)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.0036140732253384837, evs_raw.readE(63)[1188], places=DIFF_PLACES)
 
     def test_non_consecutive_runs_with_forward_scattering_spectra_gives_expected_numbers(self):
         self._run_load("14188,14190", "135-198", "Single")
 
         # Check some data
         evs_raw = mtd[self.ws_name]
-        self.assertAlmostEqual(-25611027.229559898, evs_raw.readY(0)[1], places=DIFF_PLACES)
-        self.assertAlmostEqual(43777.688780918717, evs_raw.readY(63)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(-0.81024153418200484, evs_raw.readY(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.012181357261799183, evs_raw.readE(0)[1], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.0013864599556558943, evs_raw.readY(63)[1188], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.012181357261799183, evs_raw.readE(0)[1], places=DIFF_PLACES)
 
     def test_using_ip_file_adjusts_instrument_and_attaches_parameters(self):
         self._run_load("14188", "3", "Single","IP0005.dat")
