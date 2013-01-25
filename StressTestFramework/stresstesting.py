@@ -964,6 +964,9 @@ class MantidFrameworkConfig:
 
         # Do not show paraview dialog
         mtd.settings['paraview.ignore'] = "1"
+
+        # Case insensitive
+        mtd.settings['filefinder.casesensitive'] = 'Off'
         
         # Save this configuration
         mtd.settings.saveConfig(self.__userPropsFile)
