@@ -510,7 +510,10 @@ class HFIRTests(stresstesting.MantidStressTest):
         AzimuthalAverage(n_bins=100, n_subpix=1, log_binning=True)
         IQxQy(nbins=100)
         DirectBeamCenter("BioSANS_empty_cell.xml")
-        SensitivityCorrection('BioSANS_flood_data.xml', min_sensitivity=0.5, max_sensitivity=1.5, dark_current='BioSANS_empty_trans.xml', use_sample_dc=False)
+        SensitivityCorrection('BioSANS_flood_data.xml', 
+                              min_sensitivity=0.5, max_sensitivity=1.5, 
+                              dark_current='BioSANS_empty_trans.xml', 
+                              use_sample_dc=False)
         DivideByThickness(1)
         SetTransmission(1, 0)
         ThetaDependentTransmission(True)
@@ -562,7 +565,9 @@ class HFIRTests(stresstesting.MantidStressTest):
         AppendDataFile("BioSANS_test_data.xml", "test_data")
         SensitivityCorrection("BioSANS_flood_data.xml", dark_current="BioSANS_dark_current.xml")
         DarkCurrent("BioSANS_dark_current.xml")
-        DirectBeamTransmission(sample_file="BioSANS_sample_trans.xml", empty_file="BioSANS_empty_trans.xml", beam_radius=10.0)
+        DirectBeamTransmission(sample_file="BioSANS_sample_trans.xml", 
+                               empty_file="BioSANS_empty_trans.xml", 
+                               beam_radius=10.0)
         SetTransmissionBeamCenter(100,15)
         AzimuthalAverage(binning="0.01,0.001,0.11", error_weighting=True)
         Reduce1D()

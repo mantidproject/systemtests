@@ -594,7 +594,9 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
         AppendDataFile("BioSANS_test_data.xml", "test_data")
         SensitivityCorrection("BioSANS_flood_data.xml", dark_current="BioSANS_dark_current.xml")
         DarkCurrent("BioSANS_dark_current.xml")
-        DirectBeamTransmission(sample_file="BioSANS_sample_trans.xml", empty_file="BioSANS_empty_trans.xml", beam_radius=10.0)
+        DirectBeamTransmission(sample_file="BioSANS_sample_trans.xml", 
+                               empty_file="BioSANS_empty_trans.xml", 
+                               beam_radius=10.0)
         SetTransmissionBeamCenter(100,15)
         AzimuthalAverage(binning="0.01,0.001,0.11", error_weighting=True)
         Reduce1D()

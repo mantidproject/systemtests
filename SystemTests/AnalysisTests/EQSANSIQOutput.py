@@ -48,6 +48,32 @@ class EQSANSIQOutput(stresstesting.MantidStressTest):
         self.disableChecking.append('Axes')
         return "EQSANS_1466_event_Iq", 'EQSANSIQOutput.nxs'
 
+class EQSANSBeamMonitor(stresstesting.MantidStressTest):
+    """
+        Analysis Tests for EQSANS
+        Testing that the I(Q) output of is correct 
+    """
+    
+    def runTest(self):
+        # Note that the EQSANS Reducer does the transmission correction by default,
+        # so we are also testing the EQSANSTransmission algorithm
+        mtd.settings['default.facility'] = 'SNS'
+        EQSANS()
+        AppendDataFile("EQSANS_1466_event.nxs")
+        NoSolidAngle()
+        UseConfig(False)
+        UseConfigTOFTailsCutoff(False)
+        UseConfigMask(False)
+        BeamMonitorNormalization('SANSBeamFluxCorrectionMonitor.nxs')
+        Reduce1D()        
+                        
+    def validate(self):
+        self.disableChecking.append('Instrument')
+        self.disableChecking.append('Sample')
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Axes')
+        return "EQSANS_1466_event_Iq", 'EQSANSBeamMonitor.nxs'
+
 class EQSANSDQPositiveOutput(stresstesting.MantidStressTest):
     """
         Analysis Tests for EQSANS
