@@ -1,9 +1,9 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
 import math
-from reduction.instruments.sans.sns_command_interface import *
+import mantid
+from mantid.simpleapi import *
+from reduction_workflow.instruments.sans.sns_command_interface import *
+
 class EQSANSIQOutput(stresstesting.MantidStressTest):
     """
         Analysis Tests for EQSANS
@@ -14,11 +14,10 @@ class EQSANSIQOutput(stresstesting.MantidStressTest):
         """
             Check that EQSANSTofStructure returns the correct workspace
         """
-        # Note that the EQSANS Reducer does the transmission correction by default,
-        # so we are also testing the EQSANSTransmission algorithm
-        self.cleanup()
-        mtd.settings['default.facility'] = 'SNS'
+        config = ConfigService.Instance()
+        config["facilityName"]='SNS'
         EQSANS()
+        SetBeamCenter(96.29, 126.15)
         AppendDataFile("EQSANS_1466_event.nxs")
         NoSolidAngle()
         UseConfig(False)
@@ -29,11 +28,6 @@ class EQSANSIQOutput(stresstesting.MantidStressTest):
         # Scale up to match correct scaling.
         Scale(InputWorkspace="EQSANS_1466_event_Iq", Factor=2777.81, 
               Operation='Multiply', OutputWorkspace="EQSANS_1466_event_Iq")              
-                        
-    def cleanup(self):
-        for ws in ["EQSANS_1466_event_Iq", "EQSANS_1466_event", "EQSANS_1466_event_evt", "beam_hole_transmission_EQSANS_1466_event"]:
-            if mtd.workspaceExists(ws):
-                mtd.deleteWorkspace(ws)
                 
     def validate(self):
         self.tolerance = 0.2
@@ -55,10 +49,10 @@ class EQSANSBeamMonitor(stresstesting.MantidStressTest):
     """
     
     def runTest(self):
-        # Note that the EQSANS Reducer does the transmission correction by default,
-        # so we are also testing the EQSANSTransmission algorithm
-        mtd.settings['default.facility'] = 'SNS'
+        config = ConfigService.Instance()
+        config["facilityName"]='SNS'
         EQSANS()
+        SetBeamCenter(96.29, 126.15)
         AppendDataFile("EQSANS_1466_event.nxs")
         NoSolidAngle()
         UseConfig(False)
@@ -86,8 +80,10 @@ class EQSANSDQPositiveOutput(stresstesting.MantidStressTest):
             even when background is larger than signal and I(q) is negative.
             (Non-physical value that's an experimental edge case)
         """
-        mtd.settings['default.facility'] = 'SNS'
+        config = ConfigService.Instance()
+        config["facilityName"]='SNS'
         EQSANS()
+        SetBeamCenter(96.29, 126.15)
         AppendDataFile("EQSANS_1466_event.nxs")
         UseConfig(False)
         UseConfigTOFTailsCutoff(False)
@@ -100,7 +96,10 @@ class EQSANSDQPositiveOutput(stresstesting.MantidStressTest):
                         
     def validate(self):
         dq = mtd['EQSANS_1466_event_Iq'].dataDx(0)
-        return min(dq)>=0
+        for x in dq:
+            if x<0:
+                return False
+        return True
     
 class EQSANSDQOutput(stresstesting.MantidStressTest):
     """
@@ -114,16 +113,18 @@ class EQSANSDQOutput(stresstesting.MantidStressTest):
             even when background is larger than signal and I(q) is negative.
             (Non-physical value that's an experimental edge case)
         """
-        mtd.settings['default.facility'] = 'SNS'
+        config = ConfigService.Instance()
+        config["facilityName"]='SNS'
         EQSANS()
+        SetBeamCenter(96.29, 126.15)
         AppendDataFile("EQSANS_1466_event.nxs")
         UseConfig(False)
         UseConfigTOFTailsCutoff(False)
         UseConfigMask(False)
         TotalChargeNormalization(normalize_to_beam=False)
-        SetTransmission(1.0,0.0, False)
+        SetTransmission(1.0, 0.0, False)
         Background("EQSANS_4061_event.nxs")
-        Resolution()
+        Resolution(10)
         Reduce1D()           
                         
     def validate(self):
@@ -174,8 +175,10 @@ class EQSANSDQOutput_FS(stresstesting.MantidStressTest):
             even when background is larger than signal and I(q) is negative.
             (Non-physical value that's an experimental edge case)
         """
-        mtd.settings['default.facility'] = 'SNS'
+        config = ConfigService.Instance()
+        config["facilityName"]='SNS'
         EQSANS()
+        SetBeamCenter(96.29, 126.15)
         AppendDataFile("EQSANS_4061_event.nxs")
         UseConfig(False)
         UseConfigTOFTailsCutoff(False)
