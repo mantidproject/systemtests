@@ -145,3 +145,62 @@ class EQSANSTransmissionCompatibility(EQSANSTransmission):
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Axes')
         return "EQSANS_1466_event_Iq", 'EQSANSTransmissionCompatibility.nxs'
+
+class EQSANSTransmissionFS(stresstesting.MantidStressTest):
+    
+    def runTest(self):
+        """
+            Check that EQSANSTofStructure returns the correct workspace
+        """
+        self.cleanup()
+        mtd.settings['default.facility'] = 'SNS'
+        EQSANS(True)
+        AppendDataFile("EQSANS_4061_event.nxs")
+        SolidAngle()
+        UseConfig(False)
+        UseConfigTOFTailsCutoff(False)
+        UseConfigMask(False)
+        TotalChargeNormalization(normalize_to_beam=False)
+        SetTransmission(0.5, 0.1)
+        ThetaDependentTransmission(False)
+        Reduce1D()
+        
+    def validate(self):
+        self.tolerance = 0.000001
+        self.disableChecking.append('Instrument')
+        self.disableChecking.append('Sample')
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Axes')
+        return "EQSANS_4061_event_frame1_Iq", 'EQSANSTransmissionFS.nxs' 
+    
+class EQSANSDirectTransFS(stresstesting.MantidStressTest):
+    
+    def runTest(self):
+        """
+            Check that EQSANSTofStructure returns the correct workspace
+        """
+        self.cleanup()
+        mtd.settings['default.facility'] = 'SNS'
+        EQSANS(True)
+        AppendDataFile("EQSANS_4061_event.nxs")
+        UseConfig(False)
+        UseConfigTOFTailsCutoff(False)
+        UseConfigMask(False)
+        TotalChargeNormalization(normalize_to_beam=False)
+        DirectBeamTransmission("EQSANS_4061_event.nxs", "EQSANS_4061_event.nxs", beam_radius=3)
+        ThetaDependentTransmission(False)
+        Reduce1D()
+        Scale(InputWorkspace="EQSANS_4061_event_frame1_Iq", Factor=2.0, 
+              Operation='Multiply', OutputWorkspace="EQSANS_4061_event_frame1_Iq")              
+       
+    def validate(self):
+        # Relax the tolerance since the reference data is not for that exact
+        # scenario but for one that's very close to it.
+        self.tolerance = 0.00001
+        self.disableChecking.append('Instrument')
+        self.disableChecking.append('Sample')
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Axes')
+        return "EQSANS_4061_event_frame1_Iq", 'EQSANSTransmissionFS.nxs' 
+    
+    

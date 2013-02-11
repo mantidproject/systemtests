@@ -5,16 +5,19 @@ from mantidsimple import *
 from reduction.instruments.sans.sns_command_interface import *
 import os
 
+#FILE_LOCATION = "/SNS/EQSANS/IPTS-5636/0/5704/NeXus/"
+FILE_LOCATION = "/home/m2d/data/eqsans/"
+
 class EQSANSFlatTest(stresstesting.MantidStressTest):
-    def requiredFiles(self):
+    def _requiredFiles(self):
         files = []
-        files.append("/SNS/EQSANS/IPTS-5636/0/5704/NeXus/EQSANS_5704_event.nxs")
-        files.append("/SNS/EQSANS/IPTS-5636/0/5734/NeXus/EQSANS_5734_event.nxs")
-        files.append("/SNS/EQSANS/IPTS-5636/0/5732/NeXus/EQSANS_5732_event.nxs")
-        files.append("/SNS/EQSANS/IPTS-5636/0/5738/NeXus/EQSANS_5738_event.nxs")
-        files.append("/SNS/EQSANS/IPTS-5636/0/5729/NeXus/EQSANS_5729_event.nxs")
-        files.append("/SNS/EQSANS/IPTS-5636/0/5737/NeXus/EQSANS_5737_event.nxs")
-        files.append("/SNS/EQSANS/IPTS-5636/0/5703/NeXus/EQSANS_5703_event.nxs")
+        files.append(FILE_LOCATION+"EQSANS_5704_event.nxs")
+        files.append(FILE_LOCATION+"EQSANS_5734_event.nxs")
+        files.append(FILE_LOCATION+"EQSANS_5732_event.nxs")
+        files.append(FILE_LOCATION+"EQSANS_5738_event.nxs")
+        files.append(FILE_LOCATION+"EQSANS_5729_event.nxs")
+        files.append(FILE_LOCATION+"EQSANS_5737_event.nxs")
+        files.append(FILE_LOCATION+"EQSANS_5703_event.nxs")
         return files
     
     def runTest(self):
@@ -25,38 +28,39 @@ class EQSANSFlatTest(stresstesting.MantidStressTest):
             and reproduces reference results.
         """
         EQSANS(True)
-        DataPath(DATADIR)
+        DataPath(FILE_LOCATION)
         SolidAngle()
-        DarkCurrent("5704")
-        MonitorNormalization()
+        DarkCurrent(FILE_LOCATION+"EQSANS_5704_event.nxs")
+        TotalChargeNormalization()
         AzimuthalAverage(n_bins=100, n_subpix=1, log_binning=False)
         IQxQy(nbins=100)
         UseConfigTOFTailsCutoff(True)
         PerformFlightPathCorrection(True)
         UseConfigMask(True)
         SetBeamCenter(89.6749, 129.693)
-        SensitivityCorrection('5703', min_sensitivity=0.5, max_sensitivity=1.5, use_sample_dc=True)
-        #SensitivityCorrection(os.path.join(OUTPUTDIR,'EQSANS_sensitivity_5703.nxs', min_sensitivity=0.5, max_sensitivity=1.5, use_sample_dc=True)
-        DivideByThickness(1)
-        DirectBeamTransmission("5734", "5738", beam_radius=3)
+        SensitivityCorrection(FILE_LOCATION+'EQSANS_5703_event.nxs', 
+                              min_sensitivity=0.5, 
+                              max_sensitivity=1.5, use_sample_dc=True)
+        DirectBeamTransmission(FILE_LOCATION+"EQSANS_5734_event.nxs", 
+                               FILE_LOCATION+"EQSANS_5738_event.nxs", beam_radius=3)
         ThetaDependentTransmission(False)
-        #Note: Data path was not found at script generation, will try at run time.
-        AppendDataFile(["5729"])
+        AppendDataFile([FILE_LOCATION+"EQSANS_5729_event.nxs"])
         CombineTransmissionFits(True)
         
-        Background("5732")
-        BckDirectBeamTransmission("5737", "5738", beam_radius=3)
+        Background(FILE_LOCATION+"EQSANS_5732_event.nxs")
+        BckDirectBeamTransmission(FILE_LOCATION+"EQSANS_5737_event.nxs", 
+                                  FILE_LOCATION+"EQSANS_5738_event.nxs", beam_radius=3)
         BckThetaDependentTransmission(False)
         BckCombineTransmissionFits(True)
         SaveIqAscii(process='None')
         Reduce1D()
-        Scale(InputWorkspace="5729_frame1_Iq", Factor=277.781, Operation='Multiply', OutputWorkspace="5729_frame1_Iq")
-                
+        Scale(InputWorkspace="EQSANS_5729_event_frame1_Iq", Factor=277.781, Operation='Multiply', OutputWorkspace="EQSANS_5729_event_frame1_Iq")
+    
     def validate(self):
-        self.tolerance = 0.05
+        self.tolerance = 0.3
         self.disableChecking.append('Instrument')
         self.disableChecking.append('Sample')
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Axes')
-        return "5729_frame1_Iq", 'EQSANSFlatTest.nxs'
+        return "EQSANS_5729_event_frame1_Iq", 'EQSANSFlatTest.nxs'
 
