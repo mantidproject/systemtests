@@ -5,7 +5,7 @@ from mantidsimple import *
 from reduction.instruments.sans.sns_command_interface import *
 import os
 
-FILE_LOCATION = "/SNS/EQSANS/IPTS-5636/0/5704/NeXus/"
+FILE_LOCATION = "/SNS/EQSANS/IPTS-5636/data/"
 
 class EQSANSFlatTest(stresstesting.MantidStressTest):
     def _requiredFiles(self):
