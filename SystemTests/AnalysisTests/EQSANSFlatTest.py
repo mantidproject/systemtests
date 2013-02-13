@@ -8,7 +8,7 @@ import os
 FILE_LOCATION = "/SNS/EQSANS/IPTS-5636/data/"
 
 class EQSANSFlatTest(stresstesting.MantidStressTest):
-    def _requiredFiles(self):
+    def requiredFiles(self):
         files = []
         files.append(FILE_LOCATION+"EQSANS_5704_event.nxs")
         files.append(FILE_LOCATION+"EQSANS_5734_event.nxs")
