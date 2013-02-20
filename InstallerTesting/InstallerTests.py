@@ -86,6 +86,16 @@ try:
 except Exception, err:
     scriptfailure('Version test failed: '+str(err), installer)
 
+try:
+    # Now get the revision number/git commit ID (remove the leading 'g' that isn't part of it)
+    revision = run(installer.mantidPlotPath + ' -r').lstrip('g')
+    revision_tested = open('revision_tested.log','w')
+    if revision and len(version) > 0:
+        revision_tested.write(revision)
+    revision_tested.close()
+except Exception, err:
+    scriptfailure('Revision test failed: '+str(err), installer)
+
 log("Running system tests. Log files are: logs/testsRun.log and logs/testsRun.err")
 try:
     # Pick the correct Mantid along with the bundled python on windows
