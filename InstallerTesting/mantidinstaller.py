@@ -13,13 +13,15 @@ def createScriptLog(path):
     scriptLog = open(path,'w')
 
 def stop(installer):
-    ''' Save the log, uninstall the package and exit with error code 0 '''
+    ''' Save the log, uninstall the package and exit with a return value giving the Mantid revision ID '''
+    # Get hold of the git commit ID (remove the leading 'g' that isn't part of it)
+    revision = run(installer.mantidPlotPath + ' -r').lstrip('g')
     try:
         installer.uninstall()
     except Exception, exc:
         log("Could not uninstall package %s: %s" % (installer.mantidInstaller, str(exc)))
     scriptLog.close()
-    sys.exit(0)
+    sys.exit(revision)
 
 def log(txt):
     ''' Write text to the script log file '''
