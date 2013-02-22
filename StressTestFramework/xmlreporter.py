@@ -76,6 +76,15 @@ class XmlResultReporter(stresstesting.ResultReporter):
 			if t[0] == 'iteration time_taken':
 				time_taken = float(t[1].split(' ')[1])
 				self._time_taken += time_taken
+			if t[0] == 'memory footprint increase':
+				measEl = self._doc.createElement('measurement')
+				name = self._doc.createElement('name')
+				name.appendChild(self._doc.createTextNode('MemoryFootprintIncrease'))
+				value = self._doc.createElement('value')
+				value.appendChild(self._doc.createTextNode(t[1]))
+				measEl.appendChild(name)
+				measEl.appendChild(value)
+				elem.appendChild(measEl)
 		elem.setAttribute('time',str(time_taken))
 		elem.setAttribute('totalTime',str(time_taken))
 		self._doc.documentElement.appendChild(elem)
