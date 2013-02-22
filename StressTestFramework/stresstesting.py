@@ -224,10 +224,10 @@ class MantidStressTest(object):
         to compare to the supplied workspace.
         '''
         valNames = list(self.validate())
-        from mantidsimple import LoadNexus, mtd
+        from mantidsimple import Load, mtd
         workspace2 = valNames[1]
         if workspace2.endswith('.nxs'):
-            LoadNexus(workspace2,"RefFile")
+            Load(workspace2,"RefFile")
             workspace2 = "RefFile"
         else:
             raise RuntimeError("Should supply a NeXus file: %s" % workspace2)
