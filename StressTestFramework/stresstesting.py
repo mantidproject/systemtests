@@ -353,7 +353,7 @@ class MantidStressTest(object):
         if msg != "": msg += " "
         msg += "Expected %g == %g" % (value, expected)
         
-        if not value == expected:
+        if value != expected:
             raise Exception(msg)
         
     def assertDelta(self, value, expected, delta, msg=""):
