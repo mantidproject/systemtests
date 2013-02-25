@@ -79,7 +79,8 @@ class ResNormTest(stresstesting.MantidStressTest):
         Main.ResNormRun(vname,rname,erange,nbin,verbOp,plotOp,saveOp)
 
     def validate(self):
-        self.tolerance = 1e-4 
+        self.tolerance = 1e-4
+        self.disableChecking.append("SpectraMap")
         return 'irs26173_graphite002_ResNorm_Fit','ISISIndirectBayes_ResNormTest.nxs'
 
     def cleanup(self):
