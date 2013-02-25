@@ -143,7 +143,7 @@ class MantidStressTest(object):
             return
         
         # Check if memory is available
-        from mantidsimple import MemoryStats
+        from mantid.kernel import MemoryStats
         MB_avail = MemoryStats().availMem()/(1024.)
         if (MB_avail < required):
             print "Insufficient memory available to run test! %g MB available, need %g MB." % (MB_avail,required)
@@ -167,9 +167,8 @@ class MantidStressTest(object):
         countmax = self.maxIterations() + 1
         for i in range(1, countmax):
             istart = time.time()
-            # Store the free memory of the system before starting the test
-            # TODO: Do the memory stuff in pure python rather than using Mantid
-            from mantidsimple import MemoryStats
+            # Store the free memory of the system (in MB) before starting the test
+            from mantid.kernel import MemoryStats
             self.memory = MemoryStats().availMem()/1024
             self.runTest()
             delta_t = time.time() - istart
@@ -313,8 +312,8 @@ class MantidStressTest(object):
         # Now the validation is complete we can clear out all the stored data and check memory usage
         import mantid.api
         mantid.api.FrameworkManager.clear()
-        # Get the free memory again and work out how much it's gone down by
-        from mantidsimple import MemoryStats
+        # Get the free memory again and work out how much it's gone down by (in MB)
+        from mantid.kernel import MemoryStats
         self.memory -= MemoryStats().availMem()/1024
         # Store the result
         self.reportResult('memory footprint increase', self.memory )
