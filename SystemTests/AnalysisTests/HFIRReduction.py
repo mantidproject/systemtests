@@ -1,7 +1,7 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 from reduction.instruments.sans.hfir_command_interface import *
 
 class HFIRReduction(stresstesting.MantidStressTest):
@@ -11,7 +11,7 @@ class HFIRReduction(stresstesting.MantidStressTest):
     
     def runTest(self):
 
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")
@@ -33,7 +33,7 @@ class HFIRAbsoluteScalingReference(stresstesting.MantidStressTest):
     """
     
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         SolidAngle(detector_tubes=True)
         MonitorNormalization()
@@ -56,7 +56,7 @@ class HFIRAbsoluteScalingReference(stresstesting.MantidStressTest):
     """
     
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         SolidAngle(detector_tubes=True)
         MonitorNormalization()

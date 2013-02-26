@@ -1,7 +1,7 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 from reduction.instruments.sans.sns_command_interface import *
 class EQSANSEff(stresstesting.MantidStressTest):
     def runTest(self):
@@ -11,7 +11,7 @@ class EQSANSEff(stresstesting.MantidStressTest):
         self.cleanup()
         # Note that the EQSANS Reducer does the transmission correction by default,
         # so we are also testing the EQSANSTransmission algorithm
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         EQSANS(False)
         AppendDataFile("EQSANS_1466_event.nxs")
         SolidAngle()
@@ -26,7 +26,7 @@ class EQSANSEff(stresstesting.MantidStressTest):
                 
     def cleanup(self):
         for ws in ["EQSANS_1466_event_Iq", "EQSANS_1466_event", "EQSANS_1466_event_evt"]:
-            if mtd.workspaceExists(ws):
+            if mtd.doesExist(ws):
                 mtd.deleteWorkspace(ws)
                 
     def validate(self):

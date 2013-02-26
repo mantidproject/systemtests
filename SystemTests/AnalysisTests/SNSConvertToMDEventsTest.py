@@ -1,7 +1,7 @@
 import stresstesting
 import numpy
 import os
-from mantidsimple import *
+from mantid.simpleapi import *
 
 ######################################################################
 # Common configuration

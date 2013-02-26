@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 import datetime
 from time import localtime, strftime
 import os

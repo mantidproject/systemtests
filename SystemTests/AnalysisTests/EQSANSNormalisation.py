@@ -1,7 +1,7 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 from reduction.instruments.sans.sns_command_interface import *
 import os
 
@@ -17,7 +17,7 @@ class EQSANSNormalisationNoFlux(stresstesting.MantidStressTest):
         """
         # Note that the EQSANS Reducer does the transmission correction by default,
         # so we are also testing the EQSANSTransmission algorithm
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         ws = "__eqsans_normalisation_test"
         
         EQSANSLoad(Filename="EQSANS_1466_event.nxs", OutputWorkspace=ws, 
@@ -46,7 +46,7 @@ class EQSANSNormalisationDefault(stresstesting.MantidStressTest):
         """
         # Note that the EQSANS Reducer does the transmission correction by default,
         # so we are also testing the EQSANSTransmission algorithm
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         ws = "__eqsans_normalisation_test"
         
         EQSANSLoad(Filename="EQSANS_1466_event.nxs", OutputWorkspace=ws, 
@@ -75,7 +75,7 @@ class EQSANSNormalisationInputFlux(stresstesting.MantidStressTest):
         """
         # Note that the EQSANS Reducer does the transmission correction by default,
         # so we are also testing the EQSANSTransmission algorithm
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         ws = "__eqsans_normalisation_test"
         
         parentDir = os.path.abspath('..')
@@ -107,7 +107,7 @@ class EQSANSNormalisationBeamFlux(stresstesting.MantidStressTest):
         """
         # Note that the EQSANS Reducer does the transmission correction by default,
         # so we are also testing the EQSANSTransmission algorithm
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         self.prop_mng = "eqsans_normalise_options"
         self.data_ws = "eqsans_normalise_data_ws"
 

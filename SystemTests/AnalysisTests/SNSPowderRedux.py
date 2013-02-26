@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 
 def getSaveDir():
         """determine where to save - the current working directory"""
@@ -180,8 +180,8 @@ class SeriesAndConjoinFilesTest(stresstesting.MantidStressTest):
                            NormalizeByCurrent=True, FinalDataUnits="dSpacing")
 
         # needs to be set for ConjoinFiles to work
-        mtd.settings['default.facility'] = 'SNS'
-        mtd.settings['default.instrument'] = 'POWGEN'
+        config['default.facility'] = 'SNS'
+        config['default.instrument'] = 'POWGEN'
 
         # load back in the resulting gsas files
         ConjoinFiles(RunNumbers=[9829,9830], OutputWorkspace='ConjoinFilesTest', Directory=savedir)

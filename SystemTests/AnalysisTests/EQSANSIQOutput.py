@@ -1,7 +1,7 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 import math
 from reduction.instruments.sans.sns_command_interface import *
 class EQSANSIQOutput(stresstesting.MantidStressTest):
@@ -17,7 +17,7 @@ class EQSANSIQOutput(stresstesting.MantidStressTest):
         # Note that the EQSANS Reducer does the transmission correction by default,
         # so we are also testing the EQSANSTransmission algorithm
         self.cleanup()
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         EQSANS()
         AppendDataFile("EQSANS_1466_event.nxs")
         NoSolidAngle()
@@ -32,7 +32,7 @@ class EQSANSIQOutput(stresstesting.MantidStressTest):
                         
     def cleanup(self):
         for ws in ["EQSANS_1466_event_Iq", "EQSANS_1466_event", "EQSANS_1466_event_evt", "beam_hole_transmission_EQSANS_1466_event"]:
-            if mtd.workspaceExists(ws):
+            if mtd.doesExist(ws):
                 mtd.deleteWorkspace(ws)
                 
     def validate(self):
@@ -57,7 +57,7 @@ class EQSANSBeamMonitor(stresstesting.MantidStressTest):
     def runTest(self):
         # Note that the EQSANS Reducer does the transmission correction by default,
         # so we are also testing the EQSANSTransmission algorithm
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         EQSANS()
         AppendDataFile("EQSANS_1466_event.nxs")
         NoSolidAngle()
@@ -86,7 +86,7 @@ class EQSANSDQPositiveOutput(stresstesting.MantidStressTest):
             even when background is larger than signal and I(q) is negative.
             (Non-physical value that's an experimental edge case)
         """
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         EQSANS()
         AppendDataFile("EQSANS_1466_event.nxs")
         UseConfig(False)
@@ -114,7 +114,7 @@ class EQSANSDQOutput(stresstesting.MantidStressTest):
             even when background is larger than signal and I(q) is negative.
             (Non-physical value that's an experimental edge case)
         """
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         EQSANS()
         AppendDataFile("EQSANS_1466_event.nxs")
         UseConfig(False)
@@ -174,7 +174,7 @@ class EQSANSDQOutput_FS(stresstesting.MantidStressTest):
             even when background is larger than signal and I(q) is negative.
             (Non-physical value that's an experimental edge case)
         """
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         EQSANS()
         AppendDataFile("EQSANS_4061_event.nxs")
         UseConfig(False)

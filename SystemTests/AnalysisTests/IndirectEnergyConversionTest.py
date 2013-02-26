@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 import inelastic_indirect_reducer
 
 class IndirectEnergyConversionTest(stresstesting.MantidStressTest):    

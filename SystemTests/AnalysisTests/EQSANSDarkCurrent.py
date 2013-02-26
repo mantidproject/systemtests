@@ -1,7 +1,7 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 from reduction.instruments.sans.sns_command_interface import *
 class EQSANSDarkCurrent(stresstesting.MantidStressTest):
     """
@@ -12,7 +12,7 @@ class EQSANSDarkCurrent(stresstesting.MantidStressTest):
     def runTest(self):
         # Note that the EQSANS Reducer does the transmission correction by default,
         # so we are also testing the EQSANSTransmission algorithm
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         EQSANS(True)
         SolidAngle()
         SetBeamCenter(96.29, 126.15)
@@ -49,7 +49,7 @@ class EQSANSDarkCurrentWorkflow(stresstesting.MantidStressTest):
     def runTest(self):
         # Note that the EQSANS Reducer does the transmission correction by default,
         # so we are also testing the EQSANSTransmission algorithm
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         SetupEQSANSReduction(UseConfig=False,
                              PreserveEvents=True,
                              Normalisation="Charge",

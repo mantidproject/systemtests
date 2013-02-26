@@ -5,9 +5,9 @@
     that is part of python to the stresstesting framework used in Mantid.
 """
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 from reduction.instruments.sans.sans_reducer import SANSReducer
 from reduction.instruments.sans.hfir_command_interface import *
 import types
@@ -153,7 +153,7 @@ class HFIRTests(stresstesting.MantidStressTest):
     def test_data_path(self):
         self.assertEqual(ReductionSingleton()._data_path, '.')
         #any path that definitely exists on a computer with Mantid installed
-        test_path = os.path.normcase(mtd.getConfigProperty('instrumentDefinition.directory'))
+        test_path = os.path.normcase(config.getString('instrumentDefinition.directory'))
         DataPath(test_path)
         self.assertEqual(ReductionSingleton()._data_path, test_path)
         

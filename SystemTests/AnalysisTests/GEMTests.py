@@ -1,6 +1,6 @@
 import stresstesting
 import os
-from mantidsimple import *
+from mantid.simpleapi import *
 
 class GEMTest(stresstesting.MantidStressTest):
 

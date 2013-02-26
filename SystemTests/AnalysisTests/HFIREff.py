@@ -1,14 +1,14 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 from reduction.instruments.sans.hfir_command_interface import *
 class HFIREff(stresstesting.MantidStressTest):
     def runTest(self):
         """
             System test for sensitivity correction
         """
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")
@@ -31,7 +31,7 @@ class HFIRSensitivityDirectBeamCenter(stresstesting.MantidStressTest):
         """
             System test for sensitivity correction
         """
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")
@@ -55,7 +55,7 @@ class HFIRSensitivityScatteringBeamCenter(stresstesting.MantidStressTest):
         """
             System test for sensitivity correction
         """
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")

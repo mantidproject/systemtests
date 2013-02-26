@@ -5,7 +5,7 @@ them.
 """
 import stresstesting
 import numpy
-from mantidsimple import *
+from mantid.simpleapi import *
 
 class TOPAZPeakFinding(stresstesting.MantidStressTest):
     

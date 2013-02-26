@@ -1,12 +1,12 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 from reduction.instruments.sans.hfir_command_interface import *
 
 class HFIRTrans(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         TimeNormalization()
@@ -26,7 +26,7 @@ class HFIRTrans(stresstesting.MantidStressTest):
 
 class HFIRTransValue(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         TimeNormalization()
@@ -45,7 +45,7 @@ class HFIRTransValue(stresstesting.MantidStressTest):
 
 class HFIRTransmissionDarkCurrent(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         TimeNormalization()
@@ -66,7 +66,7 @@ class HFIRTransmissionDarkCurrent(stresstesting.MantidStressTest):
 
 class HFIRTransmissionDirectBeamCenter(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         TimeNormalization()
@@ -87,7 +87,7 @@ class HFIRTransmissionDirectBeamCenter(stresstesting.MantidStressTest):
 
 class HFIRTransmissionBeamSpreader(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         TimeNormalization()
@@ -111,7 +111,7 @@ class HFIRTransmissionBeamSpreader(stresstesting.MantidStressTest):
 
 class HFIRTransmissionBeamSpreaderDC(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         TimeNormalization()
@@ -136,7 +136,7 @@ class HFIRTransmissionBeamSpreaderDC(stresstesting.MantidStressTest):
 
 class HFIRTransmissionBeamSpreaderDBC(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         TimeNormalization()
@@ -161,7 +161,7 @@ class HFIRTransmissionBeamSpreaderDBC(stresstesting.MantidStressTest):
 
 class HFIRTransmissionBeamSpreaderBC(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         TimeNormalization()

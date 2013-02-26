@@ -5,7 +5,7 @@ file-backed MDWorkspaces.
 
 import stresstesting
 import os
-from mantidsimple import *
+from mantid.simpleapi import *
 
 ###############################################################################
 class PlusMDTest(stresstesting.MantidStressTest):
@@ -25,7 +25,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
     def runTest(self):
         # Some platforms can't clean up the open file handle on cncs.nxs from the last test, so run cleanup here as well
         barefilename = "cncs.nxs"
-        self._saved_filename = os.path.join(mtd.settings["defaultsave.directory"], barefilename)
+        self._saved_filename = os.path.join(config["defaultsave.directory"], barefilename)
         self.cleanup()
 
         # Load then convert to Q in the lab frame
@@ -106,18 +106,18 @@ class PlusMDTest(stresstesting.MantidStressTest):
         if self._saved_filename is not None:
             try:
                 os.remove(self._saved_filename)
-                mtd.sendLogMessage("Removed %s" % self._saved_filename)
+                logger.notice("Removed %s" % self._saved_filename)
             except OSError:
-                mtd.sendLogMessage("Failed to remove %s" % self._saved_filename)
+                logger.notice("Failed to remove %s" % self._saved_filename)
 
             # Plus the _clone version
             filename = os.path.splitext(self._saved_filename)[0]
             filename += '_clone.nxs'
             try:
                 os.remove(filename)
-                mtd.sendLogMessage("Removed %s " % filename)
+                logger.notice("Removed %s " % filename)
             except OSError:
-                mtd.sendLogMessage("Failed to remove %s" % self._saved_filename)
+                logger.notice("Failed to remove %s" % self._saved_filename)
 
 ###############################################################################
 class MergeMDTest(stresstesting.MantidStressTest):
@@ -157,7 +157,7 @@ class MergeMDTest(stresstesting.MantidStressTest):
         for filename in self._saved_filenames:
             try:
                 os.remove(filename)
-                mtd.sendLogMessage("Removed %s" % filename)
+                logger.notice("Removed %s" % filename)
             except OSError:
-                mtd.sendLogMessage("Failed to remove %s" % filename)
+                logger.notice("Failed to remove %s" % filename)
             

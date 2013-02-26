@@ -1,12 +1,12 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 from reduction.instruments.sans.sns_command_interface import *
 class EQSANSBeamCenter(stresstesting.MantidStressTest):
     def runTest(self):
         self.cleanup()
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         EQSANS(False)
         AppendDataFile("EQSANS_4061_event.nxs")
         NoSolidAngle()
@@ -27,7 +27,7 @@ class EQSANSBeamCenter(stresstesting.MantidStressTest):
         for ws in ["beam_center_EQSANS_1466_event", "beam_center_EQSANS_1466_event_evt",
                    "EQSANS_4061_event_frame2_Iq", "EQSANS_4061_event", "EQSANS_4061_event_evt",
                    "beam_hole_transmission_EQSANS_4061_event"]:
-            if mtd.workspaceExists(ws):
+            if mtd.doesExist(ws):
                 mtd.deleteWorkspace(ws)
                 
     def validate(self):
@@ -43,7 +43,7 @@ class EQSANSBeamCenter(stresstesting.MantidStressTest):
 class EQSANSBeamCenterEvent(EQSANSBeamCenter):
     def runTest(self):
         self.cleanup()
-        mtd.settings['default.facility'] = 'SNS'
+        config['default.facility'] = 'SNS'
         EQSANS(True)
         AppendDataFile("EQSANS_4061_event.nxs")
         NoSolidAngle()

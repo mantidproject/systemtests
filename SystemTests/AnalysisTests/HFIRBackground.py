@@ -1,12 +1,12 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 from reduction.instruments.sans.hfir_command_interface import *
 
 class HFIRBackground(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         SetBeamCenter(16, 95)
         AppendDataFile("BioSANS_test_data.xml")
@@ -24,7 +24,7 @@ class HFIRBackground(stresstesting.MantidStressTest):
 
 class HFIRBackgroundTransmission(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         AppendDataFile("BioSANS_test_data.xml")
         Background("BioSANS_test_data.xml")
@@ -42,7 +42,7 @@ class HFIRBackgroundTransmission(stresstesting.MantidStressTest):
 
 class HFIRBackgroundDirectBeamTrans(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         AppendDataFile("BioSANS_test_data.xml")
         Background("BioSANS_test_data.xml")
@@ -62,7 +62,7 @@ class HFIRBackgroundDirectBeamTrans(stresstesting.MantidStressTest):
 
 class HFIRBackgroundBeamSpreaderTrans(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         AppendDataFile("BioSANS_test_data.xml")
         Background("BioSANS_test_data.xml")
@@ -85,7 +85,7 @@ class HFIRBackgroundBeamSpreaderTrans(stresstesting.MantidStressTest):
 
 class HFIRBackgroundTransDarkCurrent(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         AppendDataFile("BioSANS_test_data.xml")
         Background("BioSANS_test_data.xml")
@@ -106,7 +106,7 @@ class HFIRBackgroundTransDarkCurrent(stresstesting.MantidStressTest):
     
 class HFIRBackgroundDirectBeamTransDC(stresstesting.MantidStressTest):
     def runTest(self):
-        mtd.settings['default.facility'] = 'HFIR'
+        config['default.facility'] = 'HFIR'
         HFIRSANS()
         AppendDataFile("BioSANS_test_data.xml")
         Background("BioSANS_test_data.xml")

@@ -5,7 +5,7 @@ Tests masking functionality specific to WISH. Working masking behaviour is criti
 
 import stresstesting
 import os
-from mantidsimple import *
+from mantid.simpleapi import *
 
 class WishMasking(stresstesting.MantidStressTest):
 	

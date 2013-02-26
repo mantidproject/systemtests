@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 
 ''' Sample script from Tim Charlton. Described as Mantid version of quick:lam'''
 '''

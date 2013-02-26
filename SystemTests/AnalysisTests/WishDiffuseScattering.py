@@ -5,7 +5,7 @@ If this breaks for whatever reason, there is a good chance that unregistered scr
 """
 
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 
 class WishDiffuseScattering(stresstesting.MantidStressTest):
 

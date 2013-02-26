@@ -15,7 +15,7 @@ import math
 import random
 import mantid
 from mantid.simpleapi import *
-#from mantidsimple import *
+#from mantid.simpleapi import *
 #TODO premultiply cases, fix up.. Maybe not needed Cause Conv cell was "Nigglied"
 #TODO: SWitch cases, if use approx inequality, may get error cause low level code  [does Not](does) premult but when it [should](should not)
 class Peak2ConvCell_Test:#(stresstesting.MantidStressTest):
