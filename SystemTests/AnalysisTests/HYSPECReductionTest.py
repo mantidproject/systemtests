@@ -8,6 +8,9 @@ import stresstesting
 
 class HYSPECReductionTest(stresstesting.MantidStressTest):
 	
+	def requiredMemoryMB(self):
+		return 5000
+
 	def requiredFiles(self):
 		return ['HYS_13656_event.nxs','HYS_13657_event.nxs','HYS_13658_event.nxs']
 
@@ -19,6 +22,8 @@ class HYSPECReductionTest(stresstesting.MantidStressTest):
 	def runTest(self):
 		Load(Filename='HYS_13656-13658',OutputWorkspace='sum')
 		FilterByLogValue(InputWorkspace='sum',OutputWorkspace='sum1',LogName='s1',MinimumValue='0',MaximumValue='24.5',LogBoundary='Left')
+		SaveNexus('sum','sum.nxs')
+		SaveNexus('sum1','filtered')
 		DeleteWorkspace('sum')
 		GenerateEventsFilter(InputWorkspace='sum1',OutputWorkspace='splboth',InformationWorkspace='info',UnitOfTime='Nanoseconds',LogName='s1',MaximumLogValue='24.5',LogValueInterval='3')	
 		FilterEvents(InputWorkspace='sum1',OutputWorkspaceBaseName='split',InformationWorkspace='info',SplitterWorkspace='splboth',FilterByPulseTime='1',GroupWorkspaces='1')				
