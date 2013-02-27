@@ -97,12 +97,12 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 					firstwk="run"+str(i-1)
 					secondwk="run"+str(i)
 					Plus(firstwk,secondwk,outname)
-					mantid.deleteWorkspace(firstwk)
-					mantid.deleteWorkspace(secondwk)
+					mtd.remove(firstwk)
+					mtd.remove(secondwk)
 				elif loop > 2:
 					secondwk="run"+str(i)
 					Plus(outname,secondwk,outname)
-					mantid.deleteWorkspace(secondwk)
+					mtd.remove(secondwk)
 		return
 		
 	def PearlLoadMon(self, files,ext,outname):
@@ -125,12 +125,12 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 					firstwk="mon"+str(i-1)
 					secondwk="mon"+str(i)
 					Plus(firstwk,secondwk,outname)
-					mantid.deleteWorkspace(firstwk)
-					mantid.deleteWorkspace(secondwk)
+					mtd.remove(firstwk)
+					mtd.remove(secondwk)
 				elif loop > 2:
 					secondwk="mon"+str(i)
 					Plus(outname,secondwk,outname)
-					mantid.deleteWorkspace(secondwk)
+					mtd.remove(secondwk)
 		return
 		
 
@@ -161,7 +161,7 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 		monitor=self.PEARL_getmonitor(number,ext,spline_terms=20)
 		NormaliseToMonitor(InputWorkspace=outname,OutputWorkspace=outname,MonitorWorkspace=monitor,IntegrationRangeMin=0.6,IntegrationRangeMax=5.0)
 		ConvertUnits(outname,outname,"TOF")
-		mantid.deleteWorkspace(monitor)
+		mtd.remove(monitor)
 		return	
 
 	def PEARL_focus(self, number,ext="raw",fmode="trans",ttmode="TT70",atten=True,van_norm=True):
@@ -186,7 +186,7 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 		AlignDetectors(work,work,self.calfile)
 		DiffractionFocussing(work,focus,self.groupfile)
 		
-		mantid.deleteWorkspace(work)
+		mtd.remove(work)
 			  
 		for i in range(0,14):
 			output="mod"+str(i+1)
@@ -207,7 +207,7 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 				Rebin(rdata,output,self.tofbinning)
 				CropWorkspace(output,output,XMin=0.1)	  
 			  
-		mantid.deleteWorkspace(focus)
+		mtd.remove(focus)
 
 		if (self.mode=="all"):
 			CloneWorkspace("mod1","bank1")
@@ -228,10 +228,10 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 				output="mod"+str(i+1)
 				van="van"+str(i+1)
 				rdata="rdata"+str(i+1)
-				mantid.deleteWorkspace(rdata)
-				mantid.deleteWorkspace(van)
-				mantid.deleteWorkspace(output)
-			mantid.deleteWorkspace("bank1")
+				mtd.remove(rdata)
+				mtd.remove(van)
+				mtd.remove(output)
+			mtd.remove("bank1")
 			  
 		elif (self.mode=="groups"):
 			CloneWorkspace("mod1","group1")
@@ -272,13 +272,13 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 				output="mod"+str(i+1)
 				van="van"+str(i+1)
 				rdata="rdata"+str(i+1)
-				mantid.deleteWorkspace(rdata)
-				mantid.deleteWorkspace(van)
-				mantid.deleteWorkspace(output)
-			mantid.deleteWorkspace("group1")
-			mantid.deleteWorkspace("group2")
-			mantid.deleteWorkspace("group3")
-			mantid.deleteWorkspace("group23")
+				mtd.remove(rdata)
+				mtd.remove(van)
+				mtd.remove(output)
+			mtd.remove("group1")
+			mtd.remove("group2")
+			mtd.remove("group3")
+			mtd.remove("group23")
 		
 		elif (self.mode=="trans"):
 			CloneWorkspace("mod1","bank1")
@@ -304,10 +304,10 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 				output="mod"+str(i+1)
 				van="van"+str(i+1)
 				rdata="rdata"+str(i+1)
-				mantid.deleteWorkspace(rdata)
-				mantid.deleteWorkspace(van)
-				mantid.deleteWorkspace(output)
-			mantid.deleteWorkspace("bank1")
+				mtd.remove(rdata)
+				mtd.remove(van)
+				mtd.remove(output)
+			mtd.remove("bank1")
 		
 		elif (self.mode=="mods"):
 			for i in range(0,12):
@@ -323,9 +323,9 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 					ConvertUnits(output,output,"dSpacing")
 					SaveNexus(Filename=outfile,InputWorkspace=output,Append=True)
 
-			mantid.deleteWorkspace(rdata)
-			mantid.deleteWorkspace(van)
-			mantid.deleteWorkspace(output)
+			mtd.remove(rdata)
+			mtd.remove(van)
+			mtd.remove(output)
 		
 		else:
 			print "Sorry I don't know that mode", mode
@@ -350,7 +350,7 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 		ConvertToHistogram("wc_atten","wc_atten")
 		RebinToWorkspace("wc_atten",work,"wc_atten")
 		Divide(work,"wc_atten",outwork)
-		mantid.deleteWorkspace("wc_atten")
+		mtd.remove("wc_atten")
 		return 
 
 #================================================================================

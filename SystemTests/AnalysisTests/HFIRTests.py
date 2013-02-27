@@ -16,7 +16,7 @@ import math
 
 # Set directory containing the test data, relative to the Mantid release directory.
 TEST_DIR = "."
-data_search_dirs = ConfigService()["datasearch.directories"].split(';')
+data_search_dirs = config["datasearch.directories"].split(';')
 for item in data_search_dirs:
     if item.endswith("SANS2D/"):
         TEST_DIR = item
