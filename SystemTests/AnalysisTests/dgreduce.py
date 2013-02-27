@@ -1,8 +1,6 @@
 from utils import *
-#from mantidsimple import *
-import MantidFramework 
-MantidFramework.mtd.initialise()
 from DirectEnergyConversion import *
+from mantid.api import Workspace
 import CommonFunctions as common
 import time as time
 import numpy
@@ -102,22 +100,22 @@ def set_cal_file(ws='',cal_file_name=''):
     global reducer    
     # clear existing workspace 
     if (len(cal_file_name)==0) : 
-        if type(reducer.det_cal_file_ws) == WorkspaceProxy :
-            deleteWorkspace(reducer.det_cal_file_ws.getName());
+        if isinstance(reducer.det_cal_file_ws, Workspace):
+            DeleteWorkspace(reducer.det_cal_file_ws.name());
         reducer.det_cal_file_ws=None
         return
     
     if type(ws) == str:
         pWs = mtd[ws];
-    else : 
+    else: 
         pWs = ws;
-        ws  = pWs.getName()
+        ws  = pWs.name()
         
     # stuped but simplest way to get an reduced size workspace with full integral
     targWSName =ws+'Int'
 #    Integrate(ws,targWSName,pWs.getAxis(0).getMin(),pWS..getAxis(0).max());
     
-    LoadDetectorInfo(targWSName, cal_file_name,RelocateDets=True)
+    LoadDetectorInfo(Workspace=targWSName,DataFilename= cal_file_name,RelocateDets=True)
     reducer.det_cal_file_ws = mtd[targWSName];
                 
     
@@ -213,9 +211,9 @@ def arb_units(wb_run,sample_run,ei_guess,rebin,map_file,**kwargs):
 		
 	start_time=time.time()
 	
-	if sample_run=='00000' and mtd.workspaceExists(inst_name+'00000.raw')==True:
+	if sample_run=='00000' and mtd.doesExist(inst_name+'00000.raw')==True:
 		print 'Deleteing previous instance of temp data'
-		DeleteWorkspace(inst_name+'00000.raw')
+		DeleteWorkspace(Workspace=inst_name+'00000.raw')
 	
 	#repopulate defualts
 	if kwargs.has_key('norm_method'):
@@ -341,7 +339,7 @@ def arb_units(wb_run,sample_run,ei_guess,rebin,map_file,**kwargs):
 		reducer.det_cal_file =None
 		reducer.relocate_dets = False
 	
-	if mtd.workspaceExists(str(sample_run))==True and kwargs.has_key('det_cal_file')==False:
+	if mtd.doesExist(str(sample_run))==True and kwargs.has_key('det_cal_file')==False:
 		print 'For data input type: workspace detector calibration must be specified'
 		print 'use Keyword det_cal_file with a valid detctor file or run number'
 		return
@@ -369,7 +367,7 @@ def arb_units(wb_run,sample_run,ei_guess,rebin,map_file,**kwargs):
 		sumfilename=str(sample_run[0])+'sum'
 		accum=sum_files(sumfilename, sample_run)
 		#the D.E.C. tries to be too clever so we have to fool it into thinking the raw file is already exists as a workpsace
-		RenameWorkspace(accum,inst_name+str(sample_run[0])+'.raw')
+		RenameWorkspace(InputWorkspace=accum,OutputWorkspace=inst_name+str(sample_run[0])+'.raw')
 		sample_run=sample_run[0]
 	
 	if kwargs.has_key('hardmaskPlus'):
@@ -422,20 +420,20 @@ def arb_units(wb_run,sample_run,ei_guess,rebin,map_file,**kwargs):
 	end_time=time.time()
 	results_name=str(sample_run)+'.spe'
 	
-	ei= (deltaE_wkspace.getSampleDetails().getLogData("Ei").value)
+	ei= (deltaE_wkspace.getRun().getLogData("Ei").value)
 	
-	if mtd.workspaceExists('_wksp.spe-white')==True:
-		DeleteWorkspace('_wksp.spe-white')
+	if mtd.doesExist('_wksp.spe-white')==True:
+		DeleteWorkspace(Workspace='_wksp.spe-white')
 	
-	if mtd.workspaceExists(results_name)==False:
-		RenameWorkspace(deltaE_wkspace,results_name)
+	if mtd.doesExist(results_name)==False:
+		RenameWorkspace(InputWorkspace=deltaE_wkspace,OutputWorkspace=results_name)
 	
 	print 'Incident energy found ',ei,' meV'
 	print 'Elapsed time =',end_time-start_time, 's'
 	#get the name that convert to energy will use
 	
 	
-	RenameWorkspace(results_name,wksp_out)
+	RenameWorkspace(InputWorkspace=results_name,OutputWorkspace=wksp_out)
 	
 	return mtd[wksp_out]
     
@@ -515,9 +513,9 @@ def abs_units_old(wb_run,sample_run,mono_van,wb_mono,samp_rmm,samp_mass,ei_guess
 	
 	start_time=time.time()
 	
-	if sample_run=='00000' and mtd.workspaceExists(inst_name+'00000.raw')==True:
+	if sample_run=='00000' and mtd.doesExist(inst_name+'00000.raw')==True:
 		print 'Deleteing previous instance of temp data'
-		DeleteWorkspace(inst_name+'00000.raw')
+		DeleteWorkspace(Workspace=inst_name+'00000.raw')
 	
 	if kwargs.has_key('norm_method'):
 		reducer.normalise_method = kwargs.get('norm_method')
@@ -645,7 +643,7 @@ def abs_units_old(wb_run,sample_run,mono_van,wb_mono,samp_rmm,samp_mass,ei_guess
 		reducer.det_cal_file =None
 		reducer.relocate_dets = False
 	
-	if mtd.workspaceExists(str(sample_run))==True and kwargs.has_key('det_cal_file')==False:
+	if mtd.doesExist(str(sample_run))==True and kwargs.has_key('det_cal_file')==False:
 		print 'For data input type: workspace detector calibration must be specified'
 		print 'use Keyword det_cal_file with a valid detctor file or run number'
 		return
@@ -693,7 +691,7 @@ def abs_units_old(wb_run,sample_run,mono_van,wb_mono,samp_rmm,samp_mass,ei_guess
 		sumfilename=str(sample_run[0])+'sum'
 		accum=sum_files(sumfilename, sample_run)
 		#the D.E.C. tries to be too clever so we have to fool it into thinking the raw file is already exists as a workpsace
-		RenameWorkspace(accum,inst_name+str(sample_run[0])+'.raw')
+		RenameWorkspace(InputWorkspace=accum,OutputWorkspace=inst_name+str(sample_run[0])+'.raw')
 		sample_run=sample_run[0]
 	
 	if kwargs.has_key('hardmaskOnly'):
@@ -765,19 +763,19 @@ def abs_units_old(wb_run,sample_run,mono_van,wb_mono,samp_rmm,samp_mass,ei_guess
 	deltaE_wkspace = reducer.convert_to_energy(sample_run, ei_guess, wb_run, mono_van,ei_guess,wb_mono)
 	end_time=time.time()
 	results_name=str(sample_run)+'.spe'
-	ei= (deltaE_wkspace.getSampleDetails().getLogData("Ei").value)
+	ei= (deltaE_wkspace.getRun().getLogData("Ei").value)
 	
-	if mtd.workspaceExists('_wksp.spe-white')==True:
-		DeleteWorkspace('_wksp.spe-white')
+	if mtd.doesExist('_wksp.spe-white')==True:
+		DeleteWorkspace(Workspace='_wksp.spe-white')
 	
 	
 	print 'Incident energy found ',ei,' meV'
 	print 'Elapsed time =',end_time-start_time, 's'
 	#get the name that convert to energy will use
 	
-	if mtd.workspaceExists(results_name)==False:
-		RenameWorkspace(deltaE_wkspace,results_name)
-	RenameWorkspace(results_name,wksp_out)
+	if mtd.doesExist(results_name)==False:
+		RenameWorkspace(InputWorkspace=deltaE_wkspace,OutputWorkspace=results_name)
+	RenameWorkspace(InputWorkspace=results_name,OutputWorkspace=wksp_out)
 	
 	return mtd[wksp_out]
 
@@ -874,9 +872,9 @@ def abs_units(wb_run,sample_run,mono_van,wb_mono,samp_rmm,samp_mass,ei_guess,reb
 	
 	start_time=time.time()
 	
-	if sample_run=='00000' and mtd.workspaceExists(inst_name+'00000.raw')==True:
+	if sample_run=='00000' and mtd.doesExist(inst_name+'00000.raw')==True:
 		print 'Deleteing previous instance of temp data'
-		DeleteWorkspace(inst_name+'00000.raw')
+		DeleteWorkspace(Workspace=inst_name+'00000.raw')
 	
 	if kwargs.has_key('norm_method'):
 		reducer.normalise_method = kwargs.get('norm_method')
@@ -1005,7 +1003,7 @@ def abs_units(wb_run,sample_run,mono_van,wb_mono,samp_rmm,samp_mass,ei_guess,reb
 		reducer.det_cal_file =None
 		reducer.relocate_dets = False
 	
-	if mtd.workspaceExists(str(sample_run))==True and kwargs.has_key('det_cal_file')==False:
+	if mtd.doesExist(str(sample_run))==True and kwargs.has_key('det_cal_file')==False:
 		print 'For data input type: workspace detector calibration must be specified'
 		print 'use Keyword det_cal_file with a valid detctor file or run number'
 		return
@@ -1052,7 +1050,7 @@ def abs_units(wb_run,sample_run,mono_van,wb_mono,samp_rmm,samp_mass,ei_guess,reb
 		sumfilename=str(sample_run[0])+'sum'
 		accum=sum_files(sumfilename, sample_run)
 		#the D.E.C. tries to be too clever so we have to fool it into thinking the raw file is already exists as a workpsace
-		RenameWorkspace(accum,inst_name+str(sample_run[0])+'.raw')
+		RenameWorkspace(InputWorkspace=accum,OutputWorkspace=inst_name+str(sample_run[0])+'.raw')
 		sample_run=sample_run[0]
 	
 	if kwargs.has_key('hardmaskOnly'):
@@ -1150,10 +1148,10 @@ def abs_units(wb_run,sample_run,mono_van,wb_mono,samp_rmm,samp_mass,ei_guess,reb
 	CreateSingleValuedWorkspace(OutputWorkspace='AbsFactor',DataValue=absnorm_factor)
 	end_time=time.time()
 	results_name=str(sample_run)+'.spe'
-	ei= (deltaE_wkspace_sample.getSampleDetails().getLogData("Ei").value)
+	ei= (deltaE_wkspace_sample.getRun().getLogData("Ei").value)
 	
-	if mtd.workspaceExists('_wksp.spe-white')==True:
-		DeleteWorkspace('_wksp.spe-white')
+	if mtd.doesExist('_wksp.spe-white')==True:
+		DeleteWorkspace(Workspace='_wksp.spe-white')
 	
 	
 	print 'Incident energy found for sample run ',ei,' meV'
@@ -1161,11 +1159,11 @@ def abs_units(wb_run,sample_run,mono_van,wb_mono,samp_rmm,samp_mass,ei_guess,reb
 	print 'Elapsed time =',end_time-start_time, 's'
 	#get the name that convert to energy will use
 	
-	if mtd.workspaceExists(results_name)==False:
-		RenameWorkspace(deltaE_wkspace_sample,results_name)
-	RenameWorkspace(results_name,wksp_out)
+	if mtd.doesExist(results_name)==False:
+		RenameWorkspace(InputWorkspace=deltaE_wkspace_sample,OutputWorkspace=results_name)
+	RenameWorkspace(InputWorkspace=results_name,OutputWorkspace=wksp_out)
 	Divide(LHSWorkspace=wksp_out,RHSWorkspace='AbsFactor',OutputWorkspace=wksp_out)
-	DeleteWorkspace('AbsFactor')
+	DeleteWorkspace(Workspace='AbsFactor')
 	return mtd[wksp_out]
 
 def chunk(wb_run,sample_run,ei_guess,rebin,mapingfile,nchunk,**kwargs):
@@ -1204,9 +1202,9 @@ def chunk(wb_run,sample_run,ei_guess,rebin,mapingfile,nchunk,**kwargs):
 		
 	start_time=time.time()
 	
-	if sample_run=='00000' and mtd.workspaceExists(inst_name+'00000.raw')==True:
+	if sample_run=='00000' and mtd.doesExist(inst_name+'00000.raw')==True:
 		print 'Deleteing previous instance of temp data'
-		DeleteWorkspace(inst_name+'00000.raw')
+		DeleteWorkspace(Workspace=inst_name+'00000.raw')
 	
 	
 	reducer.energy_bins = rebin
@@ -1255,18 +1253,18 @@ def chunk(wb_run,sample_run,ei_guess,rebin,mapingfile,nchunk,**kwargs):
 		tmp=arb_units("wb_wksp","run_wksp",ei_guess,rebin,'none_for_this_run_type',one2one=True,bleed=False,**kwargs)
 		
 		
-		DeleteWorkspace("wb_wksp")
-		DeleteWorkspace("run_wksp")
+		DeleteWorkspace(Workspace="wb_wksp")
+		DeleteWorkspace(Workspace="run_wksp")
 		#DeleteWorkspace("_wksp.spe")
 		#DeleteWorkspace("_wksp.spe-white")
 		
 		if i == spectrum_start:
 			#crop the workspace to remove the monitors, the workpsace seems sorted on specnumber so this is ok for instruments where the monitors are at the end of the 
 			# spectrum list
-			CropWorkspace(tmp,wksp_out,StartWorkSpaceIndex=0,EndWorkSpaceIndex=endIndex)
+			CropWorkspace(InputWorkspace=tmp,OutputWorkspace=wksp_out,StartWorkSpaceIndex=0,EndWorkSpaceIndex=endIndex)
 		else:
-			CropWorkspace(tmp,tmp,StartWorkSpaceIndex=0,EndWorkSpaceIndex=endIndex)
-			ConjoinWorkspaces(wksp_out,tmp,CheckOverlapping='0')
+			CropWorkspace(InputWorkspace=tmp,OutputWorkspace=tmp,StartWorkSpaceIndex=0,EndWorkSpaceIndex=endIndex)
+			ConjoinWorkspaces(InputWorkspace1=wksp_out,InputWorkspace2=tmp,CheckOverlapping='0')
 		print int(((float(i+endIndex))/float(numspec))*100),'% complete'
 		print '===============================================================================' 
 	
@@ -1312,13 +1310,13 @@ def sum_files(accumulator, files):
 		for filename in files:
 			print 'Summing run ',filename,' to workspace ',accumulator
 			temp = common.load_run(filename, force=False)
-			if mtd.workspaceExists(accumulator)==False:
+			if mtd.doesExist(accumulator)==False:
 				#check for existance of output workpsace if false clone and zero
 				print 'create output file'
-				CloneWorkspace(temp,accumulator)
+				CloneWorkspace(InputWorkspace=temp,OutputWorkspace=accumulator)
 				CreateSingleValuedWorkspace(OutputWorkspace="tmp",DataValue="0",ErrorValue="0")
 				Multiply(LHSWorkspace=accumulator,RHSWorkspace="tmp",OutputWorkspace=accumulator)
-			Plus(accumulator, temp, accumulator)
+			Plus(LHSWorkspace=accumulator,RHSWorkspace= temp,OutputWorkspace= accumulator)
 		return accumulator
 
 
@@ -1365,7 +1363,7 @@ def diag_load_mask(hard_mask):
             spectra_list += numbers[index] + ","
             
     if len(spectra_list) < 1:
-        mantid.sendLogMessage('Only comment lines found in mask file ' + hard_mask)
+        logger.notice('Only comment lines found in mask file ' + hard_mask)
         return ''
     # Return everything after the very first comma we added in the line above
     return spectra_list.rstrip(',')
@@ -1392,7 +1390,7 @@ def getAbsNormalizationFactor(deltaE_wkspace,min,max):
     global reducer,van_mass
     Integration(InputWorkspace=deltaE_wkspace,OutputWorkspace='van_int',RangeLower=min,RangeUpper=max,IncludePartialBins='1')
     input_ws = mtd[deltaE_wkspace]
-    ei_monovan = input_ws.getSampleDetails().getLogData("Ei").value
+    ei_monovan = input_ws.getRun().getLogData("Ei").value
     data_ws=mtd['van_int']
     nhist = data_ws.getNumberHistograms()
    #print nhist
@@ -1483,7 +1481,7 @@ def getAbsNormalizationFactor(deltaE_wkspace,min,max):
         print '--------> Abs norm factors: LibISIS: ',absnorm_factorLibISIS,' Sigma^2: ',absnorm_factorSigSq,' Puasonian: ',absnorm_factorPuason
         print '----------------------------------------------------------------------------------------------'        
     else:
-        DeleteWorkspace(deltaE_wkspace)
-    DeleteWorkspace(data_ws)
+        DeleteWorkspace(Workspace=deltaE_wkspace)
+    DeleteWorkspace(Workspace=data_ws)
     return (absnorm_factorLibISIS,absnorm_factorSigSq,absnorm_factorPuason)
     

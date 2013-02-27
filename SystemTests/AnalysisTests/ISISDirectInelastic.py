@@ -1,5 +1,6 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
+from mantid.api import Workspace
 
 from DirectEnergyConversion import setup_reducer
 
@@ -103,7 +104,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       
     def _is_workspace(self, obj):
       """ Returns True if the object is a workspace"""
-      return type(obj) == WorkspaceProxy
+      return isinstance(obj, Workspace)
 
 #------------------------- MARI tests -------------------------------------------------
 
@@ -131,16 +132,19 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
     ISISDirectInelasticReduction.__init__(self)
 
     mono_run = Load(Filename='MAR11015.RAW',OutputWorkspace='MAR11015.RAW')
-    mono_ws = mono_run.workspace()
+    last_alg = mono_run.getHistory().lastAlgorithm()
+    print last_alg
+    mono_ws = mono_run
     AddSampleLog(Workspace=mono_ws, LogName='Filename', 
-                 LogText=mono_run['Filename'].value)
+                 LogText=last_alg.getPropertyValue('Filename'))
 
-    white_ws = Load(Filename='MAR11060.RAW',OutputWorkspace='MAR11060.RAW').workspace()
+    white_ws = Load(Filename='MAR11060.RAW',OutputWorkspace='MAR11060.RAW')
 
     van_run = Load(Filename='MAR11001.RAW',OutputWorkspace='MAR11001.RAW')
-    van_ws = van_run.workspace()
+    last_alg = van_run.getHistory().lastAlgorithm()
+    van_ws = van_run
     AddSampleLog(Workspace=van_ws, LogName='Filename', 
-                 LogText=van_run['Filename'].value)
+                 LogText=last_alg.getPropertyValue('Filename'))
 
     self.instr_name = 'MARI'
     self.sample_run = mono_ws
