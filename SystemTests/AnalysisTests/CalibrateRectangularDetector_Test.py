@@ -9,12 +9,12 @@ def _skip_test():
     import platform
     # Only runs on RHEL6 at the moment
     if "Linux" not in platform.platform():
-        return True
+        return False # Return to True if test fails on Windows
     flavour = platform.linux_distribution()[2]
     if flavour == 'Santiago': # Codename for RHEL6
         return False # Do not skip
     else:
-        return True
+        return False # Return to True if test fails on other Linux
 
 class PG3Calibration(stresstesting.MantidStressTest):
 
@@ -24,6 +24,10 @@ class PG3Calibration(stresstesting.MantidStressTest):
     def requiredFiles(self):
         files = ["PG3_2538_event.nxs"] 
         return files
+
+    def requiredMemoryMB(self):
+        """Requires 3Gb"""
+        return 3000
 
     def runTest(self):
         # determine where to save
@@ -61,6 +65,10 @@ class PG3CCCalibration(stresstesting.MantidStressTest):
     def requiredFiles(self):
         files = ["PG3_2538_event.nxs"] 
         return files
+
+    def requiredMemoryMB(self):
+        """Requires 3Gb"""
+        return 3000
 
     def runTest(self):
         # determine where to save
