@@ -12,6 +12,8 @@ class SANSLOQCan2D(stresstesting.MantidStressTest):
     Set2D()
     Detector("main-detector-bank")
     MaskFile('MASK.094AA')
+    # apply some small artificial shift
+    SetDetectorOffsets('REAR', -1.0, 1.0, 0.0, 0.0, 0.0, 0.0)    
     Gravity(True)
 
     AssignSample('99630.RAW')
