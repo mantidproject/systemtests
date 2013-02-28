@@ -9,12 +9,12 @@ def _skip_test():
     import platform
     # Only runs on RHEL6 at the moment
     if "Linux" not in platform.platform():
-        return False # Return to True if test fails on Windows
+        return True
     flavour = platform.linux_distribution()[2]
     if flavour == 'Santiago': # Codename for RHEL6
         return False # Do not skip
     else:
-        return False # Return to True if test fails on other Linux
+        return True
 
 class PG3Calibration(stresstesting.MantidStressTest):
 
