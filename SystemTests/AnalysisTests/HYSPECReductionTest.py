@@ -14,7 +14,7 @@ class HYSPECReductionTest(stresstesting.MantidStressTest):
 	def requiredFiles(self):
 		return ['HYS_13656_event.nxs','HYS_13657_event.nxs','HYS_13658_event.nxs']
 
-	def cleanup(self):        
+	def cleanup(self):     
 		if os.path.exists(self.groupingFile):
             		os.remove(self.groupingFile)
 		return True
@@ -26,6 +26,8 @@ class HYSPECReductionTest(stresstesting.MantidStressTest):
 		GenerateEventsFilter(InputWorkspace='sum1',OutputWorkspace='splboth',InformationWorkspace='info',UnitOfTime='Nanoseconds',LogName='s1',MaximumLogValue='24.5',LogValueInterval='3')	
 		FilterEvents(InputWorkspace='sum1',OutputWorkspaceBaseName='split',InformationWorkspace='info',SplitterWorkspace='splboth',FilterByPulseTime='1',GroupWorkspaces='1')				
 		DeleteWorkspace('split_unfiltered')
+		DeleteWorkspace("splboth")	
+		DeleteWorkspace("info")
 		DeleteWorkspace('sum1')
 		CompressEvents('split',0.1,OutputWorkspace='splitc')
 		DeleteWorkspace('split')
@@ -41,8 +43,10 @@ class HYSPECReductionTest(stresstesting.MantidStressTest):
 		MergeMD(InputWorkspaces='md',OutputWorkspace='merged')
 		DeleteWorkspace("md")
 		BinMD(InputWorkspace='merged',AxisAligned='0',BasisVector0='[H,0,0],in 1.079 A^-1,1,0,0,0',BasisVector1='[0,K,0],in 0.97 A^-1,0,1,0,0',BasisVector2='[0,0,L],in 1.972 A^-1,0,0,1,0',BasisVector3='DeltaE,DeltaE,0,0,0,1',OutputExtents='-3,3,-2,6,-4,-1.5,-3,3',OutputBins='1,100,100,1',Parallel='1',OutputWorkspace='slice')
+		DeleteWorkspace("merged")
+		DeleteWorkspace("PreprocessedDetectorsWS")
 
-#	def validate(self):
-#		self.tolerance = 1e-5
-#		return 'slice','HYSPECReduction.nxs'
+	def validate(self):
+		self.tolerance = 1e-10
+		return 'slice','HYSPECReduction.nxs'
 
