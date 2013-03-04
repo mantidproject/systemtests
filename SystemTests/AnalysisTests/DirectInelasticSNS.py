@@ -215,16 +215,19 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
             DeleteWorkspace("sa") 
         barefname = "%s%d_%g" % (fout_prefix,rlist[0],psi)
         fname_out = os.path.join(outdir, barefname)
-        fname_out=fname_out.replace('.','p')
         if flag_spe:
             SaveSPE(InputWorkspace="OWST",Filename=fname_out+".spe")					#save the data in spe format. 
             if (i==0):
                 SavePHX(InputWorkspace="OWST",Filename=fname_out+".spe")
-        if flag_nxspe:                                                                  #save in NXSPE format       
+        if flag_nxspe:
+            #save in NXSPE format
+            nxspe_name = fname_out+".nxspe"
+            self._nxspe_filename = nxspe_name
             if (do_powder):
-                SaveNXSPE(InputWorkspace="OWST",Filename=fname_out+".nxspe",Efixed=Efixed,psi=psi,KiOverKfScaling=True,ParFile=os.path.join(outdir, "group.par"))
+                SaveNXSPE(InputWorkspace="OWST",Filename=nxspe_name,Efixed=Efixed,psi=psi,KiOverKfScaling=True,
+                          ParFile=os.path.join(outdir, "group.par"))
             else:
-                SaveNXSPE(InputWorkspace="OWST",Filename=fname_out+".nxspe",Efixed=Efixed,psi=psi,KiOverKfScaling=True)
+                SaveNXSPE(InputWorkspace="OWST",Filename=nxspe_name,Efixed=Efixed,psi=psi,KiOverKfScaling=True)
 
     def validate(self):
         #check if required files are created
@@ -237,15 +240,20 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
         vanadiumfile = os.path.join(self.customDataDir, 'van.nx5')
         self.assertTrue(os.path.exists(vanadiumfile))
         self.assertGreaterThan(os.path.getsize(vanadiumfile),10000000)
+
+        # Check saved file (there should only be one)
         #find the nxspe filename: it should be only one, but the name might depend on the rounding of phi
         nxspelist=glob.glob(os.path.join(self.customDataDir,'*.nxspe'))
-        if len(nxspelist)!=1:
-            print "Error: No nxspe files found in %s" % (self.customDataDir)
+        if len(nxspelist)>1 or len(nxspelist) == 0:
+            print "Error: Expected single nxspe file in %s. Found %d" % (self.customDataDir, len(nxspelist))
             return False
-        nxspefilename=nxspelist[0]
-        self.assertGreaterThan(os.path.getsize(nxspefilename),100000)
-        psifilename=float((nxspefilename.split('12384_')[1].split('.nxspe'))[0].replace('p','.'))
-        self.assertDelta(psifilename,-24,0.01)
+       
+        # Name encodes rotation
+        self.assertGreaterThan(os.path.getsize(self._nxspe_filename),100000)
+        psi_part=self._nxspe_filename.split('12384_')[1]
+        psi_param=float(psi_part.split('.nxspe')[0])
+        self.assertDelta(psi_param,-24,0.01)
+
         #input workspace
         self.assertLessThan(mtd["IWS"].getNumberEvents(),100000)
         self.assertGreaterThan(mtd["IWS"].getNumberEvents(),90000)
