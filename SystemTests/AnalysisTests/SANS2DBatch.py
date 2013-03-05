@@ -1,5 +1,6 @@
 import stresstesting
-from ISISCommandInterface import *
+
+from mantid.simpleapi import *from ISISCommandInterface import *
 from mantid.simpleapi import *
 from mantid import config
 from SANSBatchMode import *

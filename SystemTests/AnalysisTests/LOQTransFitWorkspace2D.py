@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 from ISISCommandInterface import *
 
 class LOQTransFitWorkspace2D(stresstesting.MantidStressTest):
@@ -20,11 +20,11 @@ class LOQTransFitWorkspace2D(stresstesting.MantidStressTest):
         WavRangeReduction(3, 4, False, '_suff')
 
         #save the results, we'll use them later, remove the other tempory workspaces
-        RenameWorkspace('54435_trans_sample_3.0_8.0', 'samp')
-        RenameWorkspace('54434_trans_can_3.0_8.0', 'can')
-        DeleteWorkspace('54435_trans_sample_3.0_8.0_unfitted')
-        DeleteWorkspace('54434_trans_can_3.0_8.0_unfitted')
-        DeleteWorkspace('54431main_2D_3.0_4.0_suff')
+        RenameWorkspace(InputWorkspace='54435_trans_sample_3.0_8.0',OutputWorkspace= 'samp')
+        RenameWorkspace(InputWorkspace='54434_trans_can_3.0_8.0',OutputWorkspace= 'can')
+        DeleteWorkspace(Workspace='54435_trans_sample_3.0_8.0_unfitted')
+        DeleteWorkspace(Workspace='54434_trans_can_3.0_8.0_unfitted')
+        DeleteWorkspace(Workspace='54431main_2D_3.0_4.0_suff')
 
         #now test TransWorkspace()
         self.setup()

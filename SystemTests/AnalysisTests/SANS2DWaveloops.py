@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 from ISISCommandInterface import *
 
 class SANS2DWaveloops(stresstesting.MantidStressTest):

@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 from ISISCommandInterface import *
 
 # Test is giving odd results on Linux, but only this 2D one.
