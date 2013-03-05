@@ -113,12 +113,12 @@ class MARIReductionFromFile(ISISDirectInelasticReduction):
   def __init__(self):
     ISISDirectInelasticReduction.__init__(self)
     self.instr_name = 'MARI'
-    self.sample_run = 11015
+    self.sample_run = 11001
     self.incident_energy = 11
     self.bins = [-11,0.05,11]
     self.white_beam = 11060
     self.map_file = "mari_res.map"
-    self.mono_van = 11001
+    self.mono_van = 11015
     self.sample_mass = 10
     self.sample_rmm = 435.96
     self.hard_mask = "mar11015.msk"
@@ -131,7 +131,7 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
   def __init__(self):
     ISISDirectInelasticReduction.__init__(self)
 
-    mono_run = Load(Filename='MAR11015.RAW',OutputWorkspace='MAR11015.RAW')
+    mono_run = Load(Filename='MAR11001.RAW',OutputWorkspace='MAR11001.RAW')
     last_alg = mono_run.getHistory().lastAlgorithm()
     print last_alg
     mono_ws = mono_run
@@ -140,7 +140,7 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
 
     white_ws = Load(Filename='MAR11060.RAW',OutputWorkspace='MAR11060.RAW')
 
-    van_run = Load(Filename='MAR11001.RAW',OutputWorkspace='MAR11001.RAW')
+    van_run = Load(Filename='MAR11015.RAW',OutputWorkspace='MAR11015.RAW')
     last_alg = van_run.getHistory().lastAlgorithm()
     van_ws = van_run
     AddSampleLog(Workspace=van_ws, LogName='Filename', 
@@ -159,7 +159,7 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
     
   def get_result_workspace(self):
       """Returns the result workspace to be checked"""
-      return "11015.spe"
+      return "11001.spe"
 
   def get_reference_file(self):
     return "MARIReduction.nxs"
