@@ -1,5 +1,6 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
+from mantid import config
 from ISISCommandInterface import *
 from SANSBatchMode import *
 import os.path
@@ -24,13 +25,13 @@ class SANSLOQBatch(stresstesting.MantidStressTest):
     
     BatchReduce(csv_file, 'raw', plotresults=False, saveAlgs={'SaveCanSAS1D':'xml','SaveNexus':'nxs'})
         
-    LoadNexus('54433sans.nxs', 'result')
-    Plus('result', '99630sanotrans', 'result')
+    LoadNexus(Filename='54433sans.nxs',OutputWorkspace='result')
+    Plus(LHSWorkspace='result',RHSWorkspace='99630sanotrans',OutputWorkspace= 'result')
 
-    os.remove(os.path.join(mtd.getConfigProperty('defaultsave.directory'),'54433sans.nxs'))
-    os.remove(os.path.join(mtd.getConfigProperty('defaultsave.directory'),'99630sanotrans.nxs'))
-    os.remove(os.path.join(mtd.getConfigProperty('defaultsave.directory'),'54433sans.xml'))
-    os.remove(os.path.join(mtd.getConfigProperty('defaultsave.directory'),'99630sanotrans.xml'))
+    os.remove(os.path.join(config['defaultsave.directory'],'54433sans.nxs'))
+    os.remove(os.path.join(config['defaultsave.directory'],'99630sanotrans.nxs'))
+    os.remove(os.path.join(config['defaultsave.directory'],'54433sans.xml'))
+    os.remove(os.path.join(config['defaultsave.directory'],'99630sanotrans.xml'))
     
   def validate(self):
     # Need to disable checking of the Spectra-Detector map because it isn't

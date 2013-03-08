@@ -1,5 +1,6 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
+from mantid import config
 from ISISCommandInterface import *
 
 class SANS2DMultiPeriodAddFiles(stresstesting.MantidStressTest):
@@ -19,8 +20,8 @@ class SANS2DMultiPeriodAddFiles(stresstesting.MantidStressTest):
     
     WavRangeReduction(2, 4, DefaultTrans)
 
-    os.remove(os.path.join(mtd.settings['defaultsave.directory'],'SANS2D00005512-add.nxs'))
-    os.remove(os.path.join(mtd.settings['defaultsave.directory'],'SANS2D00005512.log'))
+    os.remove(os.path.join(config['defaultsave.directory'],'SANS2D00005512-add.nxs'))
+    os.remove(os.path.join(config['defaultsave.directory'],'SANS2D00005512.log'))
     
   def validate(self):
     # Need to disable checking of the Spectra-Detector map because it isn't

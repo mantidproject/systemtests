@@ -1,6 +1,7 @@
 import stresstesting
-from mantidsimple import *
 from ISISCommandInterface import *
+from mantid.simpleapi import *
+from mantid import config
 from SANSBatchMode import *
 import os.path
 
@@ -19,7 +20,7 @@ class SANS2DBatch(stresstesting.MantidStressTest):
     
     BatchReduce(csv_file, 'nxs', plotresults=False, saveAlgs={'SaveCanSAS1D':'xml','SaveNexus':'nxs'})
         
-    os.remove(os.path.join(mtd.getConfigProperty('defaultsave.directory'),'5512p7_SANS2DBatch.xml'))
+    os.remove(os.path.join(config['defaultsave.directory'],'5512p7_SANS2DBatch.xml'))
     
   def validate(self):
     # Need to disable checking of the Spectra-Detector map because it isn't
