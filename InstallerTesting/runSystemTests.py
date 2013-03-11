@@ -35,6 +35,8 @@ parser.add_option("-l", "--loglevel", dest="loglevel",
                   help="Set the log level for test running: [" + ', '.join(loglevelChoices) + "]")
 parser.add_option("", "--showskipped", dest="showskipped", action="store_true",
                   help="List the skipped tests.")
+parser.add_option("", "--archivesearch", dest="archivesearch", action="store_true",
+                  help="Turn on archive search for file finder.")
 parser.set_defaults(frameworkLoc=DEFAULT_FRAMEWORK_LOC, mantidpath=None, makeprop=True,
                     loglevel="information")
 (options, args) = parser.parse_args()
@@ -60,7 +62,8 @@ else:
 # Ensure that this is the one that is picked
 sys.path.insert(0, mantid_module_path)
 
-mtdconf = stresstesting.MantidFrameworkConfig(mantid_module_path, loglevel=options.loglevel)
+mtdconf = stresstesting.MantidFrameworkConfig(mantid_module_path, loglevel=options.loglevel,
+                                              archivesearch=options.archivesearch)
 if options.makeprop:
   mtdconf.config()
 
