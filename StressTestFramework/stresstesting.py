@@ -122,10 +122,14 @@ class MantidStressTest(object):
             return True
 
         # try full findRuns which will use archive search if it is turned on
-        candidates = FileFinder.findRuns(filename)
-        for item in candidates:
-            if os.path.exists(item):
-                return True
+        try:
+            candidates = FileFinder.findRuns(filename)
+            for item in candidates:
+                if os.path.exists(item):
+                    return True
+        except RuntimeError, e:
+            return False
+                
 
         # file was not found
         return False
