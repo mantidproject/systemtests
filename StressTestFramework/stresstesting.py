@@ -113,6 +113,27 @@ class MantidStressTest(object):
         '''
         print self.PREFIX + self.DELIMITER + name + self.DELIMITER + str(value) + '\n',
         
+    def __verifyRequiredFile(self, filename):
+        '''Return True if the specified file name is findable by Mantid.'''
+        from mantid.api import FileFinder
+
+        # simple way is just getFullPath which never uses archive search
+        if os.path.exists(FileFinder.getFullPath(filename)):
+            return True
+
+        # try full findRuns which will use archive search if it is turned on
+        try:
+            candidates = FileFinder.findRuns(filename)
+            for item in candidates:
+                if os.path.exists(item):
+                    return True
+        except RuntimeError, e:
+            return False
+                
+
+        # file was not found
+        return False
+
     def __verifyRequiredFiles(self):
         # first see if there is anything to do
         reqFiles = self.requiredFiles()
@@ -127,9 +148,8 @@ class MantidStressTest(object):
         mtd.initialise()
 
         # check that all of the files exist
-        from mantid.api import FileFinder
         for filename in reqFiles:
-            if not os.path.exists(FileFinder.getFullPath(filename)):
+            if not self.__verifyRequiredFile(filename):
                 print "Missing required file: '%s'" % filename
                 foundAll = False
 
@@ -848,7 +868,7 @@ class TestManager(object):
 class MantidFrameworkConfig:
 
     def __init__(self, mantidDir=None, sourceDir=None,
-                 loglevel='information'):
+                 loglevel='information', archivesearch=False):
         # force the environment variable
         if mantidDir is not None:
             if os.path.isfile(mantidDir):
@@ -886,6 +906,7 @@ class MantidFrameworkConfig:
 
         # set the log level
         self.__loglevel = loglevel
+        self.__datasearch =  archivesearch
 
     def __locateSourceDir(self, suggestion):
         if suggestion is None:
@@ -981,6 +1002,10 @@ class MantidFrameworkConfig:
         # Case insensitive
         mtd.settings['filefinder.casesensitive'] = 'Off'
         
+        # datasearch
+        if self.__datasearch:
+            mtd.settings["datasearch.searcharchive"] = 'On'
+
         # Save this configuration
         mtd.settings.saveConfig(self.__userPropsFile)
 
