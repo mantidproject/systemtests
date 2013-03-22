@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 
 class SXDAnalysis(stresstesting.MantidStressTest):
     """
@@ -7,18 +7,39 @@ class SXDAnalysis(stresstesting.MantidStressTest):
     """
     
     def runTest(self):
-        # Limit mem usage as it kills our 32 bit machine when running
-        #ConvertToDiffractionMDWorkspace and we have no file backend
-        LoadRaw(Filename=r'SXD23767.raw',OutputWorkspace='SXD23767',Cache='Always',
-                LoadLogFiles='0',LoadMonitors='Exclude', SpectrumMax=20564) 
-        # Ticket #4527: This step would fail occasionally.
-        ConvertToDiffractionMDWorkspace(InputWorkspace='SXD23767',OutputWorkspace='QLab',LorentzCorrection='1',SplitInto='2',SplitThreshold='50')
         
-        FindPeaksMD(InputWorkspace='QLab',PeakDistanceThreshold='1',MaxPeaks='60',DensityThresholdFactor=300,OutputWorkspace='peaks')
+        ws = Load(Filename='SXD23767.raw', LoadMonitors='Exclude')
         
-        # A basic check that peak finding was possible. We don't do much more than this with SXD in mantid at this point.
-        peaks = mtd['peaks']
-        self.assertTrue(60 == peaks.getNumberPeaks())
+        # A lower SplitThreshold, with a reasonable bound on the recursion depth, helps find weaker peaks at higher Q.
+        QLab = ConvertToDiffractionMDWorkspace(InputWorkspace=ws, OutputDimensions='Q (lab frame)', SplitThreshold=50, LorentzCorrection='1',MaxRecursionDepth='13',Extents='-15,15,-15,15,-15,15')
+        
+        #  NaCl has a relatively small unit cell, so the distance between peaks is relatively large.  Setting the PeakDistanceThreshold
+        #  higher avoids finding high count regions on the sides of strong peaks as separate peaks.
+        peaks_qLab = FindPeaksMD(InputWorkspace='QLab', MaxPeaks=300, DensityThresholdFactor=10, PeakDistanceThreshold=1.0)
+
+        FindUBUsingFFT(PeaksWorkspace=peaks_qLab, MinD='3', MaxD='5',Tolerance=0.08)
+        
+        out_params = IndexPeaks(PeaksWorkspace=peaks_qLab,Tolerance=0.12,RoundHKLs=1)
+        number_peaks_indexed = out_params[0]
+        ratio_indexed = float(number_peaks_indexed)/peaks_qLab.getNumberPeaks()
+        self.assertTrue(ratio_indexed >= 0.8, "Not enough peaks indexed. Ratio indexed : " + str(ratio_indexed))
+        
+        ShowPossibleCells(PeaksWorkspace=peaks_qLab,MaxScalarError='0.5')
+        SelectCellOfType(PeaksWorkspace=peaks_qLab, CellType='Cubic', Centering='F', Apply=True)
+        
+        unitcell_length = 5.64 # Angstroms
+        unitcell_angle = 90
+        length_tolerance = 0.1
+        angle_tolelerance = 0.25
+        
+        # Check results.
+        latt = peaks_qLab.sample().getOrientedLattice()
+        self.assertDelta( latt.a(), unitcell_length, length_tolerance, "a length is different from expected")
+        self.assertDelta( latt.b(), unitcell_length, length_tolerance, "b length is different from expected")
+        self.assertDelta( latt.c(), unitcell_length, length_tolerance, "c length is different from expected")
+        self.assertDelta( latt.alpha(), unitcell_angle, angle_tolelerance, "alpha angle is different from expected")
+        self.assertDelta( latt.beta(), unitcell_angle, angle_tolelerance, "beta angle is different from expected")
+        self.assertDelta( latt.gamma(), unitcell_angle, angle_tolelerance, "gamma angle length is different from expected")
         
     def doValidation(self):
         # If we reach here, no validation failed
