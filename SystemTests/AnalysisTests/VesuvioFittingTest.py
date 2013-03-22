@@ -5,7 +5,7 @@ from mantid.simpleapi import *
 class VesuvioFittingTest(stresstesting.MantidStressTest):
 
     def runTest(self):
-        LoadVesuvio(RunNumbers='14188-14190',OutputWorkspace='raw_ws',SpectrumList='135',DifferenceType='Single',
+        LoadVesuvio(Filename='14188-14190',OutputWorkspace='raw_ws',SpectrumList='135',Mode='SingleDifference',
                     InstrumentParFile=r'IP0005.dat')
         CropWorkspace(InputWorkspace='raw_ws',OutputWorkspace='raw_ws',XMin='50')
         Rebin(InputWorkspace='raw_ws',OutputWorkspace='raw_ws',Params='50,1,600')
