@@ -45,6 +45,9 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
           #self.assertDelta(peak1.getSigmaIntensity(),peak2.getSigmaIntenity(),.02,"peaks #"+str(i)+" have different k values")
           #self.assertDelta((peak1.getQLabFrame()-peak2.QLabFrame()).norm(),0.0,.02,"peaks #"+str(i)+" have different l values")
           #self.assertEqual(peak1.getDetectorID(),peak2.getDetectorID(),"peaks have different detectorID's")
+          if (peak1.getDetectorID()!= peak2.getDetectorID()):
+             logger.warning("SYSTEM TEST: Warning: detector ID on peak 1: "+str(peak1.getDetectorID())+" is not equal to detector ID on the peak 2: "+str(peak2.getDetectorID()))
+
           
           self.assertEqual(peak1.getRow(),peak2.getRow(),"peaks have different rows")
           self.assertEqual(peak1.getCol(),peak2.getCol(),"peaks have different columns")
