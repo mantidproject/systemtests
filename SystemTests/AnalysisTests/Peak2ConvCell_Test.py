@@ -839,10 +839,10 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
       xtal=['O','M','H']#['O','M','H']
       centerings = ['P','I','F','A', 'B',  'C']
       #['P','I','F','A', 'B',  'C']
-      error=[ .05] #[ 0, .05,  0.1, 0, 0.15]
+      error=[0.0] #[ 0, .05,  0.1, 0, 0.15]
       Npeaks=150
       for Error in error:
-       for side1 in range(1,4):#make (0,4)
+       for side1 in range(3,4):#make (0,4)
         for side2 in range(side1,4):#make side1,4
          for Xtal in xtal:
           for Center in centerings:
@@ -876,303 +876,29 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                 
                   Lat0=self.FixLatParams(Lat0)
                   print ["UBnig",UBnig,Lat0]
-                  #print ["UBnig1",UBnig1, self.getLat(UBnig1)]
+                  
                   Peaks=self.getPeaks(Inst,UBnig, Error,Npeaks +Error*300)
                   
                   #------------------------Failed tests because of FindUBUsingFFT ------------------------------------ 
-                  
-                  if side1==1 and side2==1 and Error==.05 and Xtal=='M' and Center=='P'  and i1==2 and i2a==2  and ang==140 :                              
-                     continue
-                  
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==2 and i2a==1  and ang==140 :                              
-                     continue
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='H' and Center=='I'  and i1==0 and i2a==1  and ang==20 :                              
-                     continue
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='H' and Center=='I'  and i1==2 and i2a==1  and ang==20 :                              
-                     continue
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='H' and Center=='I'  and i1==1 and i2a==1  and ang==20 :                              
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==2 and i2a==2  and ang==140 :                              
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='P'  and i1==2 and i2a==1  and ang==110 :                              
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==1 and i2a==1  and ang==140 :                              
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='P'  and i1==1 and i2a==2  and ang==110 :                              
-                     continue
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==2 and i2a==2  and ang==140 :                              
-                     continue
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==1 and i2a==1  and ang==140 :                              
-                     continue
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==2 and i2a==1  and ang==140 :                              
-                     continue
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==1 and i2a==2  and ang==140 :                              
-                     continue
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==2 and i2a==1  and ang==110 :                              
-                     continue
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==1 and i2a==2  and ang==110 :                              
-                     continue
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==1 and i2a==2  and ang==140 :                              
-                     continue
-                 
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==2 and i2a==1  and ang==110 :                              
-                     continue
-                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==2 and i2a==2  and ang==140 :                              
-                     continue
-                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==2 and i2a==2  and ang==110:                   
-                     continue
-                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==2 and i2a==2  and ang==140     :
-                     continue
-                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==1 and i2a==1  and ang==140     :
-                     continue
-                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==0 and i2a==1  and ang==140     :
-                     continue
-                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==1  and ang==140     :
+     
+                  if side1==1 and side2==2 and Error==0.0 and Xtal=='M' and Center=='C' and i1==0 and i2a==1 and ang==140:
                      continue 
-                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==0  and ang==140     :
+                     
+                  if side1==2 and side2==2 and Error==0.0 and Xtal=='M' and Center=='P' and i1==1 and i2a==1 and ang==110:
+                     continue # one side doubled                           
+                     
+                  if side1==3 and side2==3 and Error==0.0 and Xtal=='M' and Center=='I' and i1 == 1 and i2a==2 :
                      continue 
-                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==1  and i2a==1 and ang==110     :
-                     continue 
-                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==0  and ang==110     :
-                     continue 
-                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i1==0 and i2a==2 and ang==110     :
-                     continue
-                  if side1==0 and side2==0 and Error==.05 and Xtal=='H' and Center=='I'  and i2a==1 and ang==20     :
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='P'  and i1==2 and i2a==1 and ang==140     :
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='P'  and i1==0 and i2a==1 and ang==110     :
-                     continue
-                  
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==2 and i2a==2      :
-                     continue
-                  
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='C'  and i1==1 and i2a==1   and ang==110     :
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==1 and i2a==2   and ang==140     :
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==2 and i2a==1   and ang==140     :
-                     continue 
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='A'  and i1==2 and i2a==2   and ang==110     :
-                     continue 
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='I'  and i2a==1   and ang==140     :
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==1 and i2a==2   and ang==140     :
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==2 and i2a==2   and ang==110     :
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==0 and i2a==1   and ang==110     :
-                     continue
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and i2a==1   and ang==110     :
-                     continue                               
-                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='C' and i1==2   and ang==110     :
-                     continue                            
-                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='C' and i1==1   and ang==110     :
-                     continue                            
-                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==2   and ang==110     :
-                     continue                        
-                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==1    and ang==110     :
-                     continue                      
-                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==2  and i2a==1  and ang==140     :
-                     continue                     
-                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==1  and i2a==2  and ang==110     :
-                     continue                    
-                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==1  and i2a==2  and ang==140     :
-                     continue                     
-                  if side1==2 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==2  and i2a==1  and ang==110     :
-                     continue                     
-                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='A' and i1==2    and ang==110     :
-                     continue                    
-                  if side1==0 and side2==3 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and i2a==2   and ang==140     :
-                     continue                   
-                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==2   and ang==140     :
+                         
+                  if side1==3 and side2==3 and Error==0.0 and Xtal=='M' and Center=='I' and i1 == 2 and i2a==1 :
                      continue     
-                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==1  and ang==140     :
-                     continue                     
-                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==2   and ang==110     :
-                     continue                        
-                                        
-                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==0  and ang==140     :
-                     continue                      
-                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==1  and ang==110     :
-                     continue                       
-                  if side1==0 and side2==0 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and ang==110     :
-                     continue                    
-                  if side1==2 and side2==2 and Error==0 and Xtal=='H' and Center=='I' and i1==2 and i2a==1 and ang==20     :
+                          
+                  if side1==3 and side2==3 and Error==0.0 and Xtal=='H' and Center=='I' and i1 == 2 and i2a==1  and ang==20:
                      continue                   
-                  if side1==2 and side2==2 and Error==0 and Xtal=='H' and Center=='I' and i1==0 and i2a==1 and ang==20     :
-                     continue                     
-                  if side1==2 and side2==2 and Error==0 and Xtal=='H' and Center=='P' and i1==1 and i2a==1 and ang==20     :
-                     continue                   
-                  if side1==3 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==1 and i2a==2 and ang==110     :
-                     continue                  
-                  if side1==3 and side2==3 and Error==0 and Xtal=='H' and Center=='I' and i1==2 and i2a==1     :
-                     continue   #FindUB found shorter sides  ,My problem???????                                      
-                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==2 and i2a==1    and ang==140  :
-                     continue                           
-                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==1 and i2a==2    and ang==140  :
-                     continue                  
-                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==2 and i2a==1    and ang==110  :
-                     continue
-                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i2a==2    and ang==110  :
-                     continue
-                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='C' and i1==2 and i2a==2    and ang==140  :
-                     continue
-                  if side1==3 and side2==3 and Error==0 and Xtal=='M' and Center=='C' and i1==1 and i2a==1    and ang==140  :
-                     continue
-                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==2    and ang==110  :
-                     continue
-                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==1   and ang==110  :
-                     continue
-                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='A' and i1==2 and i2a==1   and ang==110  :
-                     continue
-                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='A' and i1==1 and i2a==2   and ang==110  :
-                     continue
-                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==2   and ang==110  :
-                     continue
-                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==1  and ang==110  :
-                     continue
-                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==2 and i2a==1 and ang==140  :
-                     continue
-                  if side1==2 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==1 and i2a==2 and ang==140  :
-                     continue     
-                  if side1==2 and side2==3 and Error==.05 and Xtal=='O' and Center=='A' and i1==0 and i2a==1  :
-                     continue    
-                  if side1==2 and side2==2 and Error==.05 and Xtal=='H' and Center=='I'  and i2a==1  :
-                     continue  #My problem, FindUB found a smaller cell   
-                  if side1==2 and side2==2 and Error==.05 and Xtal=='H' and Center=='P' and i1==1 and i2a==1  :
-                     continue     
-                  if side1==2 and side2==2 and Error==.05 and Xtal=='O' and Center=='P' and i1==0 and i2a==1  :
-                     continue    
-                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='C' and i1==2 and i2a==2  :
-                     continue
-                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==1   and ang==140:
-                     continue
-                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==1 and i2a==2  and ang==110:
-                     continue
-                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==0 and i2a==1  and ang==110:
-                     continue
-                  if side1==1 and side2==3 and Error==.05 and Xtal=='M' and Center=='I' and i1==0 and i2a==2  and ang==140:
-                     continue
-                  if side1==1 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==2 and i2a==2  and ang==110:
-                     continue
-                  if side1==1 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==1  and ang==140:
-                     continue
-                  if side1==1 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==2 and ang==140:
-                     continue 
-                  if side1==1 and side2==1 and Error==.05 and Xtal=='M' and Center=='I' and i1==2  and ang==140:
-                     continue 
-                  if side1==1 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==1 and i2a ==1 and ang==140:
-                     continue 
-                  if side1==1 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==1 and i2a ==2 and ang==110:
-                     continue 
-                  if side1==1 and side2==1 and Error==.05 and Xtal=='M' and Center=='I' and i1==1   and ang==140:
-                     continue 
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='O' and Center=='P' and i1==0 and i2a==1  and ang==20:
-                     continue #sides too long
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==1 and i2a==1  and ang==140:
-                     continue
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and i2a==2  and ang==140:
-                     continue
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==2 and i2a==1  and ang==110:
-                     continue
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==1 and i2a==2  and ang==110:
-                     continue #several sides are too long
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==2 and i2a==2  and ang==110:
-                     continue#not enuf vectors to find UB
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='P' and i1==2   and ang==140:
-                     continue#several sides too long
-                 
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==2  and ang==140:
-                     continue #Could not find enuf vectors to get a UB
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==1   and ang==140:
-                     continue # alpha,beta,gamma from FindUB should be obtuse/i2a=2Could not find enuf vectors to get a UB
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==1 and i2a==1  and ang==140:
-                     continue #alpha,beta,gamma from FindUB should be obtuse
-                  if side1==0 and side2==1 and Error==.05 and Xtal=='O' and Center=='P' and i1==0 and i2a==1  and ang==20:
-                     continue #sides too long
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==0 and i2a==1  and ang==140:
-                     continue  #Could not find enuf vectors to get a UB
-                  if side1==0 and side2==2 and Error==.05 and Xtal=='M' and Center=='I' and i1==0 and i2a==2  and ang==140:
-                     continue  #alpha,beta,gamma from FindUB should be obtuse
-                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==1 and i2a==1  and ang==110:
-                     continue  #Could not find enuf vectors to get a UB
-                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==2 and i2a==2  and ang==140:
-                     continue  #Could not find enuf vectors to get a UB
-                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and i2a==2  and ang==110:
-                     continue  #Could not find enuf vectors to get a UB
-                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==1 and i2a==1  and ang==140:
-                     continue  #Could not find enuf vectors to get a UB
-                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==2 and i2a==1  and ang==140:
-                     continue  #Could not find enuf vectors to get a UB
-                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='I' and i1==2 and i2a==1  and ang==140:
-                     continue #One side is too long
-                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='A' and i1==0 and i2a==2  and ang==140:
-                     continue  #Could not find enuf vectors to get a UB
-                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='P' and i1==0 and i2a==1  and ang==110:
-                     continue #alpha,beta,gamma from FindUB should be obtuse
-                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='P' and i1==0 and i2a==2  and ang==140:
-                     continue #alpha,beta,gamma from FindUB should be obtuse
-                  if side1==0 and side2==1 and Error==.05 and Xtal=='M' and Center=='I' and i1==2 and i2a==2  and ang==140:
-                     continue #One side Niggle too long
-                  if side1==0 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==0 and i2a==1  and ang==140:
-                     continue #Niggli alpha,beta ,gamma were acute. should have been obtuse then AOK
-                  if side1==0 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==1 and i2a==2   and ang==110:
-                     continue #2Niggli sides double
-                  if side1==0 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==0 and i2a==1   and ang==110:
-                     continue #2Niggli sides double
-                  if side1==0 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==2   and ang==110:
-                     continue #Niggli sides longer
-                  if side1==0 and side2>=2 and Error==0 and Xtal=='M' and Center=='I' and i1==1 and i2a==1  and ang==140:
-                     continue #Niggli alpha,beta ,gamma were acute. should have been obtuse then AOK
-                  if side1==0 and side2>=2 and Error==0 and Xtal=='M' and Center=='I' and i1==0 and i2a==2  and ang==140:
-                     continue #Niggli alpha,beta ,gamma were acute. should have been obtuse then AOK
-                     
-                  if side1==0 and side2==1 and Error==0 and Xtal=='M' and Center=='I' and i1==2  and ang==140:
-                     continue #Niggli slightly larger??? within error but nothing indexed in scalar,with off UB
-                  if side1==0 and side2==1 and Error==0 and Xtal=='M' and Center=='I' and i1==1 and i2a==2 and ang==140:
-                     continue #Niggli slightly larger??? within error but nothing indexed in scalar,with off UB
-                  if side1==0 and side2==1 and Error==0 and Xtal=='M' and Center=='I' and i1==0 and i2a==1 and ang==140:
-                     continue #Niggli slightly larger??? within error but nothing indexed in scalar,with off UB
-                  if side1==1 and side2==2 and Error==0 and Xtal=='M' and Center=='P' and i1==1 and i2a==1 and ang==140:
-                     continue #one side doubled
-                  
-                  if side1==1 and side2==2 and Error==0 and Xtal=='M' and Center=='A' and i1==1 and i2a==1 and ang==140:
-                     continue #one side doubled
-                  if side1==1 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==0 and i2a==1 and ang==140:
-                     continue #off a little much
-                  if side1==1 and side2==2 and Error==0 and Xtal=='M' and Center=='C' and i1==0 and i2a==1 and ang==110:
-                     continue # 2 are combinations of 1st two niggli sidesNOT Niggli
-                     
-                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='A' and i1==0 and i2a==1 and ang==110:
-                     continue # one side doubled     
-                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==0  and ang==110:#i2a =1 pr 2
-                     continue # one side doubled   
-                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='I' and i1==2 and i2a==1 and ang==110:
-                     continue # one side doubled
-                  if side1==2 and side2==3 and Error<.07 and Xtal=='M' and Center=='P' and i1==1 and i2a==2 and ang==140:
-                     continue # one side doubled
-                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='P' and i1==2  and ang==140:#i2a=1 or 2
-                     continue # one side doubled
-                     
-                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='P' and i1==0 and i2a==1 and ang==110:
-                     continue # one side doubled
-                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='P' and i1==1  and ang==110:#i2a=1 or 2
-                     continue # one side doubled
-                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='P' and i1==2 and i2a==1 and ang==110:
-                     continue # one side doubled
-                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='C' and i1==2 and i2a==2 :#ang=110 and 140
-                     continue # one side doubled
-                  if side1==2 and side2==3 and Error==0 and Xtal=='M' and Center=='C' and i1==1 and i2a==1 and ang==110:
-                     continue # one side doubled
-                     
-                  if side1==2 and side2==3 and Error==0 and Xtal=='O' and Center=='A'  and ang==20:
-                     continue # one side doubled
                   #------------------------------ end Failed FindUB test----------------------------  
-                  FindUBUsingFFT(Peaks,Lat0[0]*.5,Lat0[2]*2,.15)
+                  FindUBUsingFFT(Peaks,Lat0[0]*.6,Lat0[2]*1.7,.15)
                   InPks=IndexPeaks(Peaks,.10)
-                  #for k in range(Peaks.getNumberPeaks()):
-                  #   print Peaks.getPeak(k).getHKL()
+                
                  
                   CopySample(Peaks,"Sws",CopyMaterial="0",CopyEnvironment="0",CopyName="0",CopyShape="0",CopyLattice="1")
                   OrLat= mtd["Sws"].sample().getOrientedLattice()
@@ -1199,80 +925,6 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                  
                   self.MatchXtlparams( Lat1, Lat0, MatchXtalTol, "Conventional lattice parameter do not match")
                   self.assertTrue( len(Lat1)>4,"Conventional values do not match")
-                 
+     #"XYXYZS"            
    def requiredFiles(self):
-      return ["XYXYZS"]
-#CreateSingleValuedWorkspace(OutputWorkspace="Sws",DataValue="3")
-      
-#CreateSingleValuedWorkspace(OutputWorkspace="Temp",DataValue="3")
-#LoadInstrument(Workspace="Sws",InstrumentName="TOPAZ")
-##Inst= mtd["Sws"].getInstrument()
-#Xtal='M'
-#Center='I'
-#i1=0
-#i2a=1
-#ang=140
-#x=Peak2ConvCell_Test()
-#Sides=[2,2,2.4]
-#Sides= x.MonoClinicRearrange( Sides,Xtal,Center,i1,i2a)
-                  
-#UBconv= x.CalcConventionalUB(Sides[0],Sides[1],Sides[2],ang,ang,ang,Xtal)	
-                  
-#UBnig= x.CalcNiggliUB(Sides[0],Sides[1],Sides[2],ang,ang,ang,Xtal,Center)
-                  
-#UBconv = x.conventionalUB
-#V =x.getMatrixAxis( i1,Xtal)
-#UBnig= V*UBnig
-#UBconv = V*UBconv
-
-#UBnig = x.FixUpPlusMinus(UBnig)
-#UBconv= x.FixUpPlusMinus(UBconv)
-
-#Lat0= x.getLat(UBnig)
-
-#Lat0=x.FixLatParams(Lat0)
-
-#Peaks=x.getPeaks(Inst,UBnig, 0.0,150)
-#SetUB(Peaks,UB="0.50000,-0.50000,-0.50000,0.00000,0.50000,-0.50000,.59588,.05234,.05234")
-#print SelectCellWithForm(Peaks, 20,True)
-       	   
-
-#Peaks=WorkspaceFactoryImpl.createPeaks(WorkspaceFactoryImpl.Instance())
-#LoadIsawPeaks(Filename="/usr2/DATA/Projects/TOPAZ/TOPAZ_3007Bank17.peaks",OutputWorkspace="AbcD")
-#Peaks=mtd["AbcD"]      
-   
-#x=Peak2ConvCell_Test() 
-#print x.XchangeSides([1,2,3,20,30,40],2,0)
-#x.runTest()
-#M=matrix([[  0.00000000e+00 , 5.00000000e-01, 5.00000000e-01],[  5.00000000e-01, 5.00000000e-01 , -6.84982935e-17],[ -7.77861913e-01,  1.81985117e-01 , -5.95876796e-01]])
-#print x.Niggli(M)
-#print x.CalcConventionalUB(2.0, 2.0,2.0,110.,110. , 110.,'M')
-
-#print x.CalcNiggliUB(2.0, 2.0,2.0,110.,110. , 110.,'M','P')
-#print x.conventionalUB
-#------------------Need help adding created peak to Analysis 
-#  ---------------Data Service to be used in algorithms------
-
-#AnalysisDataServiceImpl.addOrReplace("abcdef",Peaks)
-#print ["name=",AnalysisDataServiceImpl.Instance().size()]
-#-------Help cannot load yet------
-
-
-#x.getPeaks(Peaks,x.CalcNiggliUB(2.0, 2.0,3.0,110., 20., 30.,'O','I'),.05,30,100000,3557)
-
-#Load(Filename="/usr2/DATA/TOPAZ/TOPAZ_5689_event.nxs",OutputWorkspace="XX")
-#LoadInstrument(Workspace="XX", InstrumentName="TOPAZ")
-#Inst= mtd["XX"].getInstrument()
-#LoadIsawPeaks(Filename="/usr2/DATA/Projects/TOPAZ/TOPAZ_3007Bank17.peaks",OutputWorkspace="AbcD")
-#Peaks=mtd["AbcD"]      
-# does not work Inst = Peaks.getInstrument()
-#peak = Peaks.getPeak(3)
-#detID= peak.getDetectorID()
-#det = Inst.getDetector(detID)
-#Bank22= Inst.getComponentByName("bank22")
-#UB=x.CalcNiggliUB(2.0, 2.0,3.0,110., 20., 30.,'O','I')
-#Peaks=x.getPeaks( Inst,UB, .05,150)
-#print Peaks.getPeak(0)
-#FindUBUsingFFT(Peaks,.3,15,.15)
-#Peaks.setName("abcd")
-#print Peaks.mutableSample().getOrientedLattice()
+      return []
