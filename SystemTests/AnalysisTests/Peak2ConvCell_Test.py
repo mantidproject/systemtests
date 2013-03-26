@@ -18,7 +18,7 @@ from mantid.simpleapi import *
 #from mantidsimple import *
 #TODO premultiply cases, fix up.. Maybe not needed Cause Conv cell was "Nigglied"
 #TODO: SWitch cases, if use approx inequality, may get error cause low level code  [does Not](does) premult but when it [should](should not)
-class Peak2ConvCell_Test(stresstesting.MantidStressTest):
+class Peak2ConvCell_Test:#(stresstesting.MantidStressTest):
    conventionalUB=numpy.zeros(shape=(3,3))
    Cubic=[1,3,5]
    Tetr=[6,7,11,15,18,21]
@@ -842,7 +842,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
       error=[0.0] #[ 0, .05,  0.1, 0, 0.15]
       Npeaks=150
       for Error in error:
-       for side1 in range(3,4):#make (0,4)
+       for side1 in range(0,4):#make (0,4)
         for side2 in range(side1,4):#make side1,4
          for Xtal in xtal:
           for Center in centerings:
@@ -896,7 +896,7 @@ class Peak2ConvCell_Test(stresstesting.MantidStressTest):
                   if side1==3 and side2==3 and Error==0.0 and Xtal=='H' and Center=='I' and i1 == 2 and i2a==1  and ang==20:
                      continue                   
                   #------------------------------ end Failed FindUB test----------------------------  
-                  FindUBUsingFFT(Peaks,Lat0[0]*.6,Lat0[2]*1.7,.15)
+                  FindUBUsingFFT(Peaks,Lat0[0]*.5,Lat0[2]*2.0,.15)
                   InPks=IndexPeaks(Peaks,.10)
                 
                  
