@@ -49,8 +49,8 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
              logger.warning("SYSTEM TEST: Warning: detector ID on peak 1: "+str(peak1.getDetectorID())+" is not equal to detector ID on the peak 2: "+str(peak2.getDetectorID()))
 
           
-          self.assertEqual(peak1.getRow(),peak2.getRow(),"peaks have different rows")
-          self.assertEqual(peak1.getCol(),peak2.getCol(),"peaks have different columns")
+          self.assertDelta(peak1.getRow(),peak2.getRow(),1.2,"peaks have different rows")
+          self.assertDelta(peak1.getCol(),peak2.getCol(),1.2,"peaks have different columns")
           #self.assertDelta(peak1.getInitialEnergy(),peak2.getInitialEnergy(),tolerance,"peaks #"+str(i)+" have different InitialEnergies")
           #self.assertDelta(peak1.getFinalEnergy(),peak2.getFinalEnergy(),tolerance,"peaks #"+str(i)+" have different FinalEnergies")
           self.assertDelta(peak1.getWavelength(),peak2.getWavelength(),tolerance,"peaks #"+str(i)+" have different Wavelengths")
@@ -137,9 +137,10 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
 #
 # Make MD workspace using Lorentz correction, to find peaks 
 #
-      MDEW = ConvertToDiffractionMDWorkspace( InputWorkspace=event_ws, 
-   	            LorentzCorrection='1', OutputDimensions='Q (lab frame)', 
-                    SplitInto='2', SplitThreshold='50' ,MaxRecursionDepth='11')
+      MDEW = ConvertToMD( InputWorkspace=event_ws, QDimensions="Q3D",
+                    dEAnalysisMode="Elastic", QConversionScales="Q in A^-1",
+    LorentzCorrection='1', MinValues="-50,-50,-50", MaxValues="50,50,50",
+                    SplitInto='2', SplitThreshold='50',MaxRecursionDepth='11' )
 #
 # Find the requested number of peaks.  Once the peaks are found, we no longer
 # need the weighted MD event workspace, so delete it.
