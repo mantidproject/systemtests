@@ -6,7 +6,8 @@ import stresstesting
 import os
 import shutil
 import glob
-from mantidsimple import *
+import mantid
+from mantid.simpleapi import *
 from numpy import *
 
 class DirectInelaticSNSTest(stresstesting.MantidStressTest):
@@ -24,12 +25,11 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
         
         MaskDetectors(Workspace='mask',WorkspaceIndexList=indexlist)
         SaveNexus(InputWorkspace="mask",Filename = os.path.join(self.customDataDir,"mask_top_bottom.nxs"))
-        mtd.deleteWorkspace('mask')
+        DeleteWorkspace('mask')
 
     def setupFiles(self):
-        self.customDataDir = os.path.join(mtd.settings['defaultsave.directory'], 'temp')
-        datasearch = mtd.settings['datasearch.directories']
-        datasearch = datasearch.split(';')
+        self.customDataDir = os.path.join(mantid.config['defaultsave.directory'], 'temp')
+        datasearch = mantid.config.getDataSearchDirs()
         filename=''
         for d in datasearch:
             temp = os.path.join(d, 'SEQ_12384_event.nxs')
@@ -52,7 +52,7 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
         w=mtd[ws]
         origin = w.getInstrument().getSample().getPos()
         for i in range(w.getNumberHistograms()):
-            ang=w.getDetector(i).getTwoTheta(origin,V3D(0,0,1))*180/math.pi
+            ang=w.getDetector(i).getTwoTheta(origin,mantid.kernel.V3D(0,0,1))*180/math.pi
             index=int((ang-amin)/astep)
             if (index>=0) and (index<len(a)) and ((w.getDetector(i).getID())>0):
                 a[index].append(w.getSpectrum(i).getSpectrumNo())
@@ -85,8 +85,8 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
         """
         Function to get Ei and  -T0
         """
-        alg=GetEi(InputWorkspace=ws_name,Monitor1Spec="1",Monitor2Spec="2",EnergyEstimate=EiGuess)				#Run GetEi algorithm
-        [Ei,Tzero]=[float(alg.getPropertyValue("IncidentEnergy")),-float(alg.getPropertyValue("Tzero"))]		#Extract incident energy and T0
+        alg=GetEi(InputWorkspace=ws_name,EnergyEstimate=EiGuess)#Run GetEi algorithm
+        [Ei,Tzero]=[alg[0],-alg[3]]				#Extract incident energy and T0
         return [Ei,Tzero]
 
     def LoadPathMaker(self,runs,folder,prefix,suffix):
@@ -146,8 +146,8 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
 
     def cleanup(self):
         for ws in ['IWS', 'OWST', 'VAN', 'monitor_ws']:
-            if mtd.workspaceExists(ws):
-                mtd.deleteWorkspace(ws)
+            if mantid.AnalysisDataService.doesExist(ws):
+                DeleteWorkspace(ws)
         if os.path.exists(self.customDataDir):
             shutil.rmtree(self.customDataDir)
        
