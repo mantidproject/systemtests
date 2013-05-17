@@ -263,5 +263,5 @@ class DirectInelaticSNSTest(stresstesting.MantidStressTest):
         # up with by the mask values in the spectra
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Instrument')
-        return "OWST",'DirectInelasticSNS.nxs'
+        return "OWST",'SEQUOIAReduction.nxs'
 
