@@ -22,7 +22,7 @@ class BASISAutoReductionTest(stresstesting.MantidStressTest):
 		Load(Filename='BSS_13387_event.nxs', OutputWorkspace=autows)
 		LoadMask(Instrument='BASIS', OutputWorkspace='BASIS_MASK', InputFile='BASIS_AutoReduction_Mask.xml')
 		MaskDetectors(Workspace=autows, MaskedWorkspace='BASIS_MASK')
-		ModeratorTzero(InputWorkspace=autows,OutputWorkspace=autows)
+		ModeratorTzeroLinear(InputWorkspace=autows,OutputWorkspace=autows)
 		LoadParameterFile(Workspace=autows, Filename=os.path.join(idfdir,'BASIS_silicon_111_Parameters.xml'))
 		LoadNexusMonitors(Filename='BSS_13387_event.nxs', OutputWorkspace=autows_monitor)
 		Rebin(InputWorkspace=autows_monitor,OutputWorkspace=autows_monitor,Params='10')
