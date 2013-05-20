@@ -11,6 +11,9 @@ class CNCSReductionTest(stresstesting.MantidStressTest):
 	def requiredFiles(self):
 		return ["CNCS_51936_event.nxs","CNCS_23936_event.nxs","CNCS_23937_event.nxs"]
 
+	def requiredMemoryMB(self):
+		return 4000
+
 	def cleanup(self):     
 		if os.path.exists(self.groupingFile):
             		os.remove(self.groupingFile)
