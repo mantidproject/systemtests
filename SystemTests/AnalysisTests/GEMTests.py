@@ -13,7 +13,7 @@ class GEMTest(stresstesting.MantidStressTest):
 		self.xye_d_files = []
 		self.ref_xye_d_files = ['GEM58654_b1_D.dat','GEM58654_b2_D.dat','GEM58654_b3_D.dat','GEM58654_b4_D.dat','GEM58654_b5_D.dat','GEM58654_b6_D.dat']
 		self.file_index = 0
-		self.cal_file = ''
+		self.new_cal_file = ''
 
 	def runTest(self):
 		# do something
@@ -30,7 +30,9 @@ class GEMTest(stresstesting.MantidStressTest):
                 DeleteWorkspace('Vanadium')
 		CreateSingleValuedWorkspace(OutputWorkspace='Sc',DataValue='100000')
 		Divide(LHSWorkspace='Corr',RHSWorkspace='Sc',OutputWorkspace='Corr')
-		MaskDetectorsIf(InputWorkspace='Corr',Mode='DeselectIf',InputCalFile=r'offsets_2011_cycle111b.cal',OutputCalFile=r'offsets_2011_cycle111b_new.cal')
+                
+                self.new_cal_file = os.path.join(config['defaultsave.directory'],'offsets_2011_cycle111b_new.cal')
+		MaskDetectorsIf(InputWorkspace='Corr',Mode='DeselectIf',InputCalFile=r'offsets_2011_cycle111b.cal',OutputCalFile=self.new_cal_file)
 		# load precompiled vanadium files
 		LoadNexusProcessed(Filename=r'van_gem59378_benchmark-0.nxs',OutputWorkspace='Vanadium-1')
 		LoadNexusProcessed(Filename=r'van_gem59378_benchmark-1.nxs',OutputWorkspace='Vanadium-2')
@@ -60,8 +62,7 @@ class GEMTest(stresstesting.MantidStressTest):
 		CylinderAbsorption(InputWorkspace='sample',OutputWorkspace='SampleTrans',AttenuationXSection='0.5',ScatteringXSection='1',SampleNumberDensity='1',NumberOfWavelengthPoints='100',CylinderSampleHeight='4',CylinderSampleRadius='0.40000000000000002',NumberOfSlices='10',NumberOfAnnuli='10')
 		Divide(LHSWorkspace='sample',RHSWorkspace='SampleTrans',OutputWorkspace='sample')
 		ConvertUnits(InputWorkspace='sample',OutputWorkspace='sample',Target='dSpacing')
-		alg = DiffractionFocussing(InputWorkspace='sample',OutputWorkspace='sample',GroupingFileName=r'offsets_2011_cycle111b_new.cal')
-		self.cal_file = alg.getPropertyValue('GroupingFileName')
+		DiffractionFocussing(InputWorkspace='sample',OutputWorkspace='sample',GroupingFileName=self.new_cal_file)
 		
 		CropWorkspace(InputWorkspace='sample',OutputWorkspace='sample-1',EndWorkspaceIndex='0')
 		CropWorkspace(InputWorkspace='sample',OutputWorkspace='sample-2',StartWorkspaceIndex='1',EndWorkspaceIndex='1')
@@ -104,52 +105,33 @@ class GEMTest(stresstesting.MantidStressTest):
 		# group and save
 		GroupWorkspaces(InputWorkspaces='ResultTOF-1,ResultTOF-2,ResultTOF-3,ResultTOF-4,ResultTOF-5,ResultTOF-6',OutputWorkspace='ResultTOFgrp')
 
-		alg = SaveGSS(InputWorkspace='ResultTOF-1',Filename=r'GEM58654_new.gss',SplitFiles='False',Append='0')
-		SaveGSS(InputWorkspace='ResultTOF-2',Filename=r'GEM58654_new.gss',SplitFiles='False',Bank='2')
-		SaveGSS(InputWorkspace='ResultTOF-3',Filename=r'GEM58654_new.gss',SplitFiles='False',Bank='3')
-		SaveGSS(InputWorkspace='ResultTOF-4',Filename=r'GEM58654_new.gss',SplitFiles='False',Bank='4')
-		SaveGSS(InputWorkspace='ResultTOF-5',Filename=r'GEM58654_new.gss',SplitFiles='False',Bank='5')
-		SaveGSS(InputWorkspace='ResultTOF-6',Filename=r'GEM58654_new.gss',SplitFiles='False',Bank='6')
-		self.gss_file = alg.getPropertyValue('Filename')
-
-		alg = SaveFocusedXYE(InputWorkspace='ResultTOF-1',Filename=r'GEM58654_b1_TOF.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_tof_files.append(alg.getPropertyValue('Filename'))
-		alg = SaveFocusedXYE(InputWorkspace='ResultTOF-2',Filename=r'GEM58654_b2_TOF.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_tof_files.append(alg.getPropertyValue('Filename'))
-		alg = SaveFocusedXYE(InputWorkspace='ResultTOF-3',Filename=r'GEM58654_b3_TOF.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_tof_files.append(alg.getPropertyValue('Filename'))
-		alg = SaveFocusedXYE(InputWorkspace='ResultTOF-4',Filename=r'GEM58654_b4_TOF.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_tof_files.append(alg.getPropertyValue('Filename'))
-		alg = SaveFocusedXYE(InputWorkspace='ResultTOF-5',Filename=r'GEM58654_b5_TOF.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_tof_files.append(alg.getPropertyValue('Filename'))
-		alg = SaveFocusedXYE(InputWorkspace='ResultTOF-6',Filename=r'GEM58654_b6_TOF.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_tof_files.append(alg.getPropertyValue('Filename'))
-
-		alg = SaveFocusedXYE(InputWorkspace='ResultD-1',Filename=r'GEM58654_b1_D.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_d_files.append(alg.getPropertyValue('Filename'))
-		alg = SaveFocusedXYE(InputWorkspace='ResultD-2',Filename=r'GEM58654_b2_D.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_d_files.append(alg.getPropertyValue('Filename'))
-		alg = SaveFocusedXYE(InputWorkspace='ResultD-3',Filename=r'GEM58654_b3_D.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_d_files.append(alg.getPropertyValue('Filename'))
-		alg = SaveFocusedXYE(InputWorkspace='ResultD-4',Filename=r'GEM58654_b4_D.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_d_files.append(alg.getPropertyValue('Filename'))
-		alg = SaveFocusedXYE(InputWorkspace='ResultD-5',Filename=r'GEM58654_b5_D.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_d_files.append(alg.getPropertyValue('Filename'))
-		alg = SaveFocusedXYE(InputWorkspace='ResultD-6',Filename=r'GEM58654_b6_D.dat',SplitFiles='False',IncludeHeader='0')
-		self.xye_d_files.append(alg.getPropertyValue('Filename'))
+                self.gss_file = os.path.join(config['defaultsave.directory'],'GEM58654_new.gss')
+                append=False
+                for i in range(1,7):
+                    if i > 1:
+                        append=True
+                    SaveGSS(InputWorkspace='ResultTOF-%d' % i,Filename=self.gss_file,SplitFiles='False',Append=append,Bank=i)
+                    
+                    filename= os.path.join(config['defaultsave.directory'],r'GEM58654_b%d_TOF.dat' % i)
+                    SaveFocusedXYE(InputWorkspace='ResultTOF-%d' % i,Filename=filename,SplitFiles='False',IncludeHeader='0')
+                    self.xye_tof_files.append(filename)
+                    
+                    filename= os.path.join(config['defaultsave.directory'],r'GEM58654_b%d_D.dat' % i)
+                    SaveFocusedXYE(InputWorkspace='ResultD-%d' % i,Filename=filename,SplitFiles='False',IncludeHeader='0')
+                    self.xye_d_files.append(filename)
 
 	def cleanup(self):
-		'''Remove temporary files'''
-		if os.path.exists(self.gss_file):
-			os.remove(self.gss_file)
-		if os.path.exists(self.cal_file):
-			os.remove(self.cal_file)
-		for file in self.xye_tof_files:
-			if os.path.exists(file):
-				os.remove(file)
-		for file in self.xye_d_files:
-			if os.path.exists(file):
-				os.remove(file)
+            '''Remove temporary files'''
+	    if os.path.exists(self.gss_file):
+                os.remove(self.gss_file)
+            if os.path.exists(self.new_cal_file):
+                os.remove(self.new_cal_file)
+	    for file in self.xye_tof_files:
+                if os.path.exists(file):
+		    os.remove(file)
+            for file in self.xye_d_files:
+                if os.path.exists(file):
+                    os.remove(file)
 			
 	def doValidation(self):
 		'''Override doValidation to vaildate two things at the same time'''

@@ -13,6 +13,7 @@ from reduction.instruments.sans.hfir_command_interface import *
 import types
 import traceback
 import math
+import os
 
 # Set directory containing the test data, relative to the Mantid release directory.
 TEST_DIR = "."
@@ -153,7 +154,7 @@ class HFIRTests(stresstesting.MantidStressTest):
     def test_data_path(self):
         self.assertEqual(ReductionSingleton()._data_path, '.')
         #any path that definitely exists on a computer with Mantid installed
-        test_path = os.path.normcase(config.getString('instrumentDefinition.directory'))
+        test_path = os.path.normcase(config['instrumentDefinition.directory'])
         DataPath(test_path)
         self.assertEqual(ReductionSingleton()._data_path, test_path)
         
