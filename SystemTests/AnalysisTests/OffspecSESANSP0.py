@@ -1,5 +1,5 @@
 from stresstesting import MantidStressTest
-from mantid.simpleapi import mtd
+from mantid.simpleapi import config,mtd
 import offspec
 
 class OffspecSESANSP0(MantidStressTest):
