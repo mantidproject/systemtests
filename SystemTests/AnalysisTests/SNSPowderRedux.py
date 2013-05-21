@@ -33,8 +33,8 @@ class PG3Analysis(stresstesting.MantidStressTest):
 
 
         # load output gsas file and the golden one
-        LoadGSS("PG3_4844.gsa", "PG3_4844")
-        LoadGSS(self.ref_file, "PG3_4844_golden")
+        LoadGSS(Filename="PG3_4844.gsa", OutputWorkspace="PG3_4844")
+        LoadGSS(Filename=self.ref_file, OutputWorkspace="PG3_4844_golden")
 
     def validateMethod(self):
         return "ValidateWorkspaceToWorkspace"
@@ -130,8 +130,8 @@ class PG3StripPeaks(stresstesting.MantidStressTest):
                 ExtendedHeader=True)
 
         # load output gsas file and the golden one
-        LoadGSS("PG3_4866.gsa", "PG3_4866")
-        LoadGSS(self.ref_file, "PG3_4866_golden")
+        LoadGSS(Filename="PG3_4866.gsa", OutputWorkspace="PG3_4866")
+        LoadGSS(Filename=self.ref_file, OutputWorkspace="PG3_4866_golden")
 
     def validateMethod(self):
         return "ValidateWorkspaceToWorkspace"
@@ -190,8 +190,8 @@ class SeriesAndConjoinFilesTest(stresstesting.MantidStressTest):
                      Target="dSpacing")
 
         # prepare for validation
-        LoadGSS("PG3_9829.gsa", "PG3_9829")
-        LoadGSS(self.ref_files[0], "PG3_4844_golden")
+        LoadGSS(Filename="PG3_9829.gsa", OutputWorkspace="PG3_9829")
+        LoadGSS(Filename=self.ref_files[0], OutputWorkspace="PG3_4844_golden")
         #LoadGSS("PG3_9830.gsa", "PG3_9830") # can only validate one workspace
         #LoadGSS(self.ref_file[1], "PG3_9830_golden")
 
