@@ -23,16 +23,16 @@ class TOPAZPeakFinding(stresstesting.MantidStressTest):
         FindUBUsingFFT(PeaksWorkspace='peaks',MinD='2',MaxD='16')
 
         # Index the peaks and check        
-        alg = IndexPeaks(PeaksWorkspace='peaks')
-        indexed = alg.getProperty("NumIndexed")
+        results = IndexPeaks(PeaksWorkspace='peaks')
+        indexed = results[0]
         if indexed < 199:
             raise Exception("Expected at least 199 of 200 peaks to be indexed. Only indexed %d!" % indexed)
 
         # Check the oriented lattice
         CopySample(InputWorkspace='peaks',OutputWorkspace='topaz_3132',CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0')
-        originalUB = numpy.array(mtd["topaz_3132"].getSample().getOrientedLattice().getUB())
+        originalUB = numpy.array(mtd["topaz_3132"].sample().getOrientedLattice().getUB())
         w = mtd["topaz_3132"]
-        s = w.getSample()
+        s = w.sample()
         ol = s.getOrientedLattice()
         self.assertDelta( ol.a(), 4.712, 0.01, "Correct lattice a value not found.")
         self.assertDelta( ol.b(), 6.06, 0.01, "Correct lattice b value not found.")
@@ -65,14 +65,14 @@ class TOPAZPeakFinding(stresstesting.MantidStressTest):
         CopySample(InputWorkspace='peaks_QSample',OutputWorkspace='topaz_3132',CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0')
         
         # Index the peaks and check        
-        alg = IndexPeaks(PeaksWorkspace='peaks_QSample')
-        indexed = alg.getProperty("NumIndexed")
+        results = IndexPeaks(PeaksWorkspace='peaks_QSample')
+        indexed = results[0]
         if indexed < 199:
             raise Exception("Expected at least 199 of 200 peaks to be indexed. Only indexed %d!" % indexed)
 
         # Check the UB matrix
         w = mtd["topaz_3132"]
-        s = w.getSample()
+        s = w.sample()
         ol = s.getOrientedLattice()
         self.assertDelta( ol.a(), 4.714, 0.01, "Correct lattice a value not found.")
         self.assertDelta( ol.b(), 6.06, 0.01, "Correct lattice b value not found.")
@@ -82,7 +82,7 @@ class TOPAZPeakFinding(stresstesting.MantidStressTest):
         self.assertDelta( ol.gamma(), 90, 0.4, "Correct lattice angle gamma value not found.")
         
         # Compare new and old UBs
-        newUB = numpy.array(mtd["topaz_3132"].getSample().getOrientedLattice().getUB())
+        newUB = numpy.array(mtd["topaz_3132"].sample().getOrientedLattice().getUB())
         # UB Matrices are not necessarily the same, some of the H,K and/or L sign can be reversed
         diff = abs(newUB) - abs(originalUB) < 0.001
         for c in xrange(3):

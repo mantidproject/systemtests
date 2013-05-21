@@ -13,7 +13,7 @@ class IndirectEnergyConversionTest(stresstesting.MantidStressTest):
         reducer.set_rebin_string('-0.5,0.005,0.5')
         reducer.reduce()
         ws = reducer.get_result_workspaces()
-        RenameWorkspace(ws[0], 'IndirectEnergyConversionTest')
+        RenameWorkspace(InputWorkspace=ws[0], OutputWorkspace='IndirectEnergyConversionTest')
 
     def validate(self):
         self.disableChecking.append('Instrument')

@@ -16,7 +16,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
         """ Compare the given workspace to the previously-binned original """
         BinMD(InputWorkspace=wsname,AlignedDim0='Q_lab_x, -3, 3, 100',AlignedDim1='Q_lab_y, -3, 3, 100',AlignedDim2='Q_lab_z, -3, 3, 100',ForceOrthogonal='1',OutputWorkspace="test_binned")
         ws = mtd["test_binned"]
-        EqualToMD(ws, self.original_binned, 'comparison')
+        EqualToMD(LHSWorkspace=ws, RHSWorkspace=self.original_binned, OutputWorkspace='comparison')
         comparison = mtd['comparison']
         for i in xrange(comparison.getNPoints()):
             if not comparison.signalAt(i):
@@ -44,14 +44,14 @@ class PlusMDTest(stresstesting.MantidStressTest):
 
         # ======== Mem + Mem ===========
         LoadMD(Filename='cncs.nxs',FileBackEnd='0',OutputWorkspace='cncs_mem2')
-        PlusMD("cncs_mem2", "cncs_mem", "cncs_mem2")
+        PlusMD(LHSWorkspace="cncs_mem2", RHSWorkspace="cncs_mem", OutputWorkspace="cncs_mem2")
         self.assertDelta( mtd['cncs_mem2'].getNPoints(), 112266*2, 1)
         self.compare_binned('cncs_mem2')
         DeleteWorkspace('cncs_mem2')
 
         # ======== File + mem, with write buffer ===========
         LoadMD(Filename='cncs.nxs',FileBackEnd='1',Memory='100',OutputWorkspace='cncs_file')
-        PlusMD("cncs_file", "cncs_mem", "cncs_file")
+        PlusMD(LHSWorkspace="cncs_file", RHSWorkspace="cncs_mem", OutputWorkspace="cncs_file")
         self.compare_binned('cncs_file')
         SaveMD("cncs_file", UpdateFileBackEnd="1")
         self.assertDelta( mtd['cncs_file'].getNPoints(), 112266*2, 1)
@@ -63,7 +63,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
         
         # ======== File + mem, with a small write buffer (only 1MB) ======== 
         LoadMD(Filename='cncs.nxs',FileBackEnd='1',Memory='1',OutputWorkspace='cncs_file_small_buffer')
-        PlusMD("cncs_file_small_buffer", "cncs_mem", "cncs_file_small_buffer")
+        PlusMD(LHSWorkspace="cncs_file_small_buffer", RHSWorkspace="cncs_mem", OutputWorkspace="cncs_file_small_buffer")
         SaveMD("cncs_file_small_buffer", UpdateFileBackEnd="1")
         self.assertDelta( mtd['cncs_file_small_buffer'].getNPoints(), 112266*2, 1)
         self.compare_binned('cncs_file_small_buffer')
@@ -74,7 +74,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
 
         # ========  File + mem, without a write buffer ======== 
         LoadMD(Filename='cncs.nxs',FileBackEnd='1',Memory='0',OutputWorkspace='cncs_file_nobuffer')
-        PlusMD("cncs_file_nobuffer", "cncs_mem", "cncs_file_nobuffer")
+        PlusMD(LHSWorkspace="cncs_file_nobuffer", RHSWorkspace="cncs_mem", OutputWorkspace="cncs_file_nobuffer")
         SaveMD("cncs_file_nobuffer", UpdateFileBackEnd="1")
         self.assertDelta( mtd['cncs_file_nobuffer'].getNPoints(), 112266*2, 1)
         self.compare_binned('cncs_file_nobuffer')
@@ -85,7 +85,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
         
         # ======== File + mem to a new (cloned) file ========  
         LoadMD(Filename='cncs.nxs',FileBackEnd='1',Memory='100',OutputWorkspace='cncs_file')
-        PlusMD("cncs_file", "cncs_mem", "cncs_added")
+        PlusMD(LHSWorkspace="cncs_file", RHSWorkspace="cncs_mem", OutputWorkspace="cncs_added")
         SaveMD("cncs_added", UpdateFileBackEnd="1")
         self.compare_binned('cncs_added')
         self.assertDelta( mtd['cncs_added'].getNPoints(), 112266*2, 1)
@@ -138,13 +138,14 @@ class MergeMDTest(stresstesting.MantidStressTest):
             AddSampleLog("CNCS_7860_event_NXS", "chi", "%s" % 0, "Number Series")
             AddSampleLog("CNCS_7860_event_NXS", "phi", "%s" % 0, "Number Series")
             ConvertToDiffractionMDWorkspace(InputWorkspace='CNCS_7860_event_NXS',OutputWorkspace='CNCS_7860_event_MD',OutputDimensions='Q (sample frame)',LorentzCorrection='1', Append=True)
-        
-            alg = SaveMD("CNCS_7860_event_MD", "CNCS_7860_event_rotated_%03d.nxs" % omega)
-            self._saved_filenames.append(alg.getPropertyValue("Filename"))
+            filename="CNCS_7860_event_rotated_%03d.nxs" % omega
+            SaveMD("CNCS_7860_event_MD", filename)
+            self._saved_filenames.append(filename)
         # End for loop
+        merged_filename=r'merged.nxs'
         alg = MergeMDFiles(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
-                           OutputFilename=r'merged.nxs',OutputWorkspace='merged')
-        self._saved_filenames.append(alg.getPropertyValue("OutputFilename"))
+                           OutputFilename=merged_filename,OutputWorkspace='merged')
+        self._saved_filenames.append(merged_filename)
 
         # 5 times the number of events in the output workspace.
         self.assertDelta( mtd['merged'].getNPoints(), 553035, 1)
@@ -154,9 +155,10 @@ class MergeMDTest(stresstesting.MantidStressTest):
         return True
 
     def cleanup(self):
+        save_path = config['defaultsave.directory']
         for filename in self._saved_filenames:
             try:
-                os.remove(filename)
+                os.remove(os.path.join(save_path,filename))
                 logger.notice("Removed %s" % filename)
             except OSError:
                 logger.notice("Failed to remove %s" % filename)
