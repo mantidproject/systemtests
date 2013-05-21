@@ -50,7 +50,7 @@ class ToscaDiffractionTest(stresstesting.MantidStressTest):
 class OsirisDiffractionTest(stresstesting.MantidStressTest):
     
   def runTest(self):
-    from mantidsimple import OSIRISDiffractionReduction
+    from mantid.simpleapi import OSIRISDiffractionReduction
     OSIRISDiffractionReduction(
 	OutputWorkspace="OsirisDiffractionTest",
 	Sample="OSI89813.raw, OSI89814.raw, OSI89815.raw, OSI89816.raw, OSI89817.raw",
