@@ -1,7 +1,7 @@
 import stresstesting
-from mantid import *
-
-from mantid.simpleapi import *
+import MantidFramework
+MantidFramework.mtd.initialize()
+from mantidsimple import *
 
 class EQSANSLive(stresstesting.MantidStressTest):
     def runTest(self):
@@ -11,7 +11,7 @@ class EQSANSLive(stresstesting.MantidStressTest):
         self.cleanup()
         # Note that the EQSANS Reducer does the transmission correction by default,
         # so we are also testing the EQSANSTransmission algorithm
-        config['default.facility'] = 'SNS'
+        mtd.settings['default.facility'] = 'SNS'
 
         SetupEQSANSReduction(UseConfigTOFCuts=True, 
                              UseConfigMask=True, 
@@ -34,8 +34,8 @@ class EQSANSLive(stresstesting.MantidStressTest):
                 
     def cleanup(self):
         for ws in ["EQSANS_1466_event_Iq", "EQSANS_1466_event", "EQSANS_1466_event_evt"]:
-            if mtd.doesExist(ws):
-                mtd.deleteWorkspace(ws)
+            if mtd.workspaceExists(ws):
+                DeleteWorkspace(ws)
                 
     def validate(self):
         # Be more tolerant with the output, mainly because of the errors.
