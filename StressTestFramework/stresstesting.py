@@ -35,6 +35,7 @@ import tempfile
 import imp
 import inspect
 import abc
+import numpy
 
 #########################################################################
 # The base test class.
@@ -300,6 +301,9 @@ class MantidStressTest(object):
         # if a simple boolean then use this
         if type(validation) == bool:
             return validation
+        # or numpy boolean
+        if type(validation) == numpy.bool_:
+            return bool(validation)
 
         # switch based on validation methods
         method = self.validateMethod()
