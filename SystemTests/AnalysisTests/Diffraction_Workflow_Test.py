@@ -127,7 +127,18 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         self.assertDelta( ol.gamma(), 90, 0.4, "Correct lattice angle gamma value not found.")
         
         # Go to HKL
-        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_HKL',OutputDimensions='HKL',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')
+        #HACK
+        #ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_HKL',OutputDimensions='HKL',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')        
+        alg=mtd.createAlgorithm("ConvertToDiffractionMDWorkspace",1)            
+        alg.setPropertyValue("InputWorkspace",'TOPAZ_3132')
+        alg.setPropertyValue("OutputWorkspace",'TOPAZ_3132_HKL')
+        alg.setPropertyValue("OutputDimensions","HKL")
+        alg.setPropertyValue("LorentzCorrection","1")        
+        alg.setPropertyValue("SplitInto","2")
+        alg.setPropertyValue("SplitThreshold","150")        
+        alg.setPropertyValue("Append","1")            
+        alg.execute()            
+        
 
         # Bin to a line (H=0 to 6, L=3, K=3)
         BinMD(InputWorkspace='TOPAZ_3132_HKL',AxisAligned='0',
