@@ -22,6 +22,9 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         # determine where to save
         import os
         savedir = os.path.abspath(os.path.curdir)
+        #HACK
+        from mantidsimple import *
+        
 
         # Basic parameters  for  Triphylite Crystal
         #Name of the workspaces to create
@@ -36,8 +39,19 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         AnvredCorrection(InputWorkspace=ws,OutputWorkspace=ws,LinearScatteringCoef="0.451",LinearAbsorptionCoef="0.993",Radius="0.14")
         
         # Convert to Q space
-        ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_MD2',LorentzCorrection='0',
-                OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150') 
+        #HACK
+        #ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_MD2',LorentzCorrection='0',
+        #       OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150') 
+        
+        alg=mtd.createAlgorithm("ConvertToDiffractionMDWorkspace",1)            
+        alg.setPropertyValue("InputWorkspace",ws)
+        alg.setPropertyValue("OutputWorkspace",ws+'_MD2')
+        alg.setPropertyValue("OutputDimensions","Q (lab frame)")
+        alg.setPropertyValue("LorentzCorrection","0")        
+        alg.setPropertyValue("SplitInto","2")
+        alg.setPropertyValue("SplitThreshold","150")        
+        alg.execute()            
+                
         # Find peaks (Reduced number of peaks so file comparison with reference does not fail with small differences)
         FindPeaksMD(InputWorkspace=ws+'_MD2',MaxPeaks='20',OutputWorkspace=ws+'_peaksLattice')
         # 3d integration to centroid peaks
@@ -82,8 +96,20 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         CopySample(InputWorkspace=ws+'_peaksFFT',OutputWorkspace=ws,
                        CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0',  CopyLattice=1)
         # Convert to reciprocal space, in the sample frame
-        ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_HKL',
-                       OutputDimensions='HKL',LorentzCorrection='0', SplitInto='2',SplitThreshold='150')
+        #HACK
+        #ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_HKL',
+        #               OutputDimensions='HKL',LorentzCorrection='0', SplitInto='2',SplitThreshold='150')
+        alg=mtd.createAlgorithm("ConvertToDiffractionMDWorkspace",1)            
+        alg.setPropertyValue("InputWorkspace",ws)
+        alg.setPropertyValue("OutputWorkspace",ws+'_HKL')
+        alg.setPropertyValue("OutputDimensions","HKL")
+        alg.setPropertyValue("LorentzCorrection","0")        
+        alg.setPropertyValue("SplitInto","2")
+        alg.setPropertyValue("SplitThreshold","150")        
+        alg.setPropertyValue("Append","1")            
+        alg.execute()            
+        
+        
         # Bin to a regular grid
         BinMD(InputWorkspace=ws+'_HKL',AlignedDim0='H, -20, 20, 800',AlignedDim1='K, -5, 5, 50',
               AlignedDim2='L, -10, 10,  800',OutputWorkspace=ws+'_binned')

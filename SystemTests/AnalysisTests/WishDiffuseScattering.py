@@ -13,6 +13,9 @@ class WishDiffuseScattering(stresstesting.MantidStressTest):
         return 2000
     
     def runTest(self):
+        #HACK
+        from mantidsimple import *
+    
         Load(Filename= 'Wish_Diffuse_Scattering_C.nxs',OutputWorkspace='C',LoadLogFiles='0',LoadMonitors='Exclude')
         NormaliseByCurrent(InputWorkspace='C',OutputWorkspace='C')
         CropWorkspace(InputWorkspace='C',OutputWorkspace='C',XMin='6000',XMax='99000')
@@ -41,7 +44,14 @@ class WishDiffuseScattering(stresstesting.MantidStressTest):
         Minus(LHSWorkspace='C_div_A_sn_smooth',RHSWorkspace='B_div_A_sn_smooth',OutputWorkspace='CminusB_smooth')
         
         LoadIsawUB(InputWorkspace='CminusB_smooth',Filename='Wish_Diffuse_Scattering_ISAW_UB.mat')
-        ConvertToDiffractionMDWorkspace(InputWorkspace='CminusB_smooth',OutputWorkspace='CminusB_smooth_MD_HKL',OutputDimensions='HKL')
+        #HACK
+        #ConvertToDiffractionMDWorkspace(InputWorkspace='CminusB_smooth',OutputWorkspace='CminusB_smooth_MD_HKL',OutputDimensions='HKL')
+        alg=mtd.createAlgorithm("ConvertToDiffractionMDWorkspace",1)            
+        alg.setPropertyValue("InputWorkspace","CminusB_smooth")
+        alg.setPropertyValue("OutputWorkspace",'CminusB_smooth_MD_HKL')
+        alg.setPropertyValue("OutputDimensions","HKL")
+        alg.execute()            
+        
         BinMD(InputWorkspace='CminusB_smooth_MD_HKL',AlignedDim0='H,-1.0,8.0,200',AlignedDim1='K,-1.0,8.0,200',AlignedDim2='L,0,1.5,200',OutputWorkspace='test_rebin')
         
         #Quick sanity checks. No comparison with a saved workspace because SliceMD is too expensive compared to BinMD.

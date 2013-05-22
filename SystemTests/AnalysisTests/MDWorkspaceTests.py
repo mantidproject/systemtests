@@ -125,6 +125,10 @@ class MergeMDTest(stresstesting.MantidStressTest):
     _saved_filenames = []
 
     def runTest(self):
+        #HACK
+        from mantidsimple import *
+        
+    
         LoadEventNexus(Filename='CNCS_7860_event.nxs',
         OutputWorkspace='CNCS_7860_event_NXS',CompressTolerance=0.1)
         
@@ -137,7 +141,18 @@ class MergeMDTest(stresstesting.MantidStressTest):
             AddSampleLog("CNCS_7860_event_NXS", "omega", "%s" % omega, "Number Series")
             AddSampleLog("CNCS_7860_event_NXS", "chi", "%s" % 0, "Number Series")
             AddSampleLog("CNCS_7860_event_NXS", "phi", "%s" % 0, "Number Series")
-            ConvertToDiffractionMDWorkspace(InputWorkspace='CNCS_7860_event_NXS',OutputWorkspace='CNCS_7860_event_MD',OutputDimensions='Q (sample frame)',LorentzCorrection='1', Append=True)
+            #HACK
+            #ConvertToDiffractionMDWorkspace(InputWorkspace='CNCS_7860_event_NXS',OutputWorkspace='CNCS_7860_event_MD',OutputDimensions='Q (sample frame)',LorentzCorrection='1', Append=True)            
+            alg=mtd.createAlgorithm("ConvertToDiffractionMDWorkspace",1)            
+            alg.setPropertyValue("InputWorkspace","CNCS_7860_event_NXS")
+            alg.setPropertyValue("OutputWorkspace","CNCS_7860_event_MD")
+            alg.setPropertyValue("OutputDimensions","Q (sample frame)")
+            alg.setPropertyValue("OutputDimensions","Q (sample frame)")
+            alg.setPropertyValue("LorentzCorrection","1")
+            alg.setPropertyValue("Append","1")            
+            alg.execute()            
+            #
+
             filename="CNCS_7860_event_rotated_%03d.nxs" % omega
             SaveMD("CNCS_7860_event_MD", filename)
             self._saved_filenames.append(filename)
