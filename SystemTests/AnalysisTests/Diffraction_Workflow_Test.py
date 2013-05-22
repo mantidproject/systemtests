@@ -4,7 +4,7 @@ and runs Diffraction Workflow.
 """
 import stresstesting
 import numpy
-from mantid.simpleapi import *
+from mantidsimple import *
 
 class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
     
@@ -22,9 +22,6 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         # determine where to save
         import os
         savedir = os.path.abspath(os.path.curdir)
-        #HACK
-        from mantidsimple import *
-        
 
         # Basic parameters  for  Triphylite Crystal
         #Name of the workspaces to create
@@ -80,10 +77,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         ## TODO conventional cell
         
         # And index to HKL           
-        results = IndexPeaks(PeaksWorkspace=ws+'_peaksFFT', Tolerance='0.12')
-        indexed = results[0]
-        if indexed < 100:
-            raise Exception("Expected at least 100 of 100 peaks to be indexed. Only indexed %d!" % indexed)
+        alg = IndexPeaks(PeaksWorkspace=ws+'_peaksFFT', Tolerance='0.12')
         # Integrate peaks in Q space using spheres
         IntegratePeaksMD(InputWorkspace=ws+'_MD2',PeakRadius='0.12',
                 BackgroundOuterRadius='0.18',BackgroundInnerRadius='0.15',
@@ -96,28 +90,19 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         CopySample(InputWorkspace=ws+'_peaksFFT',OutputWorkspace=ws,
                        CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0',  CopyLattice=1)
         # Convert to reciprocal space, in the sample frame
-        #HACK
-        #ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_HKL',
-        #               OutputDimensions='HKL',LorentzCorrection='0', SplitInto='2',SplitThreshold='150')
-        alg=mtd.createAlgorithm("ConvertToDiffractionMDWorkspace",1)            
-        alg.setPropertyValue("InputWorkspace",ws)
-        alg.setPropertyValue("OutputWorkspace",ws+'_HKL')
-        alg.setPropertyValue("OutputDimensions","HKL")
-        alg.setPropertyValue("LorentzCorrection","0")        
-        alg.setPropertyValue("SplitInto","2")
-        alg.setPropertyValue("SplitThreshold","150")        
-        alg.setPropertyValue("Append","1")            
-        alg.execute()            
-        
-        
+        ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_HKL',
+                       OutputDimensions='HKL',LorentzCorrection='0', SplitInto='2',SplitThreshold='150')
         # Bin to a regular grid
         BinMD(InputWorkspace=ws+'_HKL',AlignedDim0='H, -20, 20, 800',AlignedDim1='K, -5, 5, 50',
               AlignedDim2='L, -10, 10,  800',OutputWorkspace=ws+'_binned')
 
+        indexed = alg.getProperty("NumIndexed")
+        if indexed < 100:
+            raise Exception("Expected at least 100 of 100 peaks to be indexed. Only indexed %d!" % indexed)
 
-        originalUB = numpy.array(mtd["TOPAZ_3132"].sample().getOrientedLattice().getUB())
+        originalUB = numpy.array(mtd["TOPAZ_3132"].getSample().getOrientedLattice().getUB())
         w = mtd["TOPAZ_3132"]
-        s = w.sample()
+        s = w.getSample()
         ol = s.getOrientedLattice()
         self.assertDelta( ol.a(), 4.712, 0.01, "Correct lattice a value not found.")
         self.assertDelta( ol.b(), 6.06, 0.01, "Correct lattice b value not found.")
@@ -160,14 +145,14 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         CopySample(InputWorkspace='peaks_QSample',OutputWorkspace='TOPAZ_3132',CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0')
         
         # Index the peaks and check        
-        results = IndexPeaks(PeaksWorkspace='peaks_QSample')
-        indexed = results[0]
+        alg = IndexPeaks(PeaksWorkspace='peaks_QSample')
+        indexed = alg.getProperty("NumIndexed")
         if indexed < 100:
             raise Exception("Expected at least 100 of 100 peaks to be indexed. Only indexed %d!" % indexed)
 
         # Check the UB matrix
         w = mtd["TOPAZ_3132"]
-        s = w.sample()
+        s = w.getSample()
         ol = s.getOrientedLattice()
         self.assertDelta( ol.a(), 4.714, 0.01, "Correct lattice a value not found.")
         self.assertDelta( ol.b(), 6.06, 0.01, "Correct lattice b value not found.")
@@ -177,7 +162,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         self.assertDelta( ol.gamma(), 90, 0.4, "Correct lattice angle gamma value not found.")
         
         # Compare new and old UBs
-        newUB = numpy.array(mtd["TOPAZ_3132"].sample().getOrientedLattice().getUB())
+        newUB = numpy.array(mtd["TOPAZ_3132"].getSample().getOrientedLattice().getUB())
         # UB Matrices are not necessarily the same, some of the H,K and/or L sign can be reversed
         diff = abs(newUB) - abs(originalUB) < 0.001
         for c in xrange(3):
@@ -186,9 +171,8 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
                 raise Exception("More than 0.001 difference between UB matrices: Q (lab frame):\n%s\nQ (sample frame):\n%s" % (originalUB, newUB) )
 
         # load output hkl file and the golden one
-        LoadHKL(Filename="TOPAZ_3132.hkl", OutputWorkspace="TOPAZ_3132")
-        LoadHKL(Filename=os.path.join(os.path.dirname(__file__), 'ReferenceResults','TOPAZ_3132_reference.hkl'), 
-                OutputWorkspace="TOPAZ_3132_golden")
+        LoadHKL("TOPAZ_3132.hkl", "TOPAZ_3132")
+        LoadHKL(os.path.join(os.path.dirname(__file__), 'ReferenceResults','TOPAZ_3132_reference.hkl'), "TOPAZ_3132_golden")
 
     def validateMethod(self):
         return "ValidateWorkspaceToWorkspace"

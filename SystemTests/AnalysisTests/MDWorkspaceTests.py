@@ -5,7 +5,7 @@ file-backed MDWorkspaces.
 
 import stresstesting
 import os
-from mantid.simpleapi import *
+from mantidsimple import *
 
 ###############################################################################
 class PlusMDTest(stresstesting.MantidStressTest):
@@ -16,7 +16,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
         """ Compare the given workspace to the previously-binned original """
         BinMD(InputWorkspace=wsname,AlignedDim0='Q_lab_x, -3, 3, 100',AlignedDim1='Q_lab_y, -3, 3, 100',AlignedDim2='Q_lab_z, -3, 3, 100',ForceOrthogonal='1',OutputWorkspace="test_binned")
         ws = mtd["test_binned"]
-        EqualToMD(LHSWorkspace=ws, RHSWorkspace=self.original_binned, OutputWorkspace='comparison')
+        EqualToMD(ws, self.original_binned, 'comparison')
         comparison = mtd['comparison']
         for i in xrange(comparison.getNPoints()):
             if not comparison.signalAt(i):
@@ -25,7 +25,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
     def runTest(self):
         # Some platforms can't clean up the open file handle on cncs.nxs from the last test, so run cleanup here as well
         barefilename = "cncs.nxs"
-        self._saved_filename = os.path.join(config["defaultsave.directory"], barefilename)
+        self._saved_filename = os.path.join(mtd.settings["defaultsave.directory"], barefilename)
         self.cleanup()
 
         # Load then convert to Q in the lab frame
@@ -44,14 +44,14 @@ class PlusMDTest(stresstesting.MantidStressTest):
 
         # ======== Mem + Mem ===========
         LoadMD(Filename='cncs.nxs',FileBackEnd='0',OutputWorkspace='cncs_mem2')
-        PlusMD(LHSWorkspace="cncs_mem2", RHSWorkspace="cncs_mem", OutputWorkspace="cncs_mem2")
+        PlusMD("cncs_mem2", "cncs_mem", "cncs_mem2")
         self.assertDelta( mtd['cncs_mem2'].getNPoints(), 112266*2, 1)
         self.compare_binned('cncs_mem2')
         DeleteWorkspace('cncs_mem2')
 
         # ======== File + mem, with write buffer ===========
         LoadMD(Filename='cncs.nxs',FileBackEnd='1',Memory='100',OutputWorkspace='cncs_file')
-        PlusMD(LHSWorkspace="cncs_file", RHSWorkspace="cncs_mem", OutputWorkspace="cncs_file")
+        PlusMD("cncs_file", "cncs_mem", "cncs_file")
         self.compare_binned('cncs_file')
         SaveMD("cncs_file", UpdateFileBackEnd="1")
         self.assertDelta( mtd['cncs_file'].getNPoints(), 112266*2, 1)
@@ -63,7 +63,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
         
         # ======== File + mem, with a small write buffer (only 1MB) ======== 
         LoadMD(Filename='cncs.nxs',FileBackEnd='1',Memory='1',OutputWorkspace='cncs_file_small_buffer')
-        PlusMD(LHSWorkspace="cncs_file_small_buffer", RHSWorkspace="cncs_mem", OutputWorkspace="cncs_file_small_buffer")
+        PlusMD("cncs_file_small_buffer", "cncs_mem", "cncs_file_small_buffer")
         SaveMD("cncs_file_small_buffer", UpdateFileBackEnd="1")
         self.assertDelta( mtd['cncs_file_small_buffer'].getNPoints(), 112266*2, 1)
         self.compare_binned('cncs_file_small_buffer')
@@ -74,7 +74,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
 
         # ========  File + mem, without a write buffer ======== 
         LoadMD(Filename='cncs.nxs',FileBackEnd='1',Memory='0',OutputWorkspace='cncs_file_nobuffer')
-        PlusMD(LHSWorkspace="cncs_file_nobuffer", RHSWorkspace="cncs_mem", OutputWorkspace="cncs_file_nobuffer")
+        PlusMD("cncs_file_nobuffer", "cncs_mem", "cncs_file_nobuffer")
         SaveMD("cncs_file_nobuffer", UpdateFileBackEnd="1")
         self.assertDelta( mtd['cncs_file_nobuffer'].getNPoints(), 112266*2, 1)
         self.compare_binned('cncs_file_nobuffer')
@@ -85,7 +85,7 @@ class PlusMDTest(stresstesting.MantidStressTest):
         
         # ======== File + mem to a new (cloned) file ========  
         LoadMD(Filename='cncs.nxs',FileBackEnd='1',Memory='100',OutputWorkspace='cncs_file')
-        PlusMD(LHSWorkspace="cncs_file", RHSWorkspace="cncs_mem", OutputWorkspace="cncs_added")
+        PlusMD("cncs_file", "cncs_mem", "cncs_added")
         SaveMD("cncs_added", UpdateFileBackEnd="1")
         self.compare_binned('cncs_added')
         self.assertDelta( mtd['cncs_added'].getNPoints(), 112266*2, 1)
@@ -106,18 +106,18 @@ class PlusMDTest(stresstesting.MantidStressTest):
         if self._saved_filename is not None:
             try:
                 os.remove(self._saved_filename)
-                logger.notice("Removed %s" % self._saved_filename)
+                mtd.sendLogMessage("Removed %s" % self._saved_filename)
             except OSError:
-                logger.notice("Failed to remove %s" % self._saved_filename)
+                mtd.sendLogMessage("Failed to remove %s" % self._saved_filename)
 
             # Plus the _clone version
             filename = os.path.splitext(self._saved_filename)[0]
             filename += '_clone.nxs'
             try:
                 os.remove(filename)
-                logger.notice("Removed %s " % filename)
+                mtd.sendLogMessage("Removed %s " % filename)
             except OSError:
-                logger.notice("Failed to remove %s" % self._saved_filename)
+                mtd.sendLogMessage("Failed to remove %s" % self._saved_filename)
 
 ###############################################################################
 class MergeMDTest(stresstesting.MantidStressTest):
@@ -125,10 +125,6 @@ class MergeMDTest(stresstesting.MantidStressTest):
     _saved_filenames = []
 
     def runTest(self):
-        #HACK
-        from mantidsimple import *
-        
-    
         LoadEventNexus(Filename='CNCS_7860_event.nxs',
         OutputWorkspace='CNCS_7860_event_NXS',CompressTolerance=0.1)
         
@@ -153,9 +149,8 @@ class MergeMDTest(stresstesting.MantidStressTest):
             alg.execute()            
             #
 
-            filename="CNCS_7860_event_rotated_%03d.nxs" % omega
-            SaveMD("CNCS_7860_event_MD", filename)
-            self._saved_filenames.append(filename)
+            alg = SaveMD("CNCS_7860_event_MD", "CNCS_7860_event_rotated_%03d.nxs" % omega)
+            self._saved_filenames.append(alg.getPropertyValue("Filename"))
         # End for loop
         merged_filename=r'merged.nxs'
         alg = MergeMDFiles(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
