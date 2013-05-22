@@ -146,16 +146,14 @@ class MergeMDTest(stresstesting.MantidStressTest):
             alg.setPropertyValue("OutputDimensions","Q (sample frame)")
             alg.setPropertyValue("LorentzCorrection","1")
             alg.setPropertyValue("Append","1")            
-            alg.execute()            
-            #
-
+            alg.execute()     
+        
             alg = SaveMD("CNCS_7860_event_MD", "CNCS_7860_event_rotated_%03d.nxs" % omega)
             self._saved_filenames.append(alg.getPropertyValue("Filename"))
         # End for loop
-        merged_filename=r'merged.nxs'
         alg = MergeMDFiles(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
-                           OutputFilename=merged_filename,OutputWorkspace='merged')
-        self._saved_filenames.append(merged_filename)
+                           OutputFilename=r'merged.nxs',OutputWorkspace='merged')
+        self._saved_filenames.append(alg.getPropertyValue("OutputFilename"))
 
         # 5 times the number of events in the output workspace.
         self.assertDelta( mtd['merged'].getNPoints(), 553035, 1)
@@ -165,11 +163,10 @@ class MergeMDTest(stresstesting.MantidStressTest):
         return True
 
     def cleanup(self):
-        save_path = config['defaultsave.directory']
         for filename in self._saved_filenames:
             try:
-                os.remove(os.path.join(save_path,filename))
-                logger.notice("Removed %s" % filename)
+                os.remove(filename)
+                mtd.sendLogMessage("Removed %s" % filename)
             except OSError:
-                logger.notice("Failed to remove %s" % filename)
+                mtd.sendLogMessage("Failed to remove %s" % filename)
             
