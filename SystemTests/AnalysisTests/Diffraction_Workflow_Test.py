@@ -22,6 +22,9 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         # determine where to save
         import os
         savedir = os.path.abspath(os.path.curdir)
+        #HACK
+        from mantidsimple import *
+        
 
         # Basic parameters  for  Triphylite Crystal
         #Name of the workspaces to create
