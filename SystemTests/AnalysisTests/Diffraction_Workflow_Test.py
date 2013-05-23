@@ -81,6 +81,8 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         
         # And index to HKL           
         alg = IndexPeaks(PeaksWorkspace=ws+'_peaksFFT', Tolerance='0.12')
+
+
         # Integrate peaks in Q space using spheres
         IntegratePeaksMD(InputWorkspace=ws+'_MD2',PeakRadius='0.12',
                 BackgroundOuterRadius='0.18',BackgroundInnerRadius='0.15',
