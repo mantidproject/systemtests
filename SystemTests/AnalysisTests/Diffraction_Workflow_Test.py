@@ -22,8 +22,6 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         # determine where to save
         import os
         savedir = os.path.abspath(os.path.curdir)
-        #HACK
-        from mantidsimple import *
         
 
         # Basic parameters  for  Triphylite Crystal
@@ -40,17 +38,8 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         
         # Convert to Q space
         #HACK
-        #ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_MD2',LorentzCorrection='0',
-        #       OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150') 
-        
-        alg=mtd.createAlgorithm("ConvertToDiffractionMDWorkspace",1)            
-        alg.setPropertyValue("InputWorkspace",ws)
-        alg.setPropertyValue("OutputWorkspace",ws+'_MD2')
-        alg.setPropertyValue("OutputDimensions","Q (lab frame)")
-        alg.setPropertyValue("LorentzCorrection","0")        
-        alg.setPropertyValue("SplitInto","2")
-        alg.setPropertyValue("SplitThreshold","150")        
-        alg.execute()            
+        ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_MD2',LorentzCorrection='0',
+               OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150',Version=1) 
                 
         # Find peaks (Reduced number of peaks so file comparison with reference does not fail with small differences)
         FindPeaksMD(InputWorkspace=ws+'_MD2',MaxPeaks='20',OutputWorkspace=ws+'_peaksLattice')
@@ -95,8 +84,9 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         CopySample(InputWorkspace=ws+'_peaksFFT',OutputWorkspace=ws,
                        CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0',  CopyLattice=1)
         # Convert to reciprocal space, in the sample frame
+        #HACK        
         ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_HKL',
-                       OutputDimensions='HKL',LorentzCorrection='0', SplitInto='2',SplitThreshold='150')
+                       OutputDimensions='HKL',LorentzCorrection='0', SplitInto='2',SplitThreshold='150',Version=1)
         # Bin to a regular grid
         BinMD(InputWorkspace=ws+'_HKL',AlignedDim0='H, -20, 20, 800',AlignedDim1='K, -5, 5, 50',
               AlignedDim2='L, -10, 10,  800',OutputWorkspace=ws+'_binned')
@@ -118,16 +108,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         
         # Go to HKL
         #HACK
-        #ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_HKL',OutputDimensions='HKL',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')        
-        alg=mtd.createAlgorithm("ConvertToDiffractionMDWorkspace",1)            
-        alg.setPropertyValue("InputWorkspace",'TOPAZ_3132')
-        alg.setPropertyValue("OutputWorkspace",'TOPAZ_3132_HKL')
-        alg.setPropertyValue("OutputDimensions","HKL")
-        alg.setPropertyValue("LorentzCorrection","1")        
-        alg.setPropertyValue("SplitInto","2")
-        alg.setPropertyValue("SplitThreshold","150")        
-        alg.setPropertyValue("Append","1")            
-        alg.execute()            
+        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_HKL',OutputDimensions='HKL',LorentzCorrection='1',SplitInto='2',SplitThreshold='150',Version=1)        
         
 
         # Bin to a line (H=0 to 6, L=3, K=3)
@@ -144,7 +125,8 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         self.assertDelta( w.signalAt(30),  195.548, 10, "Peak 3")
 
         # Now do the same peak finding with Q in the sample frame
-        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')
+        #HACK        
+        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150',Version=1)
         FindPeaksMD(InputWorkspace='TOPAZ_3132_QSample',PeakDistanceThreshold='0.12',MaxPeaks='200',OutputWorkspace='peaks_QSample')
         FindUBUsingFFT(PeaksWorkspace='peaks_QSample',MinD='2',MaxD='16')
         CopySample(InputWorkspace='peaks_QSample',OutputWorkspace='TOPAZ_3132',CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0')
