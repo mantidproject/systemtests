@@ -1,7 +1,6 @@
 from stresstesting import MantidStressTest
+from mantid.simpleapi import MaskDetectors, mtd, config
 import DirectEnergyConversion as reduction
-from mantidsimple import MaskDetectors
-from MantidFramework import mtd
 import os
 
 class DirectInelasticDiagnostic(MantidStressTest):
@@ -33,10 +32,10 @@ class DirectInelasticDiagnostic(MantidStressTest):
                                      samp_lo=sv_lo, samp_hi=sv_hi, samp_sig=sv_sig, samp_zero=s_zero)
 	
 	sample_ws = mtd[sample]	
-	MaskDetectors(sample_ws, MaskedWorkspace=diag_mask)
+	MaskDetectors(Workspace=sample_ws, MaskedWorkspace=diag_mask)
 	
         # Save the masked spectra nmubers to a simple ASCII file for comparison
-        self.saved_diag_file = os.path.join(mtd.settings['defaultsave.directory'], 'CurrentDirectInelasticDiag.txt')
+        self.saved_diag_file = os.path.join(config['defaultsave.directory'], 'CurrentDirectInelasticDiag.txt')
         handle = file(self.saved_diag_file, 'w')
         for index in range(sample_ws.getNumberHistograms()):
             if sample_ws.getDetector(index).isMasked():
@@ -49,7 +48,7 @@ class DirectInelasticDiagnostic(MantidStressTest):
             if self.succeeded():
                 os.remove(self.saved_diag_file)
             else:
-                os.rename(self.saved_diag_file, os.path.join(mtd.settings['defaultsave.directory'], 'DirectInelasticDiag-Mismatch.txt'))
+                os.rename(self.saved_diag_file, os.path.join(config['defaultsave.directory'], 'DirectInelasticDiag-Mismatch.txt'))
         
     def validateMethod(self):
         return 'validateASCII'

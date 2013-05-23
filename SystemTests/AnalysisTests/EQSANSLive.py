@@ -1,6 +1,6 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
+import MantidFramework
+MantidFramework.mtd.initialize()
 from mantidsimple import *
 
 class EQSANSLive(stresstesting.MantidStressTest):
@@ -35,7 +35,7 @@ class EQSANSLive(stresstesting.MantidStressTest):
     def cleanup(self):
         for ws in ["EQSANS_1466_event_Iq", "EQSANS_1466_event", "EQSANS_1466_event_evt"]:
             if mtd.workspaceExists(ws):
-                mtd.deleteWorkspace(ws)
+                DeleteWorkspace(ws)
                 
     def validate(self):
         # Be more tolerant with the output, mainly because of the errors.

@@ -5,18 +5,19 @@
     that is part of python to the stresstesting framework used in Mantid.
 """
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 from reduction.instruments.sans.sans_reducer import SANSReducer
 from reduction.instruments.sans.hfir_command_interface import *
 import types
 import traceback
 import math
+import os
 
 # Set directory containing the test data, relative to the Mantid release directory.
 TEST_DIR = "."
-data_search_dirs = ConfigService()["datasearch.directories"].split(';')
+data_search_dirs = config["datasearch.directories"].split(';')
 for item in data_search_dirs:
     if item.endswith("SANS2D/"):
         TEST_DIR = item
@@ -153,7 +154,7 @@ class HFIRTests(stresstesting.MantidStressTest):
     def test_data_path(self):
         self.assertEqual(ReductionSingleton()._data_path, '.')
         #any path that definitely exists on a computer with Mantid installed
-        test_path = os.path.normcase(mtd.getConfigProperty('instrumentDefinition.directory'))
+        test_path = os.path.normcase(config['instrumentDefinition.directory'])
         DataPath(test_path)
         self.assertEqual(ReductionSingleton()._data_path, test_path)
         

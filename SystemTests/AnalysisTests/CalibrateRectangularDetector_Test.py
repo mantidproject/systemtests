@@ -1,4 +1,6 @@
 import stresstesting
+import MantidFramework
+MantidFramework.mtd.initialize()
 from mantidsimple import *
 import datetime
 from time import localtime, strftime

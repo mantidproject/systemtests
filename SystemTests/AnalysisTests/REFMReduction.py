@@ -1,12 +1,12 @@
 import stresstesting
-from MantidFramework import *
-mtd.initialise(False)
-from mantidsimple import *
+from mantid import *
+
+from mantid.simpleapi import *
 
 class REFMReduction(stresstesting.MantidStressTest):
     def runTest(self):
-          RefReduction(DataRun=9709,
-              NormalizationRun=9684,
+          RefReduction(DataRun=str(9709),
+              NormalizationRun=str(9684),
               SignalPeakPixelRange=[216, 224],
               SubtractSignalBackground=True,
               SignalBackgroundPixelRange=[172, 197],

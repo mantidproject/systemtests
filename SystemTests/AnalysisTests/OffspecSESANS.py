@@ -1,5 +1,5 @@
 from stresstesting import MantidStressTest
-from mantidsimple import mtd
+from mantid.simpleapi import mtd, config
 import offspec
 
 class OffspecSESANS(MantidStressTest):
@@ -9,7 +9,7 @@ class OffspecSESANS(MantidStressTest):
     
     def runTest(self):
         binning=["2.0","0.2","12.0","2"]
-        mtd.settings["default.instrument"] = "OFFSPEC"
+        config["default.instrument"] = "OFFSPEC"
         offspec.nrSESANSP0Fn("10792","P055","109","119","2","1",binning)
         offspec.nrSESANSFn("10791+10793","dPMMA","","P055pol",
                            "100","130","2","1","2","3009.9",binning,"2","0")

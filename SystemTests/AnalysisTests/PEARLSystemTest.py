@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 from mantid import *
 import os
 import numpy as n
@@ -83,7 +83,7 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 		
 		if type(files) is int:
 			infile=self.PEARL_getfilename(files,ext)
-			LoadRaw(infile,outname,LoadLogFiles="0")
+			LoadRaw(Filename=infile,OutputWorkspace=outname,LoadLogFiles="0")
 		else:
 			loop=0
 			num=files.split("_")
@@ -91,18 +91,18 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 			for i in frange:
 				infile=self.PEARL_getfilename(i,ext)
 				outwork="run"+str(i)
-				LoadRaw(infile,outwork,LoadLogFiles="0")
+				LoadRaw(Filename=infile,OutputWorkspace=outwork,LoadLogFiles="0")
 				loop=loop+1
 				if loop == 2:
 					firstwk="run"+str(i-1)
 					secondwk="run"+str(i)
-					Plus(firstwk,secondwk,outname)
-					mantid.deleteWorkspace(firstwk)
-					mantid.deleteWorkspace(secondwk)
+					Plus(LHSWorkspace=firstwk,RHSWorkspace=secondwk,OutputWorkspace=outname)
+					mtd.remove(firstwk)
+					mtd.remove(secondwk)
 				elif loop > 2:
 					secondwk="run"+str(i)
-					Plus(outname,secondwk,outname)
-					mantid.deleteWorkspace(secondwk)
+					Plus(LHSWorkspace=outname,RHSWorkspace=secondwk,OutputWorkspace=outname)
+					mtd.remove(secondwk)
 		return
 		
 	def PearlLoadMon(self, files,ext,outname):
@@ -110,7 +110,7 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 		if type(files) is int:
 			infile=self.PEARL_getfilename(files,ext)
 			mspectra=self.PEARL_getmonitorspectrum(files)
-			LoadRaw(infile,outname,SpectrumMin=mspectra,SpectrumMax=mspectra,LoadLogFiles="0")
+			LoadRaw(Filename=infile,OutputWorkspace=outname,SpectrumMin=mspectra,SpectrumMax=mspectra,LoadLogFiles="0")
 		else:
 			loop=0
 			num=files.split("_")
@@ -119,18 +119,18 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 			for i in frange:
 				infile=self.PEARL_getfilename(i,ext)
 				outwork="mon"+str(i)
-				LoadRaw(infile,outwork,SpectrumMin=mspectra,SpectrumMax=mspectra,LoadLogFiles="0")
+				LoadRaw(Filename=infile,OutputWorkspace=outwork,SpectrumMin=mspectra,SpectrumMax=mspectra,LoadLogFiles="0")
 				loop=loop+1
 				if loop == 2:
 					firstwk="mon"+str(i-1)
 					secondwk="mon"+str(i)
-					Plus(firstwk,secondwk,outname)
-					mantid.deleteWorkspace(firstwk)
-					mantid.deleteWorkspace(secondwk)
+					Plus(LHSWorkspace=firstwk,RHSWorkspace=secondwk,OutputWorkspace=outname)
+					mtd.remove(firstwk)
+					mtd.remove(secondwk)
 				elif loop > 2:
 					secondwk="mon"+str(i)
-					Plus(outname,secondwk,outname)
-					mantid.deleteWorkspace(secondwk)
+					Plus(LHSWorkspace=outname,RHSWorkspace=secondwk,OutputWorkspace=outname)
+					mtd.remove(secondwk)
 		return
 		
 
@@ -139,9 +139,9 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 	  
 	   works="monitor"+str(number)
 	   self.PearlLoadMon(number,ext,works) 	
-	   ConvertUnits(works,works,"Wavelength")
+	   ConvertUnits(InputWorkspace=works,OutputWorkspace=works,Target="Wavelength")
 	   lmin,lmax=self.PEARL_getlambdarange()
-	   CropWorkspace(works,works,XMin=lmin,XMax=lmax)
+	   CropWorkspace(InputWorkspace=works,OutputWorkspace=works,XMin=lmin,XMax=lmax)
 	   ex_regions=n.zeros((2,4))
 	   ex_regions[:,0]=[3.45,3.7]
 	   ex_regions[:,1]=[2.96,3.2]
@@ -149,19 +149,19 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 	   ex_regions[:,3]=[1.73,1.98]
 			
 	   for reg in range(0,4):
-				MaskBins(works,works,XMin=ex_regions[0,reg],XMax=ex_regions[1,reg])
+				MaskBins(InputWorkspace=works,OutputWorkspace=works,XMin=ex_regions[0,reg],XMax=ex_regions[1,reg])
 				 
-	   SplineBackground(works,works,0,spline_terms)
+	   SplineBackground(InputWorkspace=works,OutputWorkspace=works,WorkspaceIndex=0,NCoeff=spline_terms)
 	   return works
 		
 		
 	def PEARL_read(self, number,ext,outname):
 		self.PearlLoad(number,ext,outname)
-		ConvertUnits(outname,outname,"Wavelength")
+		ConvertUnits(InputWorkspace=outname,OutputWorkspace=outname,Target="Wavelength")
 		monitor=self.PEARL_getmonitor(number,ext,spline_terms=20)
 		NormaliseToMonitor(InputWorkspace=outname,OutputWorkspace=outname,MonitorWorkspace=monitor,IntegrationRangeMin=0.6,IntegrationRangeMax=5.0)
-		ConvertUnits(outname,outname,"TOF")
-		mantid.deleteWorkspace(monitor)
+		ConvertUnits(InputWorkspace=outname,OutputWorkspace=outname,Target="TOF")
+		mtd.remove(monitor)
 		return	
 
 	def PEARL_focus(self, number,ext="raw",fmode="trans",ttmode="TT70",atten=True,van_norm=True):
@@ -182,11 +182,11 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 			outwork="PRL"+number
 		 
 		self.PEARL_read(number,ext,work)
-		Rebin(work,work,self.tofbinning)
-		AlignDetectors(work,work,self.calfile)
-		DiffractionFocussing(work,focus,self.groupfile)
+		Rebin(InputWorkspace=work,OutputWorkspace=work,Params=self.tofbinning)
+		AlignDetectors(InputWorkspace=work,OutputWorkspace=work,CalibrationFile=self.calfile)
+		DiffractionFocussing(InputWorkspace=work,OutputWorkspace=focus,GroupingFileName=self.groupfile)
 		
-		mantid.deleteWorkspace(work)
+		mtd.remove(work)
 			  
 		for i in range(0,14):
 			output="mod"+str(i+1)
@@ -194,120 +194,120 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 			rdata="rdata"+str(i+1)
 			if (van_norm):
 				LoadNexus(Filename=self.vanfile,OutputWorkspace=van,EntryNumber=i+1)
-				ExtractSingleSpectrum(focus,rdata,i)
-				Rebin(van,van,self.tofbinning)
-				ConvertUnits(rdata,rdata,"TOF")
-				Rebin(rdata,rdata,self.tofbinning)
-				Divide(rdata,van,output)
-				CropWorkspace(output,output,XMin=0.1)
-				Scale(output,output,10)
+				ExtractSingleSpectrum(InputWorkspace=focus,OutputWorkspace=rdata,WorkspaceIndex=i)
+				Rebin(InputWorkspace=van,OutputWorkspace=van,Params=self.tofbinning)
+				ConvertUnits(InputWorkspace=rdata,OutputWorkspace=rdata,Target="TOF")
+				Rebin(InputWorkspace=rdata,OutputWorkspace=rdata,Params=self.tofbinning)
+				Divide(LHSWorkspace=rdata,RHSWorkspace=van,OutputWorkspace=output)
+				CropWorkspace(InputWorkspace=output,OutputWorkspace=output,XMin=0.1)
+				Scale(InputWorkspace=output,OutputWorkspace=output,Factor=10)
 			else:
-				ExtractSingleSpectrum(focus,rdata,i)
-				ConvertUnits(rdata,rdata,"TOF")
-				Rebin(rdata,output,self.tofbinning)
-				CropWorkspace(output,output,XMin=0.1)	  
+				ExtractSingleSpectrum(InputWorkspace=focus,OutputWorkspace=rdata,WorkspaceIndex=i)
+				ConvertUnits(InputWorkspace=rdata,OutputWorkspace=rdata,Target="TOF")
+				Rebin(InputWorkspace=rdata,OutputWorkspace=output,Params=self.tofbinning)
+				CropWorkspace(InputWorkspace=output,OutputWorkspace=output,XMin=0.1)	  
 			  
-		mantid.deleteWorkspace(focus)
+		mtd.remove(focus)
 
 		if (self.mode=="all"):
-			CloneWorkspace("mod1","bank1")
+			CloneWorkspace(InputWorkspace="mod1",OutputWorkspace="bank1")
 			for i in range(1,9):
 				toadd="mod"+str(i+1)
-				Plus("bank1",toadd,"bank1")
-			Scale("bank1","bank1",0.111111111111111)
-			saveGSS = SaveGSS("bank1",Filename=gssfile,Append=False,Bank=1)
-			ConvertUnits("bank1","bank1","dSpacing")
-			saveNexusAlg = SaveNexus(Filename=outfile,InputWorkspace="bank1",Append=False)	
+				Plus(LHSWorkspace="bank1",RHSWorkspace=toadd,OutputWorkspace="bank1")
+			Scale(InputWorkspace="bank1",OutputWorkspace="bank1",Factor=0.111111111111111)
+			SaveGSS(InputWorkspace="bank1",Filename=gssfile,Append=False,Bank=1)
+			ConvertUnits(InputWorkspace="bank1",OutputWorkspace="bank1",Target="dSpacing")
+			SaveNexus(Filename=outfile,InputWorkspace="bank1",Append=False)	
 			for i in range(0,5):
 				tosave="mod"+str(i+10)
-				SaveGSS(tosave,Filename=gssfile,Append=True,Bank=i+2)
-				ConvertUnits(tosave,tosave,"dSpacing")
+				SaveGSS(InputWorkspace=tosave,Filename=gssfile,Append=True,Bank=i+2)
+				ConvertUnits(InputWorkspace=tosave,OutputWorkspace=tosave,Target="dSpacing")
 				SaveNexus(Filename=outfile,InputWorkspace=tosave,Append=True)
 			
 			for i in range(0,14):
 				output="mod"+str(i+1)
 				van="van"+str(i+1)
 				rdata="rdata"+str(i+1)
-				mantid.deleteWorkspace(rdata)
-				mantid.deleteWorkspace(van)
-				mantid.deleteWorkspace(output)
-			mantid.deleteWorkspace("bank1")
+				mtd.remove(rdata)
+				mtd.remove(van)
+				mtd.remove(output)
+			mtd.remove("bank1")
 			  
 		elif (self.mode=="groups"):
-			CloneWorkspace("mod1","group1")
-			CloneWorkspace("mod4","group2")
-			CloneWorkspace("mod7","group3")
+			CloneWorkspace(InputWorkspace="mod1",OutputWorkspace="group1")
+			CloneWorkspace(InputWorkspace="mod4",OutputWorkspace="group2")
+			CloneWorkspace(InputWorkspace="mod7",OutputWorkspace="group3")
 			for i in range(1,3):
 				toadd="mod"+str(i+1)
-				Plus("group1",toadd,"group1")
-			Scale("group1","group1",0.333333333333)
+				Plus(LHSWorkspace="group1",RHSWorkspace=toadd,OutputWorkspace="group1")
+			Scale(InputWorkspace="group1",OutputWorkspace="group1",Factor=0.333333333333)
 			for i in range(1,3):
 				toadd="mod"+str(i+4)
-				Plus("group2",toadd,"group2")
-			Scale("group2","group2",0.333333333333)
+				Plus(LHSWorkspace="group2",RHSWorkspace=toadd,OutputWorkspace="group2")
+			Scale(InputWorkspace="group2",OutputWorkspace="group2",Factor=0.333333333333)
 			for i in range(1,3):
 				toadd="mod"+str(i+7)
-				Plus("group3",toadd,"group3")
-			Scale("group3","group3",0.333333333333)
-			Plus("group2","group3","group23")
-			Scale("group23","group23",0.5)
-			saveGSS = SaveGSS("group1",Filename=gssfile,Append=False,Bank=1)
-			ConvertUnits("group1","group1","dSpacing")
-			saveNexusAlg = SaveNexus(Filename=outfile,InputWorkspace="group1",Append=False)
-			SaveGSS("group2",Filename=gssfile,Append=True,Bank=2)
-			ConvertUnits("group2","group2","dSpacing")
+				Plus(LHSWorkspace="group3",RHSWorkspace=toadd,OutputWorkspace="group3")
+			Scale(InputWorkspace="group3",OutputWorkspace="group3",Factor=0.333333333333)
+			Plus(LHSWorkspace="group2",RHSWorkspace="group3",OutputWorkspace="group23")
+			Scale(InputWorkspace="group23",OutputWorkspace="group23",Factor=0.5)
+			SaveGSS("group1",Filename=gssfile,Append=False,Bank=1)
+			ConvertUnits(InputWorkspace="group1",OutputWorkspace="group1",Target="dSpacing")
+			SaveNexus(Filename=outfile,InputWorkspace="group1",Append=False)
+			SaveGSS(InputWorkspace="group2",Filename=gssfile,Append=True,Bank=2)
+			ConvertUnits(InputWorkspace="group2",OutputWorkspace="group2",Target="dSpacing")
 			SaveNexus(Filename=outfile,InputWorkspace="group2",Append=True)
-			SaveGSS("group3",Filename=gssfile,Append=True,Bank=3)
-			ConvertUnits("group3","group3","dSpacing")
+			SaveGSS(InputWorkspace="group3",Filename=gssfile,Append=True,Bank=3)
+			ConvertUnits(InputWorkspace="group3",OutputWorkspace="group3",Target="dSpacing")
 			SaveNexus(Filename=outfile,InputWorkspace="group3",Append=True)
-			SaveGSS("group23",Filename=gssfile,Append=True,Bank=4)
-			ConvertUnits("group23","group23","dSpacing")
-			saveNexusAlg = SaveNexus(Filename=outfile,InputWorkspace="group23",Append=True)
+			SaveGSS(InputWorkspace="group23",Filename=gssfile,Append=True,Bank=4)
+			ConvertUnits(InputWorkspace="group23",OutputWorkspace="group23",Target="dSpacing")
+			SaveNexus(Filename=outfile,InputWorkspace="group23",Append=True)
 			for i in range(0,3):
 				tosave="mod"+str(i+10)
-				SaveGSS(tosave,Filename=gssfile,Append=True,Bank=i+5)
-				ConvertUnits(tosave,tosave,"dSpacing")
+				SaveGSS(InputWorkspace=tosave,Filename=gssfile,Append=True,Bank=i+5)
+				ConvertUnits(InputWorkspace=tosave,OutputWorkspace=tosave,Target="dSpacing")
 				SaveNexus(Filename=outfile,InputWorkspace=tosave,Append=True)
 			for i in range(0,14):
 				output="mod"+str(i+1)
 				van="van"+str(i+1)
 				rdata="rdata"+str(i+1)
-				mantid.deleteWorkspace(rdata)
-				mantid.deleteWorkspace(van)
-				mantid.deleteWorkspace(output)
-			mantid.deleteWorkspace("group1")
-			mantid.deleteWorkspace("group2")
-			mantid.deleteWorkspace("group3")
-			mantid.deleteWorkspace("group23")
+				mtd.remove(rdata)
+				mtd.remove(van)
+				mtd.remove(output)
+			mtd.remove("group1")
+			mtd.remove("group2")
+			mtd.remove("group3")
+			mtd.remove("group23")
 		
 		elif (self.mode=="trans"):
-			CloneWorkspace("mod1","bank1")
+			CloneWorkspace(InputWorkspace="mod1",OutputWorkspace="bank1")
 			for i in range(1,9):
 				toadd="mod"+str(i+1)
-				Plus("bank1",toadd,"bank1")
-			Scale("bank1","bank1",0.111111111111111)
+				Plus(LHSWorkspace="bank1",RHSWorkspace=toadd,OutputWorkspace="bank1")
+			Scale(InputWorkspace="bank1",OutputWorkspace="bank1",Factor=0.111111111111111)
 			if (atten):
-				ConvertUnits("bank1","bank1","dSpacing")
-				CloneWorkspace("bank1",outwork+"_noatten")
+				ConvertUnits(InputWorkspace="bank1",OutputWorkspace="bank1",Target="dSpacing")
+				CloneWorkspace(InputWorkspace="bank1",OutputWorkspace=outwork+"_noatten")
 				self.PEARL_atten("bank1","bank1")
-				ConvertUnits("bank1","bank1","TOF")
+				ConvertUnits(InputWorkspace="bank1",OutputWorkspace="bank1",Target="TOF")
 				
-			saveGSS = SaveGSS("bank1",Filename=gssfile,Append=False,Bank=1)
-			ConvertUnits("bank1","bank1","dSpacing")
-			saveNexusAlg = SaveNexus(Filename=outfile,InputWorkspace="bank1",Append=False)
+			SaveGSS(InputWorkspace="bank1",Filename=gssfile,Append=False,Bank=1)
+			ConvertUnits(InputWorkspace="bank1",OutputWorkspace="bank1",Target="dSpacing")
+			SaveNexus(Filename=outfile,InputWorkspace="bank1",Append=False)
 			for i in range(0,9):
 				tosave="mod"+str(i+1)
-				ConvertUnits(tosave,tosave,"dSpacing")
+				ConvertUnits(InputWorkspace=tosave,OutputWorkspace=tosave,Target="dSpacing")
 				SaveNexus(Filename=outfile,InputWorkspace=tosave,Append=True)
 			
 			for i in range(0,14):
 				output="mod"+str(i+1)
 				van="van"+str(i+1)
 				rdata="rdata"+str(i+1)
-				mantid.deleteWorkspace(rdata)
-				mantid.deleteWorkspace(van)
-				mantid.deleteWorkspace(output)
-			mantid.deleteWorkspace("bank1")
+				mtd.remove(rdata)
+				mtd.remove(van)
+				mtd.remove(output)
+			mtd.remove("bank1")
 		
 		elif (self.mode=="mods"):
 			for i in range(0,12):
@@ -315,17 +315,17 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 				van="van"+str(i+1)
 				rdata="rdata"+str(i+1)
 				if (i==0):
-					saveGSS = SaveGSS(output,Filename=gssfile,Append=False,Bank=i+1)
-					ConvertUnits(output,output,"dSpacing")
-					saveNexusAlg = SaveNexus(Filename=outfile,InputWorkspace=output,Append=False)
+					SaveGSS(InputWorkspace=output,Filename=gssfile,Append=False,Bank=i+1)
+					ConvertUnits(InputWorkspace=output,OutputWorkspace=output,Target="dSpacing")
+					SaveNexus(Filename=outfile,InputWorkspace=output,Append=False)
 				else:
-					saveGSS = SaveGSS(output,Filename=gssfile,Append=True,Bank=i+1)
-					ConvertUnits(output,output,"dSpacing")
+					SaveGSS(InputWorkspace=output,Filename=gssfile,Append=True,Bank=i+1)
+					ConvertUnits(InputWorkspace=output,OutputWorkspace=output,Target="dSpacing")
 					SaveNexus(Filename=outfile,InputWorkspace=output,Append=True)
 
-			mantid.deleteWorkspace(rdata)
-			mantid.deleteWorkspace(van)
-			mantid.deleteWorkspace(output)
+			mtd.remove(rdata)
+			mtd.remove(van)
+			mtd.remove(output)
 		
 		else:
 			print "Sorry I don't know that mode", mode
@@ -334,9 +334,9 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 		LoadNexus(Filename=outfile,OutputWorkspace=outwork)
 		
 		# temporary nxs file to be deleted on cleanup
-		self.saved_outfile = saveNexusAlg.getPropertyValue('Filename')
+		self.saved_outfile = os.path.join(config['defaultsave.directory'],outfile)
 		# temporary gss file to be deleted on cleanup
-		self.saved_gssfile = saveGSS.getPropertyValue('Filename').replace('.gss','-0.gss')
+		self.saved_gssfile = os.path.join(config['defaultsave.directory'],gssfile).replace('.gss','-0.gss')
 		# name of the reference nxs file which is the same as outfile
 		self.reference_nexus = outfile.replace('PRL','PEARL')
 		# name of the reference gss file
@@ -345,12 +345,11 @@ class PEARL_Reduction(stresstesting.MantidStressTest):
 		self.reference_workspace = outwork
 
 	def PEARL_atten(self, work,outwork):
-		
-		PearlMCAbsorption(self.attenfile,"wc_atten")
-		ConvertToHistogram("wc_atten","wc_atten")
-		RebinToWorkspace("wc_atten",work,"wc_atten")
-		Divide(work,"wc_atten",outwork)
-		mantid.deleteWorkspace("wc_atten")
+                PearlMCAbsorption(Filename=self.attenfile,OutputWorkspace="wc_atten")
+		ConvertToHistogram(InputWorkspace="wc_atten",OutputWorkspace="wc_atten")
+		RebinToWorkspace(WorkspaceToRebin="wc_atten",WorkspaceToMatch=work,OutputWorkspace="wc_atten")
+		Divide(LHSWorkspace=work,RHSWorkspace="wc_atten",OutputWorkspace=outwork)
+		mtd.remove("wc_atten")
 		return 
 
 #================================================================================

@@ -3,7 +3,7 @@ import os
 import sys
 from abc import ABCMeta, abstractmethod
 
-from mantidsimple import *
+from mantid.simpleapi import *
 
 # For debugging only.
 from mantid.api import AnalysisDataService
@@ -118,7 +118,7 @@ class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
     def get_temp_dir_path(self, filename):
         '''Given a filename, prepends the system test temporary directory
         and returns the full path.'''
-        return os.path.join(mtd.settings['defaultsave.directory'], filename)
+        return os.path.join(config['defaultsave.directory'], filename)
 
 
 #==============================================================================

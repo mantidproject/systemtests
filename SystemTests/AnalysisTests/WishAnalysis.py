@@ -1,5 +1,5 @@
 import stresstesting
-from mantidsimple import *
+from mantid.simpleapi import *
 
 class WishAnalysis(stresstesting.MantidStressTest):
     """
@@ -35,18 +35,18 @@ class WishAnalysis(stresstesting.MantidStressTest):
         AlignDetectors(InputWorkspace="w16748-1",OutputWorkspace="w16748-1",CalibrationFile="wish_grouping_noends2_no_offsets_nov2009.cal")
         #focus data
         DiffractionFocussing(InputWorkspace="w16748-1",OutputWorkspace="w16748-1foc",GroupingFileName="wish_grouping_noends2_no_offsets_nov2009.cal")
-	mtd.deleteWorkspace("w16748-1")
+	DeleteWorkspace(Workspace="w16748-1")
         CropWorkspace(InputWorkspace="w16748-1foc",OutputWorkspace="w16748-1foc",XMin="0.83",XMax="45")
         #load pre-processed empty and subtract
         LoadNexusProcessed(Filename="emptycryo3307-1foc.nx5",OutputWorkspace="empty")
         RebinToWorkspace(WorkspaceToRebin="empty",WorkspaceToMatch="w16748-1foc",OutputWorkspace="empty")
         Minus(LHSWorkspace="w16748-1foc",RHSWorkspace="empty",OutputWorkspace="w16748-1foc")
-	mtd.deleteWorkspace("empty")
+	DeleteWorkspace(Workspace="empty")
         #Load preprocessed Vanadium and divide
         LoadNexusProcessed(Filename="vana3123-1foc-SS.nx5",OutputWorkspace="vana")
         RebinToWorkspace(WorkspaceToRebin="vana",WorkspaceToMatch="w16748-1foc",OutputWorkspace="vana")
         Divide(LHSWorkspace="w16748-1foc",RHSWorkspace="vana",OutputWorkspace="w16748-1foc")
-        mtd.deleteWorkspace("vana")
+        DeleteWorkspace(Workspace="vana")
         #convert back to TOF for ouput to GSAS/Fullprof
         ConvertUnits(InputWorkspace="w16748-1foc",OutputWorkspace="w16748-1foc",Target="TOF")
 

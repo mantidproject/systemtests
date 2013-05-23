@@ -35,6 +35,7 @@ import tempfile
 import imp
 import inspect
 import abc
+import numpy
 
 #########################################################################
 # The base test class.
@@ -144,9 +145,7 @@ class MantidStressTest(object):
         foundAll = True
 
         # initialize mantid so it can get the data directories to look in
-        from MantidFramework import mtd
-        mtd.initialise()
-
+        import mantid
         # check that all of the files exist
         for filename in reqFiles:
             if not self.__verifyRequiredFile(filename):
@@ -243,10 +242,10 @@ class MantidStressTest(object):
         to compare to the supplied workspace.
         '''
         valNames = list(self.validate())
-        from mantidsimple import Load, mtd
+        from mantid.simpleapi import Load
         workspace2 = valNames[1]
         if workspace2.endswith('.nxs'):
-            Load(workspace2,"RefFile")
+            Load(Filename=workspace2,OutputWorkspace="RefFile")
             workspace2 = "RefFile"
         else:
             raise RuntimeError("Should supply a NeXus file: %s" % workspace2)
@@ -272,8 +271,9 @@ class MantidStressTest(object):
         if valNames is None:
             valNames = self.validate()
 
-        from mantidsimple import SaveNexus, mtd
-        checker = mtd.createAlgorithm("CheckWorkspacesMatch")
+        from mantid.simpleapi import SaveNexus, FrameworkManager
+        checker = FrameworkManager.createAlgorithm("CheckWorkspacesMatch")
+        checker.setLogging(True)
         checker.setPropertyValue("Workspace1",valNames[0])
         checker.setPropertyValue("Workspace2",valNames[1])
         checker.setPropertyValue("Tolerance", str(self.tolerance))
@@ -282,7 +282,7 @@ class MantidStressTest(object):
         checker.execute()
         if checker.getPropertyValue("Result") != 'Success!':
             print self.__class__.__name__
-            SaveNexus(valNames[0],self.__class__.__name__+'-mismatch.nxs')
+            SaveNexus(InputWorkspace=valNames[0],Filename=self.__class__.__name__+'-mismatch.nxs')
             return False
                     
         return True
@@ -301,6 +301,9 @@ class MantidStressTest(object):
         # if a simple boolean then use this
         if type(validation) == bool:
             return validation
+        # or numpy boolean
+        if type(validation) == numpy.bool_:
+            return bool(validation)
 
         # switch based on validation methods
         method = self.validateMethod()
@@ -534,9 +537,7 @@ class PythonTestRunner(object):
         self._code_prefix = 'import sys, time;'
         self._code_prefix += 'sys.path.insert(0, ' + esc + '"' + self._mtdpy_header + esc + '");' + \
         'sys.path.append(' + esc + '"' + self._framework_path + esc + '");' + \
-        'sys.path.append(' + esc + '"' + self._test_dir + esc + '");' + \
-        'from MantidFramework import *;' + \
-        'mtd.initialise();'
+        'sys.path.append(' + esc + '"' + self._test_dir + esc + '");'
 
     def getCodePrefix(self):
         '''
@@ -968,20 +969,21 @@ class MantidFrameworkConfig:
             if not os.path.isdir(self.__saveDir):
                 raise RuntimeError("%s is not a directory" % self.__saveDir)
 
-        from MantidFramework import mtd
-        mtd.initialise()
+        # Start mantid
+        import mantid
+        from mantid.kernel import config
 
         # backup the existing user properties so we can step all over it
-        self.__userPropsFile = mtd.settings.getUserFilename()
+        self.__userPropsFile = config.getUserFilename()
         self.__userPropsFileBackup  = self.__userPropsFile + ".bak"
         self.__userPropsFileSystest = self.__userPropsFile + ".systest"
         self.__moveFile(self.__userPropsFile, self.__userPropsFileBackup)
 
         # Make sure we only save these keys here
-        mtd.settings.reset();
+        config.reset()
 
         # Up the log level so that failures can give useful information
-        mtd.settings['logging.loggers.root.level'] = self.__loglevel
+        config['logging.loggers.root.level'] = self.__loglevel
         # Set the correct search path
         data_path = ''
         for dir in self.__dataDirs:
@@ -991,23 +993,23 @@ class MantidFrameworkConfig:
             if not search_dir.endswith('/'):
                 search_dir += '/'
                 data_path += search_dir + ';'
-        mtd.settings['datasearch.directories'] = data_path
+        config['datasearch.directories'] = data_path
 
         # Save path
-        mtd.settings['defaultsave.directory'] = self.__saveDir
+        config['defaultsave.directory'] = self.__saveDir
 
         # Do not show paraview dialog
-        mtd.settings['paraview.ignore'] = "1"
+        config['paraview.ignore'] = "1"
 
         # Case insensitive
-        mtd.settings['filefinder.casesensitive'] = 'Off'
+        config['filefinder.casesensitive'] = 'Off'
         
         # datasearch
         if self.__datasearch:
             mtd.settings["datasearch.searcharchive"] = 'On'
 
         # Save this configuration
-        mtd.settings.saveConfig(self.__userPropsFile)
+        config.saveConfig(self.__userPropsFile)
 
     def restoreconfig(self):
         self.__moveFile(self.__userPropsFile, self.__userPropsFileSystest)

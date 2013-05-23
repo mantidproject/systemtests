@@ -1,7 +1,7 @@
 import stresstesting
 import numpy
 import os
-from mantidsimple import *
+from mantid.simpleapi import *
 
 ######################################################################
 # Common configuration
@@ -35,8 +35,7 @@ def GetEiT0(ws_name, EiGuess):
     alg = GetEi(InputWorkspace=ws_name, Monitor1Spec="1",
     	                          Monitor2Spec="2", EnergyEstimate=EiGuess)
     # Extract incident energy and T0
-    return [alg.getProperty("IncidentEnergy").value, 
-            -alg.getProperty("Tzero").value]	
+    return [alg[0],-alg[3]]
 
 def execReduction(dohist, doproj):
     # Load event data
