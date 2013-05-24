@@ -30,7 +30,8 @@ class PlusMDTest(stresstesting.MantidStressTest):
 
         # Load then convert to Q in the lab frame
         LoadEventNexus(Filename=r'CNCS_7860_event.nxs',OutputWorkspace='cncs_nxs')
-        ConvertToDiffractionMDWorkspace(InputWorkspace='cncs_nxs', OutputWorkspace='cncs_original', SplitInto=2)
+	#HACK
+        ConvertToDiffractionMDWorkspace(InputWorkspace='cncs_nxs', OutputWorkspace='cncs_original', SplitInto=2,Version=1)
         alg = SaveMD(InputWorkspace='cncs_original', Filename=barefilename)
 
         self.assertDelta( mtd['cncs_original'].getNPoints(), 112266, 1)
@@ -137,16 +138,8 @@ class MergeMDTest(stresstesting.MantidStressTest):
             AddSampleLog("CNCS_7860_event_NXS", "omega", "%s" % omega, "Number Series")
             AddSampleLog("CNCS_7860_event_NXS", "chi", "%s" % 0, "Number Series")
             AddSampleLog("CNCS_7860_event_NXS", "phi", "%s" % 0, "Number Series")
-            #HACK
-            #ConvertToDiffractionMDWorkspace(InputWorkspace='CNCS_7860_event_NXS',OutputWorkspace='CNCS_7860_event_MD',OutputDimensions='Q (sample frame)',LorentzCorrection='1', Append=True)            
-            alg=mtd.createAlgorithm("ConvertToDiffractionMDWorkspace",1)            
-            alg.setPropertyValue("InputWorkspace","CNCS_7860_event_NXS")
-            alg.setPropertyValue("OutputWorkspace","CNCS_7860_event_MD")
-            alg.setPropertyValue("OutputDimensions","Q (sample frame)")
-            alg.setPropertyValue("OutputDimensions","Q (sample frame)")
-            alg.setPropertyValue("LorentzCorrection","1")
-            alg.setPropertyValue("Append","1")            
-            alg.execute()     
+
+            ConvertToDiffractionMDWorkspace(InputWorkspace='CNCS_7860_event_NXS',OutputWorkspace='CNCS_7860_event_MD',OutputDimensions='Q (sample frame)',LorentzCorrection='1', Append=True,Version=1)            
         
             alg = SaveMD("CNCS_7860_event_MD", "CNCS_7860_event_rotated_%03d.nxs" % omega)
             self._saved_filenames.append(alg.getPropertyValue("Filename"))

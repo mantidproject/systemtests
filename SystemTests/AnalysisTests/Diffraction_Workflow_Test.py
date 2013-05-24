@@ -4,7 +4,7 @@ and runs Diffraction Workflow.
 """
 import stresstesting
 import numpy
-from mantidsimple import *
+from mantid.simpleapi import *
 
 class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
     
@@ -37,9 +37,8 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         AnvredCorrection(InputWorkspace=ws,OutputWorkspace=ws,LinearScatteringCoef="0.451",LinearAbsorptionCoef="0.993",Radius="0.14")
         
         # Convert to Q space
-        #HACK
         ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_MD2',LorentzCorrection='0',
-               OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150',Version=1) 
+               OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150') 
                 
         # Find peaks (Reduced number of peaks so file comparison with reference does not fail with small differences)
         FindPeaksMD(InputWorkspace=ws+'_MD2',MaxPeaks='20',OutputWorkspace=ws+'_peaksLattice')
@@ -71,7 +70,6 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         # And index to HKL           
         alg = IndexPeaks(PeaksWorkspace=ws+'_peaksFFT', Tolerance='0.12')
 
-
         # Integrate peaks in Q space using spheres
         IntegratePeaksMD(InputWorkspace=ws+'_MD2',PeakRadius='0.12',
                 BackgroundOuterRadius='0.18',BackgroundInnerRadius='0.15',
@@ -83,21 +81,17 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         # Copy the UB matrix back to the original workspace
         CopySample(InputWorkspace=ws+'_peaksFFT',OutputWorkspace=ws,
                        CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0',  CopyLattice=1)
-        # Convert to reciprocal space, in the sample frame
-        #HACK        
+        # Convert to reciprocal space, in the sample frame       
         ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_HKL',
-                       OutputDimensions='HKL',LorentzCorrection='0', SplitInto='2',SplitThreshold='150',Version=1)
+                       OutputDimensions='HKL',LorentzCorrection='0', SplitInto='2',SplitThreshold='150')
         # Bin to a regular grid
-        BinMD(InputWorkspace=ws+'_HKL',AlignedDim0='H, -20, 20, 800',AlignedDim1='K, -5, 5, 50',
-              AlignedDim2='L, -10, 10,  800',OutputWorkspace=ws+'_binned')
+        BinMD(InputWorkspace=ws+'_HKL',AlignedDim0="[H,0,0], -20, 20, 800",AlignedDim1="[0,K,0], -5, 5, 50",
+              AlignedDim2="[0,0,L], -10, 10,  800",OutputWorkspace=ws+'_binned')
 
-        indexed = alg.getProperty("NumIndexed")
-        if indexed < 100:
-            raise Exception("Expected at least 100 of 100 peaks to be indexed. Only indexed %d!" % indexed)
 
-        originalUB = numpy.array(mtd["TOPAZ_3132"].getSample().getOrientedLattice().getUB())
+        originalUB = numpy.array(mtd["TOPAZ_3132"].sample().getOrientedLattice().getUB())
         w = mtd["TOPAZ_3132"]
-        s = w.getSample()
+        s = w.sample()
         ol = s.getOrientedLattice()
         self.assertDelta( ol.a(), 4.712, 0.01, "Correct lattice a value not found.")
         self.assertDelta( ol.b(), 6.06, 0.01, "Correct lattice b value not found.")
@@ -125,21 +119,21 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         self.assertDelta( w.signalAt(30),  195.548, 10, "Peak 3")
 
         # Now do the same peak finding with Q in the sample frame
-        #HACK        
-        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150',Version=1)
+  
+        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')
         FindPeaksMD(InputWorkspace='TOPAZ_3132_QSample',PeakDistanceThreshold='0.12',MaxPeaks='200',OutputWorkspace='peaks_QSample')
         FindUBUsingFFT(PeaksWorkspace='peaks_QSample',MinD='2',MaxD='16')
         CopySample(InputWorkspace='peaks_QSample',OutputWorkspace='TOPAZ_3132',CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0')
         
         # Index the peaks and check        
-        alg = IndexPeaks(PeaksWorkspace='peaks_QSample')
-        indexed = alg.getProperty("NumIndexed")
+        results = IndexPeaks(PeaksWorkspace='peaks_QSample')
+        indexed = results[0]
         if indexed < 100:
             raise Exception("Expected at least 100 of 100 peaks to be indexed. Only indexed %d!" % indexed)
 
         # Check the UB matrix
         w = mtd["TOPAZ_3132"]
-        s = w.getSample()
+        s = w.sample()
         ol = s.getOrientedLattice()
         self.assertDelta( ol.a(), 4.714, 0.01, "Correct lattice a value not found.")
         self.assertDelta( ol.b(), 6.06, 0.01, "Correct lattice b value not found.")
@@ -149,7 +143,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         self.assertDelta( ol.gamma(), 90, 0.4, "Correct lattice angle gamma value not found.")
         
         # Compare new and old UBs
-        newUB = numpy.array(mtd["TOPAZ_3132"].getSample().getOrientedLattice().getUB())
+        newUB = numpy.array(mtd["TOPAZ_3132"].sample().getOrientedLattice().getUB())
         # UB Matrices are not necessarily the same, some of the H,K and/or L sign can be reversed
         diff = abs(newUB) - abs(originalUB) < 0.001
         for c in xrange(3):
@@ -158,8 +152,9 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
                 raise Exception("More than 0.001 difference between UB matrices: Q (lab frame):\n%s\nQ (sample frame):\n%s" % (originalUB, newUB) )
 
         # load output hkl file and the golden one
-        LoadHKL("TOPAZ_3132.hkl", "TOPAZ_3132")
-        LoadHKL(os.path.join(os.path.dirname(__file__), 'ReferenceResults','TOPAZ_3132_reference.hkl'), "TOPAZ_3132_golden")
+        LoadHKL(Filename="TOPAZ_3132.hkl", OutputWorkspace="TOPAZ_3132")
+        LoadHKL(Filename=os.path.join(os.path.dirname(__file__), 'ReferenceResults','TOPAZ_3132_reference.hkl'), 
+                OutputWorkspace="TOPAZ_3132_golden")
 
     def validateMethod(self):
         return "ValidateWorkspaceToWorkspace"
