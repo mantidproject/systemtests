@@ -37,9 +37,9 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         AnvredCorrection(InputWorkspace=ws,OutputWorkspace=ws,LinearScatteringCoef="0.451",LinearAbsorptionCoef="0.993",Radius="0.14")
         
         # Convert to Q space
+        #HACK
         ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_MD2',LorentzCorrection='0',
-               OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150') 
-                
+               OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150',Version=1) 
         # Find peaks (Reduced number of peaks so file comparison with reference does not fail with small differences)
         FindPeaksMD(InputWorkspace=ws+'_MD2',MaxPeaks='20',OutputWorkspace=ws+'_peaksLattice')
         # 3d integration to centroid peaks
@@ -82,6 +82,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         CopySample(InputWorkspace=ws+'_peaksFFT',OutputWorkspace=ws,
                        CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0',  CopyLattice=1)
         # Convert to reciprocal space, in the sample frame       
+
         ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_HKL',
                        OutputDimensions='HKL',LorentzCorrection='0', SplitInto='2',SplitThreshold='150')
         # Bin to a regular grid
@@ -119,8 +120,9 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         self.assertDelta( w.signalAt(30),  195.548, 10, "Peak 3")
 
         # Now do the same peak finding with Q in the sample frame
-  
-        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')
+
+        #HACK        
+        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150',Version=1)
         FindPeaksMD(InputWorkspace='TOPAZ_3132_QSample',PeakDistanceThreshold='0.12',MaxPeaks='200',OutputWorkspace='peaks_QSample')
         FindUBUsingFFT(PeaksWorkspace='peaks_QSample',MinD='2',MaxD='16')
         CopySample(InputWorkspace='peaks_QSample',OutputWorkspace='TOPAZ_3132',CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0')
