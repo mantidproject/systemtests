@@ -160,15 +160,8 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
             del wksp
             return False
 
-        # rest switches based on workspace type
-        if id == "WorkspaceGroup":
-            # groups have no histograms
-            #    and take no memory
-            pass
-        elif isinstance(wksp, IMDEventWorkspace):
-            # IMDEventWorkspace have no histograms
-            pass
-        else:
+        # checks based on workspace type
+        if hasattr(wksp, "getNumberHistograms"):
             if wksp.getNumberHistograms() <= 0:
                 print "Workspace has zero histograms"
                 del wksp
@@ -179,7 +172,7 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
                 return False
 
         # checks for EventWorkspace
-        if id == "EventWorkspace":
+        if hasattr(wksp, "getNumberEvents"):
             if wksp.getNumberEvents() <= 0:
                 print "EventWorkspace does not have events"
                 del wksp
