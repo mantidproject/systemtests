@@ -45,7 +45,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       ei = self.incident_energy
       reducer.energy_bins = self.bins
       # Disable auto save
-      reducer.save_formats = []
+      reducer.save_format = []
       reducer.map_file = self.map_file
       reducer.abs_map_file = reducer.map_file
       if self.sample_mass is not None:
@@ -187,6 +187,40 @@ class MAPSReduction(ISISDirectInelasticReduction):
     self.sample_rmm = 435.96
     self.hard_mask = None
     
+  def get_reference_file(self):
+    return "MAPSReduction.nxs"
+
+class MAPSDgreduceReduction(ISISDirectInelasticReduction):
+
+  def requiredMemoryMB(self):
+      """Far too slow for managed workspaces. They're tested in other places. Requires 10Gb"""
+      return 10000
+
+  def __init__(self):
+    ISISDirectInelasticReduction.__init__(self)
+
+
+
+    self.instr_name = 'MAPS'
+    self.sample_run = 17269
+    self.incident_energy = 150
+    self.bins = [-15,3,135]
+    self.white_beam = 17186
+    self.map_file = "4to1.map"
+    self.mono_van = 17589
+    # We care about deviations from expected so the absolute numbers are not vital
+    # Using same as above
+    self.sample_mass = 10
+    self.sample_rmm = 435.96
+    self.hard_mask = None
+
+  def runTest(self):
+      import dgreduce
+      dgreduce.setup('MAP')   
+      argi = dict();
+      argi['save_format'] = []; # disable saving
+      ws = dgreduce.arb_units(17186,17269,150,[-15,3,135],None,**argi)
+
   def get_reference_file(self):
     return "MAPSReduction.nxs"
 
