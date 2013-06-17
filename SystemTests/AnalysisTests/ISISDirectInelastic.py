@@ -55,7 +55,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       hard_mask = self.hard_mask
 
       # Do the reduction
-      reducer.diagnose(self.white_beam, sample=self.sample_run, hard_mask=self.hard_mask)
+      reducer.diagnose(self.white_beam, sample=self.sample_run, hard_mask=self.hard_mask,print_results=True)
       reducer.convert_to_energy(mono_run=self.sample_run, ei=self.incident_energy, 
                                 white_run=self.white_beam,mono_van=self.mono_van, 
                                 abs_white_run=self.white_beam)
@@ -201,25 +201,24 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
 
 
 
-    self.instr_name = 'MAPS'
-    self.sample_run = 17269
-    self.incident_energy = 150
-    self.bins = [-15,3,135]
-    self.white_beam = 17186
-    self.map_file = "4to1.map"
-    self.mono_van = 17589
-    # We care about deviations from expected so the absolute numbers are not vital
-    # Using same as above
-    self.sample_mass = 10
-    self.sample_rmm = 435.96
-    self.hard_mask = None
-
   def runTest(self):
       import dgreduce
       dgreduce.setup('MAP')   
       argi = dict();
-      argi['save_format'] = []; # disable saving
-      ws = dgreduce.arb_units(17186,17269,150,[-15,3,135],None,**argi)
+      argi['save_format'] = None; # disable saving
+      #[-15,135,3]
+      # this is for testing only as the test talks to these parameters
+      self.sample_run = int(17269)
+      #self.white_beam = wb_run
+      #self.incident_energy = float(ei_guess)
+      #self.bins = [-10, 0.2, 15]
+
+      outWS = dgreduce.arb_units(17186,self.sample_run,150,'-15,3,135',None,**argi)
+    # set up the reducer parameters which come from dgreduce arguments
+
+      # rename workspace to the name expected by unit test framework
+      RenameWorkspace(InputWorkspace=outWS,OutputWorkspace=str(self.sample_run)+'.spe')
+
 
   def get_reference_file(self):
     return "MAPSReduction.nxs"
