@@ -213,7 +213,7 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
       #self.incident_energy = float(ei_guess)
       #self.bins = [-10, 0.2, 15]
 
-      outWS = dgreduce.arb_units(17186,self.sample_run,150,'-15,3,135',None,**argi)
+      outWS = dgreduce.arb_units(17186,self.sample_run,150,'-15,3,135',None,17589,**argi)
     # set up the reducer parameters which come from dgreduce arguments
 
       # rename workspace to the name expected by unit test framework
