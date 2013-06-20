@@ -1,6 +1,7 @@
-from l2q import *
+
 import stresstesting
 from mantid.simpleapi import *
+from isis_reflgui.l2q import *
 
 class L2QScriptTest(stresstesting.MantidStressTest):
 
