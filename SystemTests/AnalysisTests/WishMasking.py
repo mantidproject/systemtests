@@ -74,12 +74,20 @@ class WishMasking(stresstesting.MantidStressTest):
 		#self.assertTrue( not mask_ws.getDetector(masking_edge + 1).isMasked() )
 		
 		# Save masking
-		# The following is also broken on the master branch!
-		#mask_file = 'wish_masking_system_test_mask_file_temp.xml'
-		#SaveMask(InputWorkspace=mask_ws,OutputFile=mask_file)
+		mask_file = 'wish_masking_system_test_mask_file_temp.xml'
+		SaveMask(InputWorkspace=mask_ws,OutputFile=mask_file)
+                mask_file_path = os.path.join(config['defaultsave.directory'], mask_file)
 		# Check the mask file was created.
-		#self.assertTrue(os.path.isfile(mask_file)) 
-		#os.remove(mask_file)
+		self.assertTrue(os.path.isfile(mask_file_path)) 
+                # ... and has the correct contents
+                masking_xml = open(mask_file_path, 'r')
+                found_correct_ids = False
+                for line in masking_xml:
+                        if "<detids>1-5,1100000-1100019</detids>" in line:
+                                found_correct_ids = True
+                masking_xml.close()
+                self.assertTrue(found_correct_ids)
+                os.remove(mask_file_path)
 		
 		## END COMPLETE TESTS 
 		
@@ -88,16 +96,6 @@ class WishMasking(stresstesting.MantidStressTest):
 		
 		# Testing that the isMasking is the same on both sides of the masking boundary. If things were working properly the following would not pass!
 		self.assertTrue( mask_ws.getDetector(masking_edge).isMasked() == mask_ws.getDetector(masking_edge + 1).isMasked() )
-		
-		mask_file = 'wish_masking_system_test_mask_file_temp.xml'
-		try:
-			SaveMask(InputWorkspace=mask_ws,OutputFile=mask_file)
-		except:
-			self.assertTrue(not os.path.isfile(mask_file)) 
-		else:
-			os.remove(mask_file)
-			self.assertTrue(False)
-			
 		## END CHARACTERISATION TESTS 
 		
 		#Test creation with normal masking
