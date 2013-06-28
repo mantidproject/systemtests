@@ -27,4 +27,5 @@ class VesuvioFittingTest(stresstesting.MantidStressTest):
         self.assertTrue(ws_prefix + "_NormalisedCovarianceMatrix" in mtd, "Expected covariance workspace in ADS")
         
     def validate(self):
+        self.tolerance = 1e-07
         return "fit_Workspace","VesuvioFittingTest.nxs"
