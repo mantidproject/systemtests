@@ -18,6 +18,7 @@ class L2QScriptTest(stresstesting.MantidStressTest):
         
         
     def validate(self):
+        self.disableChecking.append('Instrument')
         return 'IvsQ','L2QReferenceResult.nxs'
         
 
