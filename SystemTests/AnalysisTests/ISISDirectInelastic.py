@@ -3,6 +3,7 @@ from mantid.simpleapi import *
 from mantid.api import Workspace
 
 from DirectEnergyConversion import setup_reducer
+import dgreduce 
 
 from abc import ABCMeta, abstractmethod
 
@@ -40,25 +41,38 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       """Defines the workflow for the test"""
 
       self._validate_properties()
+      #reducer = setup_reducer(self.instr_name)
+      # The tests rely on MARI_Parameters.xml file valind on 31 July 2013
+      dgreduce.setup(self.instr_name) 
 
-      reducer = setup_reducer(self.instr_name)
-      ei = self.incident_energy
-      reducer.energy_bins = self.bins
+      args={};
+      args['sample_mass'] = self.sample_mass;
+      args['sample_rmm']  = self.sample_rmm;
       # Disable auto save
-      reducer.save_format = []
-      reducer.map_file = self.map_file
-      reducer.abs_map_file = reducer.map_file
-      if self.sample_mass is not None:
-        reducer.sample_mass = self.sample_mass
-      if self.sample_rmm is not None:
-        reducer.sample_rmm = self.sample_rmm
-      hard_mask = self.hard_mask
+      args['save_format'] = []
+      args['hard_mask_file'] = self.hard_mask
+      args['monovan_mapfile'] = self.map_file
+      args['det_cal_file']=self.white_beam #"11060"
 
-      # Do the reduction
-      reducer.diagnose(self.white_beam, sample=self.sample_run, hard_mask=self.hard_mask,print_results=True)
-      reducer.convert_to_energy(mono_run=self.sample_run, ei=self.incident_energy, 
-                                white_run=self.white_beam,mono_van=self.mono_van, 
-                                abs_white_run=self.white_beam)
+
+      #prepare the worksapce name expected by the framework
+      if isinstance(self.sample_run, Workspace ):
+        # reduction from workspace currently needs detector_calibration file
+        # HACK! but MARI calibration file does not work/does  not exist. Use vanadium run for calibration
+        args['det_cal_file']="11060"
+
+
+      monovan_run=self.mono_van
+      # Do the reduction -- when monovan run is not None, it does absolute units 
+      outWS=dgreduce.arb_units(self.white_beam,self.sample_run,self.incident_energy,self.bins,self.map_file,monovan_run,**args)
+
+      #SaveNexus(outWS,'MAR_reduction2.nxs')
+      #SaveNXSPE(outWS,'MAR_reduction2.nxspe')
+ 
+
+     # rename workspace to the name expected by unit test framework
+
+
 
     def validate(self):
       """Returns the name of the workspace & file to compare"""
@@ -113,16 +127,19 @@ class MARIReductionFromFile(ISISDirectInelasticReduction):
   def __init__(self):
     ISISDirectInelasticReduction.__init__(self)
     self.instr_name = 'MARI'
-    self.sample_run = 11001
-    self.incident_energy = 11
+    self.sample_run = 11001 #11001
+    self.incident_energy = 12
     self.bins = [-11,0.05,11]
     self.white_beam = 11060
     self.map_file = "mari_res.map"
     self.mono_van = 11015
-    self.sample_mass = 10
-    self.sample_rmm = 435.96
+    self.sample_mass = 10 #32.58 # 10
+    self.sample_rmm =  435.96# 50.9415 # 435.96
     self.hard_mask = "mar11015.msk"
-    
+
+  def get_result_workspace(self):
+      """Returns the result workspace to be checked"""
+      return "outWS"   
   def get_reference_file(self):
     return "MARIReduction.nxs"
     
@@ -148,21 +165,70 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
 
     self.instr_name = 'MARI'
     self.sample_run = mono_ws
-    self.incident_energy = 11
+    self.incident_energy = 12
     self.bins = [-11,0.05,11]
-    self.white_beam = 11060
+    self.white_beam = white_ws
+    #self.white_beam = 
     self.map_file = "mari_res.map"
     self.mono_van = van_ws
     self.sample_mass = 10
     self.sample_rmm = 435.96
     self.hard_mask = "mar11015.msk"
+
     
   def get_result_workspace(self):
       """Returns the result workspace to be checked"""
-      return "11001.spe"
+      return "outWS"
 
   def get_reference_file(self):
     return "MARIReduction.nxs"
+
+class MARIReductionSum(ISISDirectInelasticReduction):
+
+  def __init__(self):
+    ISISDirectInelasticReduction.__init__(self)
+
+    ISISDirectInelasticReduction.__init__(self)
+    self.instr_name = 'MARI'
+    self.sample_run = 11001 #11001
+    self.incident_energy = 11
+    self.bins = [-11,0.05,11]
+    self.white_beam = 11060
+    self.map_file = "mari_res.map"
+    self.mono_van = 11015
+    self.sample_mass = 32.58 # 10
+    self.sample_rmm =  50.9415 # 435.96
+    self.hard_mask = "mar11015.msk"
+
+  def runTest(self):
+      """Defines the workflow for the test
+      It verifies operation on summing two files on demand. No absolute units
+      """
+
+      self._validate_properties()
+      # The tests rely on MARI_Parameters.xml file valind on 31 July 2013
+      dgreduce.setup(self.instr_name) 
+
+      args={};
+      # Disable auto save
+      args['save_format'] = []
+      args['hard_mask_file'] = self.hard_mask
+      args['sum_runs']    = True
+
+
+      run_nums=[self.sample_run,self.mono_van]
+
+      # Do the reduction
+      outWS=dgreduce.arb_units(self.white_beam,run_nums,self.incident_energy,self.bins,self.map_file,**args)
+      #SaveNexus(outWS,'MAR_reduction2.nxs')
+      #SaveNXSPE(outWS,'MAR_reduction2.nxspe')
+    
+  def get_result_workspace(self):
+      """Returns the result workspace to be checked"""
+      return "outWS"
+
+  def get_reference_file(self):
+    return "MARIReductionSum.nxs"
 
 #------------------------- MAPS tests -------------------------------------------------
 
@@ -180,7 +246,8 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
 
 
   def runTest(self):
-      import dgreduce
+      # The tests rely on MAPS_Parameters.xml file valind on 31 July 2013
+      # All other reducer parameters are defaults taken this file
       dgreduce.setup('MAP')   
       argi = dict();
       argi['save_format'] = None; # disable saving
@@ -188,6 +255,7 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
 
       #argi['hardmaskPlus']=maskfile 
       #argi['hardmaskOnly']=maskfile 
+      argi['hard_mask_file']=None
       argi['diag_remove_zero']=False
       argi['sample_mass'] = 10/(94.4/13) # -- this number allows to get approximately the same system test intensities for MAPS as the old test
       argi['sample_rmm']  = 435.96 #
@@ -198,11 +266,13 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
       # this are the parameterw which were used in old MAPS_Parameters.xml test. 
       argi['wb-integr-max'] =300
       argi['bkgd-range-min']=12000
+      argi['bkgd-range-max']=18000
       argi['diag_samp_hi']=1.5
       argi['diag_samp_sig']=3.3
       argi['diag_van_hi']=2.0
 
-      # All other reducer parameters are defaults taken from MAPS_Parameters.xml file valid on 27/06/2013. 
+
+
       # This file is the essential part of this test
 
       # this is for testing only as the test talks to these parameters
