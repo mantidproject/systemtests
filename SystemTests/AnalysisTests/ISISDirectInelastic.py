@@ -59,7 +59,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       if isinstance(self.sample_run, Workspace ):
         # reduction from workspace currently needs detector_calibration file
         # HACK! but MARI calibration file does not work/does  not exist. Use vanadium run for calibration
-        args['det_cal_file']="11060"
+        args['det_cal_file']=self.white_beam
 
 
       monovan_run=self.mono_van
@@ -175,6 +175,32 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
     self.sample_rmm = 435.96
     self.hard_mask = "mar11015.msk"
 
+  def runTest(self):
+      """Defines the workflow for the test"""
+
+      self._validate_properties()
+      #reducer = setup_reducer(self.instr_name)
+      # The tests rely on MARI_Parameters.xml file valind on 31 July 2013
+      dgreduce.setup(self.instr_name) 
+
+      args={};
+      args['sample_mass'] = self.sample_mass;
+      args['sample_rmm']  = self.sample_rmm;
+      # Disable auto save
+      args['save_format'] = []
+      args['hard_mask_file'] = self.hard_mask
+      args['monovan_mapfile'] = self.map_file
+      args['det_cal_file']=self.white_beam #"11060"
+
+
+     # reduction from workspace currently needs detector_calibration file
+      # HACK! but MARI calibration file does not work/does  not exist. Use vanadium run for calibration. for ethotheric reasons it works in the following form only
+      args['det_cal_file']="11060"
+
+
+      monovan_run=self.mono_van
+      # Do the reduction -- when monovan run is not None, it does absolute units 
+      outWS=dgreduce.arb_units(self.white_beam,self.sample_run,self.incident_energy,self.bins,self.map_file,monovan_run,**args)
     
   def get_result_workspace(self):
       """Returns the result workspace to be checked"""
@@ -300,6 +326,8 @@ class MERLINReduction(ISISDirectInelasticReduction):
       return 16000
 
   def __init__(self):
+    ''' Test relies on MERLIN_Parameters.xml file introduced in July 2014
+    ''' 
     ISISDirectInelasticReduction.__init__(self)
     self.instr_name = 'MERLIN'
     self.sample_run = 6398
@@ -314,6 +342,18 @@ class MERLINReduction(ISISDirectInelasticReduction):
     
   def get_reference_file(self):
     return "MERLINReduction.nxs"
+  def get_result_workspace(self):
+      """Returns the result workspace to be checked"""
+      return "outWS"
+
+  def validate(self):
+      self.tolerance = 1e-4
+      self.tolerance_is_reller=True
+      self.disableChecking.append('SpectraMap')
+      self.disableChecking.append('Instrument')
+      result = self.get_result_workspace()
+      reference = self.get_reference_file()
+      return result, reference
 
 #------------------------- LET tests -------------------------------------------------
 
@@ -326,8 +366,10 @@ class LETReduction(stresstesting.MantidStressTest):
   def runTest(self):
       """
       Run the LET reduction with event NeXus files
+      
+      Relies on LET_Parameters.xml file from June 2013
       """
-      import dgreduce
+
       dgreduce.setup('LET')
       white_run = 'LET00005545.raw'
       sample_run = 'LET00006278.nxs'
@@ -357,12 +399,21 @@ class LETReduction(stresstesting.MantidStressTest):
       energybin = [ebin[0]*energy,ebin[1]*energy,ebin[2]*energy]
       energybin = [ '%.4f' % elem for elem in energybin ]  
       ebinstring = str(energybin[0])+','+str(energybin[1])+','+str(energybin[2])
-
-      reduced_ws = dgreduce.arb_units(white_ws, sample_ws, energy, ebinstring, map_file, det_cal_file='det_corrected7.dat',
-                                      bleed=False, norm_method='current', 
-                                      detector_van_range=[0.5,200],bkgd_range=[int(t_elastic),int(tmax)])
+      argi={}
+      argi['det_cal_file']='det_corrected7.dat'
+      argi['bleed'] = False
+      argi['norm_method']='current'
+      argi['detector_van_range']=[0.5,200]
+      argi['bkgd_range']=[int(t_elastic),int(tmax)]
+      argi['hard_mask_file']='LET_hard.msk'
+      reduced_ws = dgreduce.arb_units(white_ws, sample_ws, energy, ebinstring, map_file,**argi)
+      pass
 
   def validate(self):
-      self.disableChecking.append('Instrument') # Disable parameter map checking
+      self.tolerance = 1e-6
+      self.tolerance_is_reller=True
+      self.disableChecking.append('SpectraMap')
+      self.disableChecking.append('Instrument')
+
       return "reduced_ws", "LETReduction.nxs"
 
