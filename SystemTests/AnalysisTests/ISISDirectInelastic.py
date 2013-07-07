@@ -285,6 +285,7 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
       argi['diag_remove_zero']=False
       argi['sample_mass'] = 10/(94.4/13) # -- this number allows to get approximately the same system test intensities for MAPS as the old test
       argi['sample_rmm']  = 435.96 #
+      #argi['monovan_mapfile']='4to1_mid_lowang.map' # default
       # The mass and rmm for Vanadium to get correct cross-section
       #argi['sample_mass'] =  30.1
       #argi['sample_rmm']  =  50.9415
