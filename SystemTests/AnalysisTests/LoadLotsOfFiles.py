@@ -21,6 +21,7 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'IP0005.dat',
                 'batch_input.csv',
                 'mar11015.msk',
+                'LET_hard.msk', #It seems loade does not understand it?
                 'MASK.094AA',
                 'MASKSANS2D_094i_RKH.txt',
                 'MASKSANS2D.091A',
