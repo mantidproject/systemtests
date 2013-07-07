@@ -47,8 +47,9 @@ class DirectInelasticDiagnostic2(MantidStressTest):
         #reducer.wb_integr_range = [20,300]
         red_man["DetVanIntRangeLow"] = 20.
         red_man["DetVanIntRangeHigh"] = 300.
-        red_man["TibTofRangeStart"]=12000.
-        red_man["TibTofRangeEnd"]=18000.
+        red_man["BackgroundCheck"] = True
+        red_man["BackgroundTofStart"]=12000.
+        red_man["BackgroundTofEnd"]=18000.
         #reducer.bkgd_range=[12000,18000]
 
 
