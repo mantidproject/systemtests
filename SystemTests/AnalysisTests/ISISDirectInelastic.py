@@ -240,7 +240,7 @@ class MARIReductionSum(ISISDirectInelasticReduction):
       args['save_format'] = []
       args['hard_mask_file'] = self.hard_mask
       args['sum_runs']    = True
-
+      #args['monovan_mapfile'] = self.map_file
 
       run_nums=[self.sample_run,self.mono_van]
 
