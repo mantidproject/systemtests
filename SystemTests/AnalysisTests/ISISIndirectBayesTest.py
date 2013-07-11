@@ -45,7 +45,7 @@ class QLresTest(stresstesting.MantidStressTest):
 
     def validate(self):
         self.tolerance = 1e-4 
-        return 'irs26176_graphite002_QLr_Fit','ISISIndirectBayes_QlresTest.nxs'
+        return 'irs26176_graphite002_QLr_Result','ISISIndirectBayes_QlresTest.nxs'
 
     def cleanup(self):
         filenames = ['irs26176_graphite002_QLr.lpt','irs26176_graphite002_QLr.ql1',
@@ -155,7 +155,7 @@ class QSeTest(stresstesting.MantidStressTest):
 
     def validate(self):
         self.tolerance = 1e-1 
-        return 'irs26176_graphite002_QSe_Fit','ISISIndirectBayes_QSeTest.nxs'
+        return 'irs26176_graphite002_QSe_Result','ISISIndirectBayes_QSeTest.nxs'
 
     def cleanup(self):
         filenames = ['irs26176_graphite002_QSe_Parameters.nxs', 'irs26176_graphite002_Qse.qse',
@@ -193,7 +193,7 @@ class QLDataTest(stresstesting.MantidStressTest):
 
     def validate(self):
         self.tolerance = 1e-4 
-        return 'irs26176_graphite002_QLd_Fit','ISISIndirectBayes_QLDataTest.nxs'
+        return 'irs26176_graphite002_QLd_Result','ISISIndirectBayes_QLDataTest.nxs'
 
     def cleanup(self):
         filenames = ['irs26176_graphite002_QLd.lpt','irs26176_graphite002_QLd.ql1',
