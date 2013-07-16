@@ -38,43 +38,4 @@ class EQSANSDarkCurrent(stresstesting.MantidStressTest):
         self.disableChecking.append('Axes')
         
         return "EQSANS_1466_event_Iq", 'EQSANSDarkCurrent.nxs'
-
-class EQSANSDarkCurrentWorkflow(stresstesting.MantidStressTest):
-    """
-        Analysis Tests for EQSANS using the workflow algorithms
-        along with property manager
-        Testing that the I(Q) output of is correct 
-    """
     
-    def runTest(self):
-        config = ConfigService.Instance()
-        config["facilityName"]='SNS'
-        SetupEQSANSReduction(UseConfig=False,
-                             PreserveEvents=True,
-                             Normalisation="Charge",
-                             BeamCenterMethod="Value",
-                             BeamCenterX=96.29,
-                             BeamCenterY=126.15,
-                             DarkCurrentFile="EQSANS_4061_event.nxs",
-                             TransmissionValue=1.0,
-                             ThetaDependentTransmission=False,
-                             ReductionProperties="_test_eqsans_reduce")
-        
-        EQSANSReduce(Filename="EQSANS_1466_event.nxs",
-                     ReductionProcess=True,
-                     PostProcess=True,
-                     ReductionProperties="_test_eqsans_reduce",
-                     OutputWorkspace="eqsans_reduce_output")
-        
-        # Scale up to match correct scaling.
-        Scale(InputWorkspace="EQSANS_1466_event_Iq", Factor=2777.81, 
-              Operation='Multiply', OutputWorkspace="EQSANS_1466_event_Iq")              
-
-    def validate(self):
-        self.tolerance = 1.0
-        self.disableChecking.append('Instrument')
-        self.disableChecking.append('Sample')
-        self.disableChecking.append('SpectraMap')
-        self.disableChecking.append('Axes')
-        
-        return "EQSANS_1466_event_Iq", 'EQSANSDarkCurrent.nxs'
