@@ -58,7 +58,6 @@ class EQSANSDarkCurrentWorkflow(stresstesting.MantidStressTest):
                              DarkCurrentFile="EQSANS_4061_event.nxs",
                              TransmissionValue=1.0,
                              ThetaDependentTransmission=False,
-                             SetupReducer=True,
                              ReductionProperties="_test_eqsans_reduce")
         
         EQSANSReduce(Filename="EQSANS_1466_event.nxs",
