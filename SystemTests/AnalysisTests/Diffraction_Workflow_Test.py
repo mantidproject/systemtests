@@ -37,7 +37,6 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         AnvredCorrection(InputWorkspace=ws,OutputWorkspace=ws,LinearScatteringCoef="0.451",LinearAbsorptionCoef="0.993",Radius="0.14")
         
         # Convert to Q space
-        #HACK
         ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_MD2',LorentzCorrection='0',
                OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150') #,Version=1
         # Find peaks (Reduced number of peaks so file comparison with reference does not fail with small differences)
@@ -102,8 +101,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         self.assertDelta( ol.gamma(), 90, 0.4, "Correct lattice angle gamma value not found.")
         
         # Go to HKL
-        #HACK
-        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_HKL',OutputDimensions='HKL',LorentzCorrection='1',SplitInto='2',SplitThreshold='150',Version=1)        
+        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_HKL',OutputDimensions='HKL',LorentzCorrection='0',SplitInto='2',SplitThreshold='150')        
         
 
         # Bin to a line (H=0 to 6, L=3, K=3)
@@ -122,7 +120,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         # Now do the same peak finding with Q in the sample frame
 
         #HACK        
-        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150',Version=1)
+        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='0',SplitInto='2',SplitThreshold='150')
         FindPeaksMD(InputWorkspace='TOPAZ_3132_QSample',PeakDistanceThreshold='0.12',MaxPeaks='200',OutputWorkspace='peaks_QSample')
         FindUBUsingFFT(PeaksWorkspace='peaks_QSample',MinD='2',MaxD='16')
         CopySample(InputWorkspace='peaks_QSample',OutputWorkspace='TOPAZ_3132',CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0')
