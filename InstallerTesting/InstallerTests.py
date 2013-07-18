@@ -29,12 +29,14 @@ if ('-h','') in opt:
     print "       -h Display the usage"
     print "       -v Run the newer version (NSIS) of the windows installer"
     print "       -R Optionally only run the test matched by the regex"
+    print "       -l Log level"
     sys.exit(0)
 
 doInstall = True
 useNSISWindowsInstaller = False
 test_regex = None
 out2stdout = False
+log_level = 'notice'
 for option, arg in opt:
     if option == '-n':
         doInstall = False
@@ -44,6 +46,8 @@ for option, arg in opt:
         useNSISWindowsInstaller = True
     if option == '-R' and arg != "":
         test_regex = arg
+    if option == '-l' and arg != "":
+        log_level = arg
 
 # The log file for this script
 parentDir = os.path.abspath('..').replace('\\','/')
@@ -99,7 +103,7 @@ except Exception, err:
 log("Running system tests. Log files are: logs/testsRun.log and logs/testsRun.err")
 try:
     # Pick the correct Mantid along with the bundled python on windows
-    run_test_cmd = "%s runSystemTests.py --loglevel=information --mantidpath=%s" % (installer.python_cmd, mantidPlotDir)
+    run_test_cmd = "%s runSystemTests.py --loglevel=%s --mantidpath=%s" % (installer.python_cmd, log_level, mantidPlotDir)
     if test_regex is not None:
         run_test_cmd += " -R " + test_regex
     if out2stdout:
