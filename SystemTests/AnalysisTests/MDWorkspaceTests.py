@@ -5,7 +5,7 @@ file-backed MDWorkspaces.
 
 import stresstesting
 import os
-from mantidsimple import *
+from mantid.simpleapi import *
 
 ###############################################################################
 class PlusMDTest(stresstesting.MantidStressTest):
@@ -30,8 +30,8 @@ class PlusMDTest(stresstesting.MantidStressTest):
 
         # Load then convert to Q in the lab frame
         LoadEventNexus(Filename=r'CNCS_7860_event.nxs',OutputWorkspace='cncs_nxs')
-	#HACK
-        ConvertToDiffractionMDWorkspace(InputWorkspace='cncs_nxs', OutputWorkspace='cncs_original', SplitInto=2,Version=1)
+
+        ConvertToDiffractionMDWorkspace(InputWorkspace='cncs_nxs', OutputWorkspace='cncs_original', SplitInto=2)
         alg = SaveMD(InputWorkspace='cncs_original', Filename=barefilename)
 
         self.assertDelta( mtd['cncs_original'].getNPoints(), 112266, 1)
@@ -131,22 +131,26 @@ class MergeMDTest(stresstesting.MantidStressTest):
         
         for omega in xrange(0, 5):
             print "Starting omega %03d degrees" % omega
-            CreateMDWorkspace(Dimensions='3',Extents='-5,5,-5,5,-5,5',Names='Q_sample_x,Q_sample_y,Q__sample_z',Units='A,A,A',SplitInto='3',SplitThreshold='200',MaxRecursionDepth='3',
+            CreateMDWorkspace(Dimensions='3',Extents='-5,5,-5,5,-5,5',Names='Q_sample_x,Q_sample_y,Q_sample_z',Units='A^-1,A^-1,A^-1',SplitInto='3',SplitThreshold='200',MaxRecursionDepth='3',
             MinRecursionDepth='3', OutputWorkspace='CNCS_7860_event_MD')
             
             # Convert events to MD events
             AddSampleLog("CNCS_7860_event_NXS", "omega", "%s" % omega, "Number Series")
             AddSampleLog("CNCS_7860_event_NXS", "chi", "%s" % 0, "Number Series")
             AddSampleLog("CNCS_7860_event_NXS", "phi", "%s" % 0, "Number Series")
+            # V2 of ConvertToDiffractionMD needs Goniometer to be set on workspace.
+            SetGoniometer(Workspace='CNCS_7860_event_NXS',Axis0='omega,0,0,1,1',Axis1='chi,1,0,0,1',Axis2='phi,0,1,0,1')
 
-            ConvertToDiffractionMDWorkspace(InputWorkspace='CNCS_7860_event_NXS',OutputWorkspace='CNCS_7860_event_MD',OutputDimensions='Q (sample frame)',LorentzCorrection='1', Append=True,Version=1)            
+            ConvertToDiffractionMDWorkspace(InputWorkspace='CNCS_7860_event_NXS',OutputWorkspace='CNCS_7860_event_MD',OutputDimensions='Q (sample frame)',LorentzCorrection='1', Append=True)            
         
-            alg = SaveMD("CNCS_7860_event_MD", "CNCS_7860_event_rotated_%03d.nxs" % omega)
-            self._saved_filenames.append(alg.getPropertyValue("Filename"))
+            fileName =  "CNCS_7860_event_rotated_%03d.nxs" % omega
+            SaveMD(InputWorkspace="CNCS_7860_event_MD",Filename=fileName)
+            self._saved_filenames.append(fileName)
         # End for loop
-        alg = MergeMDFiles(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
-                           OutputFilename=r'merged.nxs',OutputWorkspace='merged')
-        self._saved_filenames.append(alg.getPropertyValue("OutputFilename"))
+        OutFileName = r'merged.nxs'
+        MergeMDFiles(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
+                           OutputFilename=OutFileName,OutputWorkspace='merged')
+        self._saved_filenames.append(OutFileName)
 
         # 5 times the number of events in the output workspace.
         self.assertDelta( mtd['merged'].getNPoints(), 553035, 1)
