@@ -16,7 +16,7 @@ installs it, runs system tests and produces an xml report file SystemTestsReport
 '''
 
 try:
-    opt, argv = getopt(sys.argv[1:],'nohvR:')
+    opt, argv = getopt(sys.argv[1:],'nohvR:l:')
 except:
     opt = [('-h','')]
 
