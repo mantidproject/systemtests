@@ -31,7 +31,7 @@ class SXDAnalysis(stresstesting.MantidStressTest):
         unitcell_angle = 90
         length_tolerance = 0.1
         #
-        angle_tolelerance = 0.26  #HACK: changed from 0.25 due to convertToMD replacement
+        angle_tolelerance = 0.25  # Actual tolernce seems is 0.17
         #
         # Check results.
         latt = peaks_qLab.sample().getOrientedLattice()
