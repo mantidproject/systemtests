@@ -1,9 +1,6 @@
 import stresstesting
-import MantidFramework
-MantidFramework.mtd.initialize()
-from mantidsimple import *
-import datetime
-from time import localtime, strftime
+from mantid.simpleapi import *
+from time import strftime
 import os
 
 def _skip_test():
@@ -33,7 +30,6 @@ class PG3Calibration(stresstesting.MantidStressTest):
 
     def runTest(self):
         # determine where to save
-        import os
         savedir = os.path.abspath(os.path.curdir)
 
         # run the actual code
@@ -74,7 +70,6 @@ class PG3CCCalibration(stresstesting.MantidStressTest):
 
     def runTest(self):
         # determine where to save
-        import os
         savedir = os.path.abspath(os.path.curdir)
 
         # run the actual code
