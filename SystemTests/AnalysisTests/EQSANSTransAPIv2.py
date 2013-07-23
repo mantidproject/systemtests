@@ -51,7 +51,18 @@ class EQSANSTransmissionEvent(EQSANSTransmission):
         Reduce1D()
         # Scale up to match correct scaling.
         Scale(InputWorkspace="EQSANS_1466_event_Iq", Factor=2777.81, 
-              Operation='Multiply', OutputWorkspace="EQSANS_1466_event_Iq")              
+              Operation='Multiply', OutputWorkspace="EQSANS_1466_event_Iq")
+
+    def validate(self):
+        # Be more tolerant with the output, mainly because of the errors.
+        # The following tolerance check the errors up to the third digit.   
+        self.tolerance = 0.1
+        self.disableChecking.append('Instrument')
+        self.disableChecking.append('Sample')
+        self.disableChecking.append('SpectraMap')
+        self.disableChecking.append('Axes')
+        return "EQSANS_1466_event_Iq", 'EQSANSTransEvent.nxs'
+
 
 class EQSANSTransmissionDC(stresstesting.MantidStressTest):
     def runTest(self):
