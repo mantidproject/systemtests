@@ -28,6 +28,9 @@ class ReflectometryQuickCombineMulti(stresstesting.MantidStressTest):
             config[defaultInstKey] = defaultInstrument
         return mtd[str(runNumber) + '_IvsQ']
     
+    def createBinningParam(self, low, step, high):
+        return "%f,%f,%f" %(low, step, high)
+    
     def runTest(self):
         step = 0.040
         run1QLow = 0.010
@@ -37,11 +40,11 @@ class ReflectometryQuickCombineMulti(stresstesting.MantidStressTest):
         
         # Create IvsQ workspaces
         IvsQ1 = self.doQuickOnRun(runNumber=13460, transmissionNumbers=[13463,13464], instrument='INTER', incidentAngle=0.7)
-        IvsQ1Binned = Rebin(InputWorkspace=IvsQ1, Params=str(run1QLow) + ',' + str(-step) + ',' + str(run1QHigh))
+        IvsQ1Binned = Rebin(InputWorkspace=IvsQ1, Params=self.createBinningParam(run1QLow, -step, run1QHigh))
         
         # Create IvsQ workspaces
         IvsQ2 = self.doQuickOnRun(runNumber=13462, transmissionNumbers=[13463,13464], instrument='INTER', incidentAngle=2.3)
-        IvsQ2Binned = Rebin(InputWorkspace=IvsQ2, Params=str(run2QLow) + ',' + str(-step) + ',' + str(run2QHigh))
+        IvsQ2Binned = Rebin(InputWorkspace=IvsQ2, Params=self.createBinningParam(run2QLow, -step, run2QHigh))
         
         # Peform the stitching
         combineMulti.combineDataMulti([IvsQ1Binned.name(), IvsQ2Binned.name()], self.__stitchedWorkspaceName, [run1QLow, run2QLow], [run1QHigh, run2QHigh], run1QLow, run2QHigh, -step, 1)
