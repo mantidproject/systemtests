@@ -47,7 +47,7 @@ class ToscaDiffractionTest(stresstesting.MantidStressTest):
 
 #-------------------------------------------------------------------------------
 
-class OsirisDiffractionTest(stresstesting.MantidStressTest):
+class OsirisDiffOnlyTest(stresstesting.MantidStressTest):
     
   def runTest(self):
     from mantid.simpleapi import OSIRISDiffractionReduction
@@ -60,3 +60,25 @@ class OsirisDiffractionTest(stresstesting.MantidStressTest):
   def validate(self):
     self.disableChecking.append('Instrument')
     return 'OsirisDiffractionTest', 'OsirisDiffractionTest.nxs'
+
+#-------------------------------------------------------------------------------
+class OSIRISDiffspecDiffractionTest(stresstesting.MantidStressTest):
+  
+  def runTest(self):
+    """
+    Runs the reduction
+    """
+    inst_name = "OSIRIS"
+    param_file = "%s_diffraction_diffspec_Parameters.xml" % (inst_name)
+    from IndirectDiffractionReduction import MSGDiffractionReducer
+    reducer = MSGDiffractionReducer()
+    reducer.set_instrument_name(inst_name)
+    reducer.set_detector_range(2, 961) # Note these are one less than what you enter in the GUI
+    reducer.set_parameter_file(param_file)
+    reducer.append_data_file("osiris00101300.raw")
+    reducer.set_rebin_string("2.0,0.001,3.0")
+    reducer.reduce()
+
+  def validate(self):
+    self.disableChecking.append('Instrument')
+    return 'OSIRIS00101300', 'OsirisDiffspecDiffractionTest.nxs'
