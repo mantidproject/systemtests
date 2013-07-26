@@ -277,6 +277,8 @@ class MantidStressTest(object):
         checker.setPropertyValue("Workspace1",valNames[0])
         checker.setPropertyValue("Workspace2",valNames[1])
         checker.setPropertyValue("Tolerance", str(self.tolerance))
+        if hasattr(self,'tolerance_is_reller') and self.tolerance_is_reller:
+           checker.setPropertyValue("ToleranceRelerr", "1")
         for d in self.disableChecking:
             checker.setPropertyValue("Check"+d,"0")
         checker.execute()
@@ -798,9 +800,9 @@ class TestManager(object):
         for suite in self._tests:
             if self.__shouldTest(suite):
                 suite.execute(self._runner)
-	    if suite.status == "success":
+            if suite.status == "success":
                 self._passedTests += 1
-	    elif suite.status == "skipped":
+            elif suite.status == "skipped":
                 self._skippedTests += 1
             else:
                 self._failedTests += 1
