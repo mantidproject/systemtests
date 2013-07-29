@@ -37,9 +37,8 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         AnvredCorrection(InputWorkspace=ws,OutputWorkspace=ws,LinearScatteringCoef="0.451",LinearAbsorptionCoef="0.993",Radius="0.14")
         
         # Convert to Q space
-        #HACK
         ConvertToDiffractionMDWorkspace(InputWorkspace=ws,OutputWorkspace=ws+'_MD2',LorentzCorrection='0',
-               OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150',Version=1) 
+               OutputDimensions='Q (lab frame)', SplitInto='2',SplitThreshold='150') #,Version=1
         # Find peaks (Reduced number of peaks so file comparison with reference does not fail with small differences)
         FindPeaksMD(InputWorkspace=ws+'_MD2',MaxPeaks='20',OutputWorkspace=ws+'_peaksLattice')
         # 3d integration to centroid peaks
@@ -102,8 +101,7 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         self.assertDelta( ol.gamma(), 90, 0.4, "Correct lattice angle gamma value not found.")
         
         # Go to HKL
-        #HACK
-        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_HKL',OutputDimensions='HKL',LorentzCorrection='1',SplitInto='2',SplitThreshold='150',Version=1)        
+        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_HKL',OutputDimensions='HKL',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')        
         
 
         # Bin to a line (H=0 to 6, L=3, K=3)
@@ -115,14 +113,14 @@ class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
         # Now check the integrated bin and the peaks
         w = mtd["TOPAZ_3132_HKL_line"]
         self.assertLessThan( w.signalAt(1), 1e4, "Limited background signal" )
-        self.assertDelta( w.signalAt(10), 1110.86, 10, "Peak 1")
-        self.assertDelta( w.signalAt(20),  337.71, 10, "Peak 2")
-        self.assertDelta( w.signalAt(30),  195.548, 10, "Peak 3")
+        self.assertDelta( w.signalAt(10), 140.824, 1, "Peak 1") #self.assertDelta( w.signalAt(10), 1110.86, 10, "Peak 1")
+        self.assertDelta( w.signalAt(20),  36.25, 1, "Peak 2") #self.assertDelta( w.signalAt(20),  337.71, 10, "Peak 2")
+        self.assertDelta( w.signalAt(30),  26.53, 1, "Peak 3") #self.assertDelta( w.signalAt(30),  195.548, 10, "Peak 3")
 
         # Now do the same peak finding with Q in the sample frame
 
-        #HACK        
-        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150',Version=1)
+
+        ConvertToDiffractionMDWorkspace(InputWorkspace='TOPAZ_3132',OutputWorkspace='TOPAZ_3132_QSample',OutputDimensions='Q (sample frame)',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')
         FindPeaksMD(InputWorkspace='TOPAZ_3132_QSample',PeakDistanceThreshold='0.12',MaxPeaks='200',OutputWorkspace='peaks_QSample')
         FindUBUsingFFT(PeaksWorkspace='peaks_QSample',MinD='2',MaxD='16')
         CopySample(InputWorkspace='peaks_QSample',OutputWorkspace='TOPAZ_3132',CopyName='0',CopyMaterial='0',CopyEnvironment='0',CopyShape='0')

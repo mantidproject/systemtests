@@ -11,7 +11,7 @@ class SXDAnalysis(stresstesting.MantidStressTest):
         ws = Load(Filename='SXD23767.raw', LoadMonitors='Exclude')
         
         # A lower SplitThreshold, with a reasonable bound on the recursion depth, helps find weaker peaks at higher Q.
-        QLab = ConvertToDiffractionMDWorkspace(InputWorkspace=ws, OutputDimensions='Q (lab frame)', SplitThreshold=50, LorentzCorrection='1',MaxRecursionDepth='13',Extents='-15,15,-15,15,-15,15',Version=1)
+        QLab = ConvertToDiffractionMDWorkspace(InputWorkspace=ws, OutputDimensions='Q (lab frame)', SplitThreshold=50, LorentzCorrection='1',MaxRecursionDepth='13',Extents='-15,15,-15,15,-15,15')
         
         #  NaCl has a relatively small unit cell, so the distance between peaks is relatively large.  Setting the PeakDistanceThreshold
         #  higher avoids finding high count regions on the sides of strong peaks as separate peaks.
@@ -31,7 +31,7 @@ class SXDAnalysis(stresstesting.MantidStressTest):
         unitcell_angle = 90
         length_tolerance = 0.1
         #
-        angle_tolelerance = 0.26  #HACK: changed from 0.25 due to convertToMD replacement
+        angle_tolelerance = 0.25  # Actual tolernce seems is 0.17
         #
         # Check results.
         latt = peaks_qLab.sample().getOrientedLattice()
@@ -45,3 +45,6 @@ class SXDAnalysis(stresstesting.MantidStressTest):
     def doValidation(self):
         # If we reach here, no validation failed
         return True
+    def requiredMemoryMB(self):
+      """Far too slow for managed workspaces. They're tested in other places. Requires 2Gb"""
+      return 3000
