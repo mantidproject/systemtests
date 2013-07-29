@@ -47,4 +47,4 @@ class SXDAnalysis(stresstesting.MantidStressTest):
         return True
     def requiredMemoryMB(self):
       """Far too slow for managed workspaces. They're tested in other places. Requires 2Gb"""
-      return 2000
+      return 3000
