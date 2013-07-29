@@ -45,6 +45,3 @@ class SXDAnalysis(stresstesting.MantidStressTest):
     def doValidation(self):
         # If we reach here, no validation failed
         return True
-    def requiredMemoryMB(self):
-      """Far too slow for managed workspaces. They're tested in other places. Requires 2Gb"""
-      return 2000
