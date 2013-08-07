@@ -28,7 +28,7 @@ def getSourceDir():
 # These are the table fields, in order
 TABLE_FIELDS = ['date', 'name', 'type', 'host', 'environment', 'runner',
                  'revision', 'commitid', 'runtime', 'cpu_fraction', 
-                 'success',
+                 'memory_change', 'success',
                  'status', 'logarchive', 'variables']
 
 #=====================================================================
@@ -229,7 +229,7 @@ def setup_database():
     date DATETIME, name VARCHAR(60), type VARCHAR(20), 
     host VARCHAR(30), environment VARCHAR(50), runner VARCHAR(20), 
     revision INT, commitid VARCHAR(45), 
-    runtime DOUBLE, cpu_fraction DOUBLE, 
+    runtime DOUBLE, cpu_fraction DOUBLE, memory_change INT,
     success BOOL,
     status VARCHAR(50), logarchive VARCHAR(80),
     variables VARCHAR(200)
