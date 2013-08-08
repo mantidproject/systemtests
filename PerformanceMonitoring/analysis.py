@@ -466,6 +466,7 @@ def get_html_summary_table(test_names):
     <th>Status</th> 
     <th>When?</th>
     <th>Total runtime (s)</th>
+    <th>Memory 'loss'</th>
     """
     
     for name in test_names:
@@ -486,6 +487,7 @@ def get_html_summary_table(test_names):
             html += """<td>%s</td>""" %  date.strftime("%b %d, %H:%M:%S")
             
             html += """<td>%s</td>""" % res['runtime']
+            html += """<td>%s</td>""" % res['memory_change']
             html += """</tr>"""
             
     html += """</table>"""
