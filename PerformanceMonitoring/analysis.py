@@ -483,8 +483,11 @@ def get_html_summary_table(test_names):
             html += """<td>%s</td>""" % res['status']
 
             # Friendly date
-            date = datetime.datetime.strptime(res['date'], DATE_STR_FORMAT)
-            html += """<td>%s</td>""" %  date.strftime("%b %d, %H:%M:%S")
+            try:
+                date = datetime.datetime.strptime(res['date'], DATE_STR_FORMAT)
+                html += """<td>%s</td>""" %  date.strftime("%b %d, %H:%M:%S")
+            except:
+                html += """<td></td>"""
             
             html += """<td>%s</td>""" % res['runtime']
             html += """<td>%s</td>""" % res['memory_change']
