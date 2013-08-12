@@ -187,7 +187,9 @@ class MantidStressTest(object):
         for i in range(1, countmax):
             istart = time.time()
             # Store the free memory of the system (in MB) before starting the test
+            import mantid.api
             from mantid.kernel import MemoryStats
+            mantid.api.FrameworkManager.clear()
             self.memory = MemoryStats().availMem()/1024
             self.runTest()
             delta_t = time.time() - istart
