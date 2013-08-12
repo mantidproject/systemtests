@@ -58,8 +58,11 @@ class MantidStressTest(object):
         self.stripWhitespace = True
         # Tolerance
         self.tolerance = 0.00000001
-        # The free memory of the system in MB
-        self.memory = 0
+        # Store the free memory of the system (in MB) before starting the test
+        import mantid.api
+        mantid.api.FrameworkManager.clear()
+        from mantid.kernel import MemoryStats
+        self.memory = MemoryStats().availMem()/1024
     
     def runTest(self):
         raise NotImplementedError('"runTest(self)" should be overridden in a derived class')
@@ -186,11 +189,6 @@ class MantidStressTest(object):
         countmax = self.maxIterations() + 1
         for i in range(1, countmax):
             istart = time.time()
-            # Store the free memory of the system (in MB) before starting the test
-            import mantid.api
-            from mantid.kernel import MemoryStats
-            mantid.api.FrameworkManager.clear()
-            self.memory = MemoryStats().availMem()/1024
             self.runTest()
             delta_t = time.time() - istart
             self.reportResult('iteration time_taken', str(i) + ' %.2f' % delta_t)
