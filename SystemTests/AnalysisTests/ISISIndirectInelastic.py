@@ -464,6 +464,14 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
                               Verbose=False,
                               Plot=False)
 
+        #Manually set the Elf file label
+        elf_ws = elwin_results[0][:-3]+"elf"
+        units = mtd[elf_ws].getAxis(0).setUnit("Label")
+        units.setLabel("Temperature", "K")
+
+        #Append Elf file for saving
+        elwin_results = elwin_results + (elf_ws,)
+
         int_files = [self.get_temp_dir_path(filename) + ".nxs" 
                      for filename in elwin_results]
 
@@ -488,6 +496,14 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
         for ws, filename in zip(elwin_results, int_files):
             LoadNexusProcessed(Filename=filename,
                                OutputWorkspace=ws)
+
+            # check label properties were saved correctly
+            if(ws[-3:] == "elf"):
+                units = mtd[ws].getAxis(0).getUnit()
+                self.assertTrue(units.caption() == "Temperature")
+                self.assertTrue(units.label() == "K")
+
+
 
         # Clean up the intermediate files.
         for filename in int_files:
