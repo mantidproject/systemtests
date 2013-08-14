@@ -71,15 +71,16 @@ class XmlResultReporter(stresstesting.ResultReporter):
 			if len(output) > 0:
 				failEl.appendChild(self._doc.createTextNode(output))
 			elem.appendChild(failEl)
-		time_taken = 0.0
-		for t in result.resultLogs():
-			if t[0] == 'iteration time_taken':
-				time_taken = float(t[1].split(' ')[1])
-				self._time_taken += time_taken
-			if t[0] == 'memory footprint increase':
-				memEl = self._doc.createElement('memory')
-				memEl.appendChild(self._doc.createTextNode(t[1]))
-				elem.appendChild(memEl)
-		elem.setAttribute('time',str(time_taken))
-		elem.setAttribute('totalTime',str(time_taken))
+		else:
+			time_taken = 0.0
+			for t in result.resultLogs():
+				if t[0] == 'iteration time_taken':
+					time_taken = float(t[1].split(' ')[1])
+					self._time_taken += time_taken
+				if t[0] == 'memory footprint increase':
+					memEl = self._doc.createElement('memory')
+					memEl.appendChild(self._doc.createTextNode(t[1]))
+					elem.appendChild(memEl)
+			elem.setAttribute('time',str(time_taken))
+			elem.setAttribute('totalTime',str(time_taken))
 		self._doc.documentElement.appendChild(elem)

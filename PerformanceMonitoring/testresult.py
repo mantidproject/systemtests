@@ -71,6 +71,7 @@ class TestResult(object):
                  runtime=0.0,
                  speed_up=0.0,
                  cpu_fraction=0.0,
+                 memory_change=0, 
                  iterations=1,
                  success=False,
                  status="",
@@ -88,6 +89,7 @@ class TestResult(object):
         self.data["commitid"] = commitid
         self.data["runtime"] = runtime
         self.data["cpu_fraction"] = cpu_fraction
+        self.data["memory_change"] = memory_change
         self.data["success"] = success
         self.data["status"] = status
         self.data["log_contents"] = log_contents

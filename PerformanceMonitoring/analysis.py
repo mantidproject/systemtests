@@ -26,7 +26,7 @@ def get_orderby_clause(last_num):
         
 
 #============================================================================================
-def get_runtime_data(name='', type='', x_field='revision', last_num=-1):
+def get_data(name='', type='', x_field='revision', y_field='runtime', last_num=-1):
     """Get the test runtime/iteration as a function of an X variable.
     
     Parameters
@@ -61,10 +61,10 @@ def get_runtime_data(name='', type='', x_field='revision', last_num=-1):
         if data.has_key(x):
             old = data[x]
             iters = old[0] + 1 # Iterations
-            runtime = old[1] + res["runtime"]
+            runtime = old[1] + res[y_field]
         else:
             iters = 1 
-            runtime = res["runtime"]
+            runtime = res[y_field]
         # Save the # of iterations and runtime
         data[x] = (iters, runtime)
         
@@ -203,13 +203,13 @@ def plot_success_count(type='system', last_num=-1, x_field='revision'):
 
 #============================================================================================
 def plot_runtime(*args, **kwargs):
-    """ Call get_runtime_data() 
+    """ Call get_data() 
     
     Parameters
     ----------
-        - See get_runtime_data() for the full list
+        - See get_data() for the full list
     """
-    (x,y) = get_runtime_data(*args, **kwargs)
+    (x,y) = get_data(*args, **kwargs)
 
     figure()
     index = np.arange(len(x))
@@ -224,6 +224,31 @@ def plot_runtime(*args, **kwargs):
     else:
         title("Runtime History of %s (all revs)" % kwargs['name'])
 
+
+
+
+#============================================================================================
+def plot_memory(*args, **kwargs):
+    """ Call get_data() 
+    
+    Parameters
+    ----------
+        - See get_data() for the full list
+    """
+    (x,y) = get_data(*args, **kwargs)
+
+    figure()
+    index = np.arange(len(x))
+    plot(index,y,'-b.')
+    smart_ticks( index, x)
+    ylabel("Memory 'loss' (MB)")
+    xlabel(kwargs['x_field'])
+    
+    last_num =kwargs.get('last_num',-1) 
+    if last_num > 0:
+        title("Memory History of %s (last %d revs)" % (kwargs['name'], kwargs["last_num"]) )
+    else:
+        title("Memory History of %s (all revs)" % kwargs['name'])
 
 
 
@@ -290,19 +315,22 @@ def make_environment_html(res):
     return html
 
 #============================================================================================
-def make_detailed_html_file(basedir, name, fig1, fig2, last_num):
+def make_detailed_html_file(basedir, name, fig1, fig2, fig3, fig4, last_num):
     """ Create a detailed HTML report for the named test """
     html = default_html_header
     html += """<h1>Detailed report for %s</h1><br>""" % (name)
     html += """<img src="%s" alt="runtime vs revision number (latest %d entries)" />\n""" % (fig1, last_num)
     html += """<img src="%s" alt="runtime vs revision number" />\n""" % (fig2)
+    html += """<img src="%s" alt="memory vs revision number (latest %d entries)" />\n""" % (fig3, last_num)
+    html += """<img src="%s" alt="memory vs revision number" />\n""" % (fig4)
     html += """<h3>Test Results</h3>"""
     
-    fields = ['revision', 'date', 'commitid', 'compare', 'status', 'runtime', 'cpu_fraction', 'variables']
+    fields = ['revision', 'date', 'commitid', 'compare', 'status', 'runtime', 'cpu_fraction', 'memory_change', 'variables']
     
     table_row_header = "<tr>"
     for field in fields:
         if field == "runtime": field = "Runtime/Iter."
+        if field == "memory_change": field = "Memory 'loss'"
         field = field[0].upper() + field[1:]
         table_row_header += "<th>%s</th>" % field
     table_row_header += "</tr>"
@@ -438,6 +466,7 @@ def get_html_summary_table(test_names):
     <th>Status</th> 
     <th>When?</th>
     <th>Total runtime (s)</th>
+    <th>Memory 'loss'</th>
     """
     
     for name in test_names:
@@ -454,10 +483,14 @@ def get_html_summary_table(test_names):
             html += """<td>%s</td>""" % res['status']
 
             # Friendly date
-            date = datetime.datetime.strptime(res['date'], DATE_STR_FORMAT)
-            html += """<td>%s</td>""" %  date.strftime("%b %d, %H:%M:%S")
+            try:
+                date = datetime.datetime.strptime(res['date'], DATE_STR_FORMAT)
+                html += """<td>%s</td>""" %  date.strftime("%b %d, %H:%M:%S")
+            except:
+                html += """<td></td>"""
             
             html += """<td>%s</td>""" % res['runtime']
+            html += """<td>%s</td>""" % res['memory_change']
             html += """</tr>"""
             
     html += """</table>"""
@@ -481,16 +514,12 @@ def generate_html_subproject_report(path, last_num, x_field='revision', starts_w
     dofigs = True
     try:
         figure()
+        rcParams['axes.titlesize'] = 'small'
     except:
         dofigs = False
         
     # Start the HTML
     overview_html = ""
-    html = default_html_header
-    html += """<h1>Mantid System Tests: %s</h1>""" % starts_with
-    if not dofigs:
-        html += """<p class="error">There was an error generating plots. No figures will be present in the report.</p>"""
-        
 
     # ------ Find the test names of interest ----------------    
     # Limit with only those tests that exist in the latest rev
@@ -504,20 +533,16 @@ def generate_html_subproject_report(path, last_num, x_field='revision', starts_w
            
     test_names.sort()
     
-    # --------- Table with the summary of latest results --------
-    html += """<h2>Latest Results Summary</h2>"""
-    html += get_html_summary_table(test_names)
-        
-    
     # -------- Report for each test ------------------------
     for name in test_names:
         print "Plotting", name
-        html += """<hr><h2>%s</h2>\n""" % name
         overview_html += """<hr><h2>%s</h2>\n""" % name
         
         # Path to the figures
         fig1 = "%s.runtime.v.revision.png" % name
         fig2 = "%s.runtime.v.revision.ALL.png" % name
+        fig3 = "%s.memory.v.revision.png" % name
+        fig4 = "%s.memory.v.revision.ALL.png" % name
         
         if dofigs:
             # Only the latest X entries
@@ -530,25 +555,26 @@ def generate_html_subproject_report(path, last_num, x_field='revision', starts_w
             savefig(os.path.join(basedir, fig2))
             close()
             
-            #html += """<img src="%s" alt="runtime vs revision number (latest %d entries)" />\n""" % (fig1, last_num)
-            html += """<img src="%s" alt="runtime vs revision number" />\n""" % (fig2)
-            overview_html +=  """<img src="%s" alt="runtime vs revision number" />\n""" % (fig1)
+            # Only the latest X entries
+            plot_memory(name=name,x_field=x_field,y_field='memory_change',last_num=last_num)
+            savefig(os.path.join(basedir, fig3))
+            close()
+
+            # Plot all svn times
+            plot_memory(name=name,x_field=x_field,y_field='memory_change',last_num=-1)
+            savefig(os.path.join(basedir, fig4))
+            close()
+            
+            overview_html +=  """<img src="%s" alt="runtime vs revision number" />""" % (fig1)
+            overview_html +=  """<img src="%s" alt="memory vs revision number" />\n""" % (fig3)
         
-        make_detailed_html_file(basedir, name, fig1, fig2, last_num)
+        make_detailed_html_file(basedir, name, fig1, fig2, fig3, fig4, last_num)
         detailed_html = """<br><a href="%s.htm">Detailed test report for %s</a>
         <br><br>
         """ % (name, name)
-        html += detailed_html
         overview_html +=  detailed_html
         
-    html += default_html_footer
-        
     filename = starts_with + ".htm"
-    
-    f = open(os.path.join(basedir,filename), "w")
-    html = html.replace("\n", os.linesep) # Fix line endings for windows
-    f.write(html)
-    f.close()
     
     return (filename, overview_html)
     

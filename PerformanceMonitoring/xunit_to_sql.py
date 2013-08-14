@@ -41,6 +41,10 @@ def handle_testcase(case, suite_name):
         cpu_fraction = float(case.getAttribute("CPUFraction"))
     except:
         cpu_fraction = 0.0
+    try:
+        memory_change = int(case.getElementsByTagName("memory").item(0).firstChild.nodeValue)
+    except:
+        memory_change = 0
         
     
     tr = TestResult(date = datetime.datetime.now(),
@@ -48,11 +52,12 @@ def handle_testcase(case, suite_name):
                  type="performance",
                  host=platform.uname()[1],
                  environment=envAsString(),
-                 runner="ctest",
+                 runner="runSystemTests.py",
                  revision=revision,
                  commitid=commitid,
                  runtime=time,
                  cpu_fraction=cpu_fraction,
+                 memory_change=memory_change,
                  success=True,
                  status="",
                  log_contents="",
