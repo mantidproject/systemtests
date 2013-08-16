@@ -1,0 +1,2 @@
+wksp.getEventList(0).getNumberEvents() == 21
+wksp.getEventList(1).getNumberEvents() == 23
