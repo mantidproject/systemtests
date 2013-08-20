@@ -58,11 +58,11 @@ class MantidStressTest(object):
         self.stripWhitespace = True
         # Tolerance
         self.tolerance = 0.00000001
-        # Store the free memory of the system (in MB) before starting the test
+        # Store the resident memory of the system (in MB) before starting the test
         import mantid.api
         mantid.api.FrameworkManager.clear()
         from mantid.kernel import MemoryStats
-        self.memory = MemoryStats().availMem()/1024
+        self.memory = MemoryStats().residentMem()/1024
     
     def runTest(self):
         raise NotImplementedError('"runTest(self)" should be overridden in a derived class')
@@ -337,11 +337,11 @@ class MantidStressTest(object):
         # Now the validation is complete we can clear out all the stored data and check memory usage
         import mantid.api
         mantid.api.FrameworkManager.clear()
-        # Get the free memory again and work out how much it's gone down by (in MB)
+        # Get the resident memory again and work out how much it's gone up by (in MB)
         from mantid.kernel import MemoryStats
-        self.memory -= MemoryStats().availMem()/1024
+        memorySwallowed = MemoryStats().residentMem()/1024 - self.memory
         # Store the result
-        self.reportResult('memory footprint increase', self.memory )
+        self.reportResult('memory footprint increase', memorySwallowed )
         return retcode
 
     def succeeded(self):
