@@ -12,17 +12,15 @@ class LoadLotsOfInstruments(stresstesting.MantidStressTest):
         # get a list of directories to look in
         direc = config['instrumentDefinition.directory']
         print "Looking for instrument definition files in: %s" % direc
-	cwd = os.getcwd()
-	os.chdir(direc)
-	myFiles = glob.glob("*Definition*.xml")
-	os.chdir(cwd)
+        cwd = os.getcwd()
+        os.chdir(direc)
+        myFiles = glob.glob("*Definition*.xml")
+        os.chdir(cwd)
         # Files and their corresponding sizes. the low-memory win machines
         # fair better loading the big files first
         files = []
-        #myFiles = os.listdir(direc)
         for filename in myFiles:
-            #if filename.endswith("_Definition.xml"):
-	    files.append(os.path.join(direc, filename))
+            files.append(os.path.join(direc, filename))
         files.sort()
         return files
 
