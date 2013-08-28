@@ -2,6 +2,7 @@ from mantid.simpleapi import *
 from mantid.api import FrameworkManager
 import os
 import re
+import glob
 import stresstesting
 
 EXPECTED_EXT = '.expected'
@@ -11,16 +12,20 @@ class LoadLotsOfInstruments(stresstesting.MantidStressTest):
         # get a list of directories to look in
         direc = config['instrumentDefinition.directory']
         print "Looking for instrument definition files in: %s" % direc
-
+	cwd = os.getcwd()
+	os.chdir(direc)
+	myFiles = glob.glob("*Definition*.xml")
+	os.chdir(cwd)
         # Files and their corresponding sizes. the low-memory win machines
         # fair better loading the big files first
         files = []
-        myFiles = os.listdir(direc)
+        #myFiles = os.listdir(direc)
         for filename in myFiles:
-            if filename.endswith("_Definition.xml"):
-                files.append(os.path.join(direc, filename))
+            #if filename.endswith("_Definition.xml"):
+	    files.append(os.path.join(direc, filename))
         files.sort()
         return files
+
 
     def __loadAndTest__(self, filename):
         """Do all of the real work of loading and testing the file"""
@@ -72,3 +77,4 @@ class LoadLotsOfInstruments(stresstesting.MantidStressTest):
                                    % (len(failed), len(files)))
         else:
             print "Successfully loaded %d files" % len(files)
+	    print files
