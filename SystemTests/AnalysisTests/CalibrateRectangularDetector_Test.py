@@ -35,7 +35,7 @@ class PG3Calibration(stresstesting.MantidStressTest):
         # run the actual code
         CalibrateRectangularDetectors(OutputDirectory = savedir, SaveAs = 'calibration', FilterBadPulses = True,
                           GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.0004, 2.5', 
-                          MaxOffset=0.01, PeakPositions = '2.0592,1.2610,1.0754,0.7280', 
+                          MaxOffset=0.01, PeakPositions = '.4093,.4120,.4205,.4327,.4359,.4460,.4645,.4768,.4996,.5150,.5379,.5441,,.5641,,.5947,.6307,.6866,.7283,.8185,.8920,1.0300,1.0758,1.2615,2.0599', 
                           CrossCorrelation = False, Instrument = 'PG3', RunNumber = '2538', Extension = '_event.nxs')
 
         # load saved cal file
