@@ -32,30 +32,6 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
        """ Require about 12GB free """
        return 6000
       
-   def ComparePeaks( self, Peaks1,Peaks2,tolerance):
-       N=Peaks1.getNumberPeaks()
-       self.assertEqual(Peaks2.getNumberPeaks(),N,"Peaks workspaces have different sizes")
-       for i in range(N):
-          peak1=Peaks1.getPeak(i)
-          peak2=Peaks2.getPeak(i)
-          self.assertDelta(peak1.getIntensity(),peak2.getIntensity(),5.0,"peaks #"+str(i)+" have different intensities values")
-          self.assertDelta(peak1.getH(),peak2.getH(),.05,"peaks #"+str(i)+" have different h values")
-          self.assertDelta(peak1.getK(),peak2.getK(),.05,"peaks #"+str(i)+" have different k values")
-          self.assertDelta(peak1.getL(),peak2.getL(),.05,"peaks #"+str(i)+" have different l values")
-          #self.assertDelta(peak1.getSigmaIntensity(),peak2.getSigmaIntenity(),.02,"peaks #"+str(i)+" have different k values")
-          #self.assertDelta((peak1.getQLabFrame()-peak2.QLabFrame()).norm(),0.0,.02,"peaks #"+str(i)+" have different l values")
-          #self.assertEqual(peak1.getDetectorID(),peak2.getDetectorID(),"peaks have different detectorID's")
-          if (peak1.getDetectorID()!= peak2.getDetectorID()):
-             logger.warning("SYSTEM TEST: Warning: detector ID on peak 1: "+str(peak1.getDetectorID())+" is not equal to detector ID on the peak 2: "+str(peak2.getDetectorID()))
-
-          
-          self.assertDelta(peak1.getRow(),peak2.getRow(),1.2,"peaks have different rows")
-          self.assertDelta(peak1.getCol(),peak2.getCol(),1.2,"peaks have different columns")
-          #self.assertDelta(peak1.getInitialEnergy(),peak2.getInitialEnergy(),tolerance,"peaks #"+str(i)+" have different InitialEnergies")
-          #self.assertDelta(peak1.getFinalEnergy(),peak2.getFinalEnergy(),tolerance,"peaks #"+str(i)+" have different FinalEnergies")
-          self.assertDelta(peak1.getWavelength(),peak2.getWavelength(),tolerance,"peaks #"+str(i)+" have different Wavelengths")
-          self.assertEqual(peak1.getRunNumber(),peak2.getRunNumber(),"peaks #"+str(i)+" have different Run Numbers")
-          
    def runTest(self):
       start_time = time.time()
 
@@ -260,7 +236,7 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
       self.assertDelta( ol.beta(), ol.beta(), 0.4, "Correct lattice angle beta value not found.")
       self.assertDelta( ol.gamma(), ol.gamma(), 0.4, "Correct lattice angle gamma value not found.")
       
-      self.ComparePeaks( peaks_ws, mtd['PeaksP'],.01)
+      self.__reduced_ws_name = str(peaks_ws)
       
       print '\nReduced run ' + str(run) + ' in ' + str(end_time - start_time) + ' sec'
       print ["output directory=",self.output_directory]
@@ -270,8 +246,11 @@ class ReduceOneSCD_Run( stresstesting.MantidStressTest):
           import os
           os.remove( self.run_conventional_matrix_file)
           
+   def validateMethod(self):
+      return "ValidateWorkspaceToWorkspace"
+
    def validate(self):
-      x=1
+      return [self.__reduced_ws_name,'PeaksP']
       
    def requiredFiles(self):
    
