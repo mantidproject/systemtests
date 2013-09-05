@@ -578,10 +578,11 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
     def _run(self):
         '''Defines the workflow for the test'''
 
+        self.samples = [sample[:-4] for sample in self.samples]
 
         #load files into mantid
         for sample in self.samples:
-            LoadNexus(sample, OutputWorkspace=sample[-4:])
+            LoadNexus(sample, OutputWorkspace=sample)
 
         fury_ws = fury(self.samples, 
                        self.resolution, 
@@ -607,7 +608,7 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
 
         #remove workspaces from mantid
         for sample in self.samples:
-            DeleteWorkspace(sample[-4:])
+            DeleteWorkspace(sample)
         
     def _validate_properties(self):
         """Check the object properties are in an expected state to continue"""
