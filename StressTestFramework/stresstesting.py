@@ -884,8 +884,8 @@ class MantidFrameworkConfig:
             raise RuntimeError("MANTIDPATH not found.")
         else:
             sys.path.append(directory)
-        if not os.path.isfile(os.path.join(directory, "MantidFramework.py")):
-            raise RuntimeError("Did not find Mantid (MantidFramework.py) in %s" % directory)
+        if not os.path.isdir(os.path.join(directory, "mantid")):
+            raise RuntimeError("Did not find mantid package in %s" % directory)
 
         self.__sourceDir = self.__locateSourceDir(sourceDir)
 
