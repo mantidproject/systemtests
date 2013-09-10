@@ -20,7 +20,7 @@ class ConvertToMDworkflow(stresstesting.MantidStressTest):
         # but if it is not, we have to provide it for inelastic conversion to work.
         AddSampleLog(Workspace=WS_Name,LogName='Ei',LogText='3',LogType='Number')
         # disable multithreaded splitting as BoxID-s are assigned in random manner
-        AddSampleLog(Workspace=WS_Name,LogName='NUM_THREADS',LogText='0',LogType='Number')
+        # AddSampleLog(Workspace=WS_Name,LogName='NUM_THREADS',LogText='0',LogType='Number')
         #
         # set up target ws name and remove target workspace with the same name which can occasionally exist.
         RezWS = 'WS_4D'
