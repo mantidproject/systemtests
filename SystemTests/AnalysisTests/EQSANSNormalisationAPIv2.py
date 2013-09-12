@@ -53,6 +53,14 @@ class EQSANSNormalisationDefault(stresstesting.MantidStressTest):
         SumSpectra(InputWorkspace=ws, OutputWorkspace="eqsans_default_flux")
         
     def validate(self):
+        # This test only makes sense if /SNS is not available,
+        # otherwise we will end up using the actual beam file, 
+        # which may not produce the same output. This test
+        # is meant to exercise the functionality to find the
+        # beam profile and will only produce the correct results
+        # on a system that is not hooked up to real instrument files.
+        if os.path.isdir('/SNS/EQSANS'):
+            return True
         self.disableChecking.append('Instrument')
         self.disableChecking.append('Sample')
         self.disableChecking.append('SpectraMap')
