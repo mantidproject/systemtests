@@ -20,7 +20,7 @@ class ConvertToMDworkflow(stresstesting.MantidStressTest):
         # but if it is not, we have to provide it for inelastic conversion to work.
         AddSampleLog(Workspace=WS_Name,LogName='Ei',LogText='3',LogType='Number')
         # disable multithreaded splitting as BoxID-s are assigned in random manner
-        AddSampleLog(Workspace=WS_Name,LogName='NUM_THREADS',LogText='0',LogType='Number')
+        # AddSampleLog(Workspace=WS_Name,LogName='NUM_THREADS',LogText='0',LogType='Number')
         #
         # set up target ws name and remove target workspace with the same name which can occasionally exist.
         RezWS = 'WS_4D'
@@ -58,6 +58,28 @@ class ConvertToMDworkflow(stresstesting.MantidStressTest):
       #elf.disableChecking.append('Instrument')
       result = 'WS_4D'
       reference = "ConvertToMDSample.nxs"
-      return result, reference
+      
+      valNames = [result,reference]
+      from mantid.simpleapi import Load,CompareMDWorkspaces,FrameworkManager,SaveNexus
+      
+      Load(Filename=reference,OutputWorkspace=valNames[1])
+
+      checker = FrameworkManager.createAlgorithm("CompareMDWorkspaces")
+      checker.setLogging(True)
+      checker.setPropertyValue("Workspace1",result)
+      checker.setPropertyValue("Workspace2",valNames[1])
+      checker.setPropertyValue("Tolerance", str(self.tolerance))
+      checker.setPropertyValue("IgnoreBoxID", "1")
+      checker.setPropertyValue("CheckEvents", "1")
+
+      checker.execute()
+      if checker.getPropertyValue("Equals") != "1":
+           print " Workspaced do not match, result: ",checker.getPropertyValue("Result")
+           print self.__class__.__name__
+           SaveNexus(InputWorkspace=valNames[0],Filename=self.__class__.__name__+'-mismatch.nxs')
+           return False
+
+      
+      return True
 
 
