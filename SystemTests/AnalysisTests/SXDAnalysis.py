@@ -9,9 +9,13 @@ class SXDAnalysis(stresstesting.MantidStressTest):
     def runTest(self):
         
         ws = Load(Filename='SXD23767.raw', LoadMonitors='Exclude')
+        #AddSampleLog(Workspace=ws,LogName='NUM_THREADS',LogText='0',LogType='Number')
+        from time import clock
         
         # A lower SplitThreshold, with a reasonable bound on the recursion depth, helps find weaker peaks at higher Q.
-        QLab = ConvertToDiffractionMDWorkspace(InputWorkspace=ws, OutputDimensions='Q (lab frame)', SplitThreshold=50, LorentzCorrection='1',MaxRecursionDepth='13',Extents='-15,15,-15,15,-15,15')
+        start = clock();
+        QLab = ConvertToDiffractionMDWorkspace(InputWorkspace=ws, OutputDimensions='Q (lab frame)', SplitThreshold=50, LorentzCorrection='1',MaxRecursionDepth='13',Extents='-15,15,-15,15,-15,15',Version=1)
+        print " ConvertToMD runs for: ",clock()-start,' sec'
         
         #  NaCl has a relatively small unit cell, so the distance between peaks is relatively large.  Setting the PeakDistanceThreshold
         #  higher avoids finding high count regions on the sides of strong peaks as separate peaks.
@@ -47,4 +51,4 @@ class SXDAnalysis(stresstesting.MantidStressTest):
         return True
     def requiredMemoryMB(self):
       """Far too slow for managed workspaces. They're tested in other places. Requires 2Gb"""
-      return 3000
+      return 1000
