@@ -48,5 +48,5 @@ class HYSPECReductionTest(stresstesting.MantidStressTest):
 
 	def validate(self):
 		self.tolerance = 1e-10
-		return 'slice','HYSPECReduction.nxs'
+		return 'slice','HYSPECReduction_TIBasEvents_slim.nxs'
 
