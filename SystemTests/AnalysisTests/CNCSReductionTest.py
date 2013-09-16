@@ -72,7 +72,7 @@ class CNCSReductionTest(stresstesting.MantidStressTest):
 		nxspe=LoadNXSPE(self.nxspeFile)
 		self.disableChecking.append('Instrument')
 
-		return 'nxspe','CNCSReduction.nxs'
+		return 'nxspe','CNCSReduction_TIBasEvents.nxs'
 
 
 
