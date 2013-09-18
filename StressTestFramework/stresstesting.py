@@ -1008,7 +1008,7 @@ class MantidFrameworkConfig:
         
         # datasearch
         if self.__datasearch:
-            mtd.settings["datasearch.searcharchive"] = 'On'
+            config["datasearch.searcharchive"] = 'On'
 
         # Save this configuration
         config.saveConfig(self.__userPropsFile)
