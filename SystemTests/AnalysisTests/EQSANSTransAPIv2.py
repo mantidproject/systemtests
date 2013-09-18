@@ -171,8 +171,8 @@ class EQSANSDirectTransFS(stresstesting.MantidStressTest):
         EQSANS(False)
         SetBeamCenter(96.29, 126.15)
         AppendDataFile("EQSANS_4061_event.nxs")
-        UseConfig(False)
-        UseConfigTOFTailsCutoff(False)
+        UseConfig(True)
+        UseConfigTOFTailsCutoff(True)
         UseConfigMask(False)
         TotalChargeNormalization(normalize_to_beam=False)
         DirectBeamTransmission("EQSANS_4061_event.nxs", "EQSANS_4061_event.nxs", beam_radius=3)
@@ -189,5 +189,5 @@ class EQSANSDirectTransFS(stresstesting.MantidStressTest):
         self.disableChecking.append('Sample')
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Axes')
-        return "EQSANS_4061_event_frame1_Iq", 'EQSANSTransmissionFS.nxs' 
+        return "EQSANS_4061_event_frame1_Iq", 'EQSANSDirectTransFS.nxs' 
     
