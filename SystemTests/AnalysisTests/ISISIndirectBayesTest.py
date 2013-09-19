@@ -211,22 +211,22 @@ class JumpCETest(stresstesting.MantidStressTest):
             return True
 
     def runTest(self):
-        import IndirectBayes as Main
-        sname = 'irs26176_graphite002_QLr'
+        from IndirectJumpFit import JumpRun
+        sname = 'iris21360_graphite002_QLd_Workspace'
         cropOp = False
         qrange = [0.0, 5.0]
         verbOp = False
         plotOp = False
         saveOp = False
 
-        filename = sname+'_Parameters.nxs' # path name for nxs file
-        LoadNexusProcessed(Filename=filename, OutputWorkspace=sname+'_Parameters')
+        filename = sname+'.nxs' # path name for nxs file
+        LoadNexusProcessed(Filename=filename, OutputWorkspace=sname)
         
-        Main.JumpRun(sname,'CE','QLr','FW11',cropOp,qrange,verbOp,plotOp,saveOp)
+        JumpRun(sname,'CE',verbOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-5 
-        return 'irs26176_graphite002_QLr_CEfit_FW11','ISISIndirectBayes_JumpCETest.nxs'
+        return 'iris21360_graphite002_QLd_Workspace_CEfit_Workspace','ISISIndirectBayes_JumpCETest.nxs'
 
     def cleanup(self):
         filenames = ['irs26176_graphite002_QLr_CEfit_FW11.lpt']
@@ -242,21 +242,21 @@ class JumpSSTest(stresstesting.MantidStressTest):
             return True
     
     def runTest(self):
-        import IndirectBayes as Main
-        sname = 'irs26176_graphite002_QLr'
+        from IndirectJumpFit import JumpRun
+        sname = 'iris21360_graphite002_QLd_Workspace'
         cropOp = False
         qrange = [0.0, 5.0]
         verbOp = False
         plotOp = False
         saveOp = False
 
-        path = sname+'_Parameters.nxs'  # path name for nxs file
-        LoadNexusProcessed(Filename=path, OutputWorkspace=sname+'_Parameters')
-        Main.JumpRun(sname,'SS','QLr','FW11',cropOp,qrange,verbOp,plotOp,saveOp)
+        path = sname+'.nxs'  # path name for nxs file
+        LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
+        JumpRun(sname,'SS',verbOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-5 
-        return 'irs26176_graphite002_QLr_SSfit_FW11','ISISIndirectBayes_JumpSSTest.nxs'
+        return 'iris21360_graphite002_QLd_Workspace_SSfit_Workspace','ISISIndirectBayes_JumpSSTest.nxs'
 
     def cleanup(self):
         filenames = ['irs26176_graphite002_QLr_SSfit_FW11.lpt']
