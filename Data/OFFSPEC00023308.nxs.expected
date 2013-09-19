@@ -1,0 +1,3 @@
+wksp.id() == "EventWorkspace"
+wksp.getSpectrum(0).getSpectrumNo() == 4 # 3 monitors are at the start so should be skipped
+wksp.getSpectrum(wksp.getNumberHistograms() - 1).getSpectrumNo() == 245 # double-check last one is correct
