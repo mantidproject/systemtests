@@ -4,7 +4,6 @@ import re
 import stresstesting
 import glob
 
-
 EXPECTED_EXT = '.expected'
 
 class ValidateGroupingFiles(stresstesting.MantidStressTest):
