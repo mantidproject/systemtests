@@ -1,0 +1,3 @@
+wksp.id() == "EventWorkspace"
+wksp.getSpectrum(0).getSpectrumNo() == 1
+wksp.getSpectrum(wksp.getNumberHistograms() - 1).getSpectrumNo() == 40960 # monitors are at the end (after this spectrum)
