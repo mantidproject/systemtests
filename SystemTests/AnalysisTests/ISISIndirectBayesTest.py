@@ -203,17 +203,10 @@ class QLDataTest(stresstesting.MantidStressTest):
 
 #=============================================================================
 class JumpCETest(stresstesting.MantidStressTest):
-    
-    def skipTests(self):
-        if is_supported_f2py_platform():
-            return False
-        else:
-            return True
 
     def runTest(self):
         from IndirectJumpFit import JumpRun
         sname = 'iris21360_graphite002_QLd_Workspace'
-        cropOp = False
         qrange = [0.0, 5.0]
         verbOp = False
         plotOp = False
@@ -221,8 +214,7 @@ class JumpCETest(stresstesting.MantidStressTest):
 
         filename = sname+'.nxs' # path name for nxs file
         LoadNexusProcessed(Filename=filename, OutputWorkspace=sname)
-        
-        JumpRun(sname,'CE',verbOp,plotOp,saveOp)
+        JumpRun(sname,'CE',0,qrange[0],qrange[1],verbOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-5 
@@ -234,17 +226,10 @@ class JumpCETest(stresstesting.MantidStressTest):
 
 #=============================================================================
 class JumpSSTest(stresstesting.MantidStressTest):
-    
-    def skipTests(self):
-        if is_supported_f2py_platform():
-            return False
-        else:
-            return True
-    
+
     def runTest(self):
         from IndirectJumpFit import JumpRun
         sname = 'iris21360_graphite002_QLd_Workspace'
-        cropOp = False
         qrange = [0.0, 5.0]
         verbOp = False
         plotOp = False
@@ -252,7 +237,7 @@ class JumpSSTest(stresstesting.MantidStressTest):
 
         path = sname+'.nxs'  # path name for nxs file
         LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
-        JumpRun(sname,'SS',verbOp,plotOp,saveOp)
+        JumpRun(sname,'SS',0,qrange[0],qrange[1],verbOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-5 
