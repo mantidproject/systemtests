@@ -30,79 +30,46 @@ def makeOutputName(ws_name, dohist, doproj):
     md_ws_name += "_" + tag
     return md_ws_name
 
-def GetEiT0(ws_name, EiGuess):
-    # Run GetEi algorithm (old API)
-    alg = GetEi(InputWorkspace=ws_name, Monitor1Spec="1",
-    	                          Monitor2Spec="2", EnergyEstimate=EiGuess)
-    # Extract incident energy and T0
-    return [alg[0],-alg[3]]
-
 def execReduction(dohist, doproj):
-    # Load event data
-    LoadEventNexus(Filename=DATA_FILE, OutputWorkspace="IWS")
-    # Load the monitors
-    LoadNexusMonitors(Filename=DATA_FILE, OutputWorkspace="MonWS")
-    # Get Ei and -T0 using the function defined before
-    (Efixed, T0) = GetEiT0("MonWS", E_GUESS)
-    # Change all TOF by -T0
-    ChangeBinOffset(InputWorkspace="IWS", OutputWorkspace="OWS", Offset=T0)
-    # Normalize by proton charge
-    NormaliseByCurrent(InputWorkspace="OWS", OutputWorkspace="OWS")
-    # The algorithm for He3 tube efficiency requires wavelength units
-    ConvertUnits(InputWorkspace="OWS", OutputWorkspace="OWS",
-                 Target="Wavelength", EMode="Direct", EFixed=Efixed)	
-    # Apply correction due to absorption in He3
-    He3TubeEfficiency(InputWorkspace="OWS", OutputWorkspace="OWS")
-    # Switch  to energy transfer
-    ConvertUnits(InputWorkspace="OWS", OutputWorkspace="OWS", Target="DeltaE",
-                 EMode="Direct", EFixed=Efixed)
-    # Apply k_i/k_f factor
-    CorrectKiKf(InputWorkspace="OWS", OutputWorkspace="OWS")
-    if dohist:
-    	# Make sure the bins are correct
-    	Rebin(InputWorkspace="OWS", OutputWorkspace="OWS", Params=E_RANGE,
-              PreserveEvents=False)
-    	# Convert to differential cross section by dividing by the energy
-        # bin width
-    	ConvertToDistribution(Workspace="OWS")
+    # Set the facility
+    config['default.facility'] = "SNS"
+    # SPE workspace name
+    workspace_name = "reduced"
+    # Run the reduction
+    DgsReduction(SampleInputFile=DATA_FILE,
+                 IncidentBeamNormalisation="ByCurrent",
+                 OutputWorkspace=workspace_name,
+                 IncidentEnergyGuess=E_GUESS,
+                 EnergyTransferRange=E_RANGE,
+                 SofPhiEIsDistribution=dohist,
+                 DetectorVanadiumInputFile=VAN_FILE,
+                 UseProcessedDetVan=True)
     
-    # Load vanadium file
-    LoadNexus(Filename=VAN_FILE, OutputWorkspace="VAN")
-    # Apply overall mask
-    MaskDetectors(Workspace="OWS", MaskedWorkspace="VAN")
-    # Normalize by Vanadium
-    Divide(LHSWorkspace="OWS", RHSWorkspace="VAN", OutputWorkspace="OWS")
+    # Set the goniometer. Add a rotation angle fix as well.
+    SetGoniometer(Workspace=workspace_name, Axis0="CCR13VRot,0,1,0,1",
+                  Axis1="49.73,0,1,0,1")
     
-    # Rename workspace to something meaningful
-    workspace_name = "_".join(DATA_FILE.split('.')[0].split('_')[:2])
-    RenameWorkspace(InputWorkspace="OWS",  OutputWorkspace=workspace_name)
-    # Need to fix the goniometer angle by 49.73 degrees
-    w = mtd[workspace_name]
-    psi = w.getRun()["CCR13VRot"].getStatistics().mean + 49.73
-    AddSampleLog(Workspace=workspace_name, LogName="CCR13VRot_Fixed",
-                 LogType="Number Series", LogText=str(psi))
-    # Set the Goiniometer information
-    SetGoniometer(Workspace=workspace_name, Axis0="CCR13VRot_Fixed,0,1,0,1")
     # Set the information for the UB matrix
     SetUB(Workspace=workspace_name,
           a=3.643, b=3.643, c=5.781, alpha=90, beta=90, gamma=120,
           u='1,1,0', v='0,0,1')
+    
     # Create the MDEventWorkspace
     md_output_ws = makeOutputName(workspace_name, dohist, doproj)
 
     if not doproj:
         ConvertToMD(InputWorkspace=workspace_name,
-                          OutputWorkspace=md_output_ws,
-    	                  QDimensions='Q3D', MinValues='-5,-5,-5,-10',
-    	                  QConversionScales='HKL',
-    	                  MaxValues='5,5,5,45', MaxRecursionDepth='1')
+                    OutputWorkspace=md_output_ws,
+                    QDimensions='Q3D', MinValues='-5,-5,-5,-10',
+                    QConversionScales='HKL',
+                    MaxValues='5,5,5,45', MaxRecursionDepth='1')
     else:
-    	ConvertToMD(InputWorkspace=workspace_name,
-                          OutputWorkspace=md_output_ws,
-    	                  QDimensions='Q3D', MinValues='-5,-5,-5,-10',
-    	                  QConversionScales='HKL',
-    	                  MaxValues='5,5,5,45', MaxRecursionDepth='1',
-    	                  Uproj='1,1,0', Vproj='1,-1,0', Wproj='0,0,1')
+        ConvertToMD(InputWorkspace=workspace_name,
+                    OutputWorkspace=md_output_ws,
+                    QDimensions='Q3D', MinValues='-5,-5,-5,-10',
+                    QConversionScales='HKL',
+                    MaxValues='5,5,5,45', MaxRecursionDepth='1',
+                    Uproj='1,1,0', Vproj='1,-1,0', Wproj='0,0,1')
     	
     # Remove SPE workspace
     DeleteWorkspace(Workspace=workspace_name)
