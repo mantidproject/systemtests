@@ -76,7 +76,7 @@ def execReduction(dohist, doproj):
 	
     return md_output_ws
 
-class SNSConvertToMDEventsNoHistNoProjTest(stresstesting.MantidStressTest):
+class SNSConvertToMDNoHistNoProjTest(stresstesting.MantidStressTest):
     truth_file = "SEQ_11499_md_enp.nxs"
 
     def requiredMemoryMB(self):
@@ -100,7 +100,7 @@ class SNSConvertToMDEventsNoHistNoProjTest(stresstesting.MantidStressTest):
         self.tolerance = 1.0e-1
         return (self.output_ws, self.gold_ws_name)
 
-class SNSConvertToMDEventsHistNoProjTest(stresstesting.MantidStressTest):
+class SNSConvertToMDHistNoProjTest(stresstesting.MantidStressTest):
     truth_file = "SEQ_11499_md_hnp.nxs"
 
     def requiredMemoryMB(self):
@@ -124,7 +124,7 @@ class SNSConvertToMDEventsHistNoProjTest(stresstesting.MantidStressTest):
         self.tolerance = 1.0e-1
         return (self.output_ws, self.gold_ws_name)
 
-class SNSConvertToMDEventsNoHistProjTest(stresstesting.MantidStressTest):
+class SNSConvertToMDNoHistProjTest(stresstesting.MantidStressTest):
     truth_file = "SEQ_11499_md_ewp.nxs"
 
     def requiredMemoryMB(self):
@@ -148,7 +148,7 @@ class SNSConvertToMDEventsNoHistProjTest(stresstesting.MantidStressTest):
         self.tolerance = 1.0e-3
         return (self.output_ws, self.gold_ws_name)
 
-class SNSConvertToMDEventsHistProjTest(stresstesting.MantidStressTest):
+class SNSConvertToMDHistProjTest(stresstesting.MantidStressTest):
     truth_file = "SEQ_11499_md_hwp.nxs"
 
     def requiredMemoryMB(self):
