@@ -101,7 +101,7 @@ class SNSConvertToMDNoHistNoProjTest(stresstesting.MantidStressTest):
         return (self.output_ws, self.gold_ws_name)
 
 class SNSConvertToMDHistNoProjTest(stresstesting.MantidStressTest):
-    truth_file = "SEQ_11499_md_hnp.nxs"
+    truth_file = "/home/builder/data/SystemTests/AnalysisTests/ReferenceResults/SEQ_11499_md_hnp.nxs"
 
     def requiredMemoryMB(self):
         """ Require about 2.5GB free """
@@ -149,7 +149,7 @@ class SNSConvertToMDNoHistProjTest(stresstesting.MantidStressTest):
         return (self.output_ws, self.gold_ws_name)
 
 class SNSConvertToMDHistProjTest(stresstesting.MantidStressTest):
-    truth_file = "SEQ_11499_md_hwp.nxs"
+    truth_file = "/home/builder/data/SystemTests/AnalysisTests/ReferenceResults/SEQ_11499_md_hwp.nxs"
 
     def requiredMemoryMB(self):
         """ Require about 2.5GB free """
