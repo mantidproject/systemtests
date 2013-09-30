@@ -25,7 +25,7 @@ class IN10SiliconTest(stresstesting.MantidStressTest):
         verbOp = True
         saveOp = False
         plotOp = False
-        Main.InxStart(instr,run,ana,refl,rejectZ,useM,verbOp,plotOp,saveOp)
+        Main.InxStart(instr,run,ana,refl,rejectZ,useM, '',verbOp,plotOp,saveOp)
         
     def validate(self):
         self.tolerance = 1e-2
@@ -54,7 +54,7 @@ class IN16SiliconTest(stresstesting.MantidStressTest):
         verbOp = True
         saveOp = False
         plotOp = False
-        Main.IbackStart(instr,run,ana,refl,rejectZ,useM,verbOp,plotOp,saveOp)
+        Main.IbackStart(instr,run,ana,refl,rejectZ,useM, '',verbOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-2
