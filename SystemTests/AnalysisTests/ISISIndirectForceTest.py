@@ -1,16 +1,9 @@
 import stresstesting
 import os
 from mantid.simpleapi import *
-from IndirectImport import is_supported_f2py_platform
 
 #====================================================================================================
 class IN10SiliconTest(stresstesting.MantidStressTest):
-
-    # def skipTests(self):
-    #     if is_supported_f2py_platform():
-    #         return False
-    #     else:
-    #         return True
 
     def runTest(self):
         import IndirectForce as Main 
@@ -35,12 +28,6 @@ class IN10SiliconTest(stresstesting.MantidStressTest):
 
 #====================================================================================================
 class IN16SiliconTest(stresstesting.MantidStressTest):
-
-    # def skipTests(self):
-    #     if is_supported_f2py_platform():
-    #         return False
-    #     else:
-    #         return True
     
     def runTest(self):
         import IndirectForce as Main
