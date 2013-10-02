@@ -28,7 +28,6 @@ class EQSANSFlatTest(stresstesting.MantidStressTest):
         config = ConfigService.Instance()
         config["facilityName"]='SNS'
         EQSANS(True)
-        DataPath(FILE_LOCATION)
         SolidAngle()
         DarkCurrent(FILE_LOCATION+"EQSANS_5704_event.nxs")
         TotalChargeNormalization(beam_file="bl6_flux_at_sample")
