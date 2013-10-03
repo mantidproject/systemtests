@@ -13,6 +13,7 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'BioSANS_flood_data.xml',
                 'BioSANS_sample_trans.xml',
                 'BioSANS_test_data.xml',
+                'DISF_NaF.cdl',
                 'det_corrected7.dat',
                 'eqsans_configuration.1463',
                 'FLAT_CELL.061',
@@ -38,6 +39,7 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'SANS2D_992_91A.csv',
                 'testCansas1DMultiEntry.xml',
                 'Wish_Diffuse_Scattering_ISAW_UB.mat',
+                'WSH_test.dat',
                 'SANS2D_periodTests.csv'
                 ]
 
