@@ -380,16 +380,12 @@ class LETReduction(stresstesting.MantidStressTest):
       
       white_ws = 'wb_wksp'
       LoadRaw(Filename=white_run,OutputWorkspace=white_ws)
-      det_cal = "det_corrected7.dat"
-      UpdateInstrumentFromFile(Workspace=white_ws,Filename=det_cal)
 
       sample_ws = 'w1'
       monitors_ws = sample_ws + '_monitors'
       LoadEventNexus(Filename=sample_run,OutputWorkspace=sample_ws,
                      SingleBankPixelsOnly='0',LoadMonitors='1',
                      MonitorsAsEvents='1')
-      # Copy calibration from white_beam
-      CopyInstrumentParameters(InputWorkspace=white_ws,OutputWorkspace=sample_ws)
       ConjoinWorkspaces(InputWorkspace1=sample_ws, InputWorkspace2=monitors_ws)
 
       energy = ei
@@ -406,7 +402,7 @@ class LETReduction(stresstesting.MantidStressTest):
       energybin = [ '%.4f' % elem for elem in energybin ]  
       ebinstring = str(energybin[0])+','+str(energybin[1])+','+str(energybin[2])
       argi={}
-      argi['det_cal_file']=None #already applied
+      argi['det_cal_file']="det_corrected7.dat"
       argi['bleed'] = False
       argi['norm_method']='current'
       argi['detector_van_range']=[0.5,200]
