@@ -31,7 +31,7 @@ class QLresTest(stresstesting.MantidStressTest):
         rsname = ''
         wfile = ''
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', False, False] #elastic, background, width, resnorm
         loopOp = False
         verbOp = False
         plotOp = False
@@ -103,7 +103,7 @@ class QuestTest(stresstesting.MantidStressTest):
         sname = 'irs26176_graphite002_red'
         rname = 'irs26173_graphite002_res'
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', 0, 0] #elastic, background, width, resnorm
         loopOp = False
         verbOp = False
         plotOp = 'None'
@@ -141,7 +141,7 @@ class QSeTest(stresstesting.MantidStressTest):
         rsname = ''
         wfile = ''
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', False, False] #elastic, background, width, resnorm
         loopOp = False
         verbOp = False
         plotOp = False
@@ -179,7 +179,7 @@ class QLDataTest(stresstesting.MantidStressTest):
         rsname = ''
         wfile = ''
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', False, False] #elastic, background, width, resnorm
         loopOp = False
         verbOp = False
         plotOp = False
