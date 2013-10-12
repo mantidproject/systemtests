@@ -14,7 +14,7 @@ class PolrefExample(stresstesting.MantidStressTest):
     LoadRaw(Filename="POLREF00003014.raw",OutputWorkspace="W",SpectrumMax="4",LoadMonitors="Separate")
     ConvertUnits(InputWorkspace="W_Monitors",OutputWorkspace="M",Target="Wavelength",AlignBins="1")
     DeleteWorkspace(Workspace="W_Monitors")
-    FlatBackground(InputWorkspace="M",OutputWorkspace="M",WorkspaceIndexList="0,1,2",StartX="15",EndX="17")
+    CalculateFlatBackground(InputWorkspace="M",OutputWorkspace="M",WorkspaceIndexList="0,1,2",StartX="15",EndX="17")
     ConvertUnits(InputWorkspace="W",OutputWorkspace="D",Target="Wavelength",AlignBins="1")
     DeleteWorkspace(Workspace="W")
     OneMinusExponentialCor(InputWorkspace="D",OutputWorkspace="D",C="1.99012524619")
