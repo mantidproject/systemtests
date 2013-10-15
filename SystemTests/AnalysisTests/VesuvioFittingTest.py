@@ -4,9 +4,33 @@ from mantid.simpleapi import *
 #------------------------------------------------------------------------------------------------------------------
 WS_PREFIX="fit"
 
-def _do_fit(k_is_free):
+def do_fit_no_background(k_is_free):
     """
-    Run the Vesuvio. If k_is_free is False then it is fixed to f0.Width*sqrt(2)/12
+    Run the Vesuvio fit without background. If k_is_free is False then it is fixed to f0.Width*sqrt(2)/12
+    """
+    function_str = \
+        "composite=ComptonScatteringCountRate,NumDeriv=1,IntensityConstraints=\"Matrix(1|3)0|-1|3\";"\
+        "name=GramCharlierComptonProfile,WorkspaceIndex=0,Mass=1.007940,HermiteCoeffs=1 0 1;"\
+        "name=GaussianComptonProfile,WorkspaceIndex=0,Mass=27.000000;"\
+        "name=GaussianComptonProfile,WorkspaceIndex=0,Mass=91.000000"
+    # Run fit
+    _do_fit(function_str, k_is_free)
+
+def do_fit_with_quadratic_background():
+    """
+    Run the Vesuvio fit without background. If k_is_free is False then it is fixed to f0.Width*sqrt(2)/12
+    """
+    function_str = \
+        "composite=ComptonScatteringCountRate,NumDeriv=1,IntensityConstraints=\"Matrix(1|3)0|-1|3\";"\
+        "name=GramCharlierComptonProfile,WorkspaceIndex=0,Mass=1.007940,HermiteCoeffs=1 0 1;"\
+        "name=GaussianComptonProfile,WorkspaceIndex=0,Mass=27.000000;"\
+        "name=GaussianComptonProfile,WorkspaceIndex=0,Mass=91.000000;name=Polynomial,n=2,A0=0,A1=0,A2=0"
+    # Run fit
+    _do_fit(function_str, k_is_free=False)
+
+def _do_fit(function_str, k_is_free):
+    """
+    Run the Vesuvio . If k_is_free is False then it is fixed to f0.Width*sqrt(2)/12
     
     """
     LoadVesuvio(Filename='14188-14190',OutputWorkspace='raw_ws',SpectrumList='135',Mode='SingleDifference',
@@ -15,12 +39,6 @@ def _do_fit(k_is_free):
     # Convert to seconds
     ScaleX(InputWorkspace='raw_ws',OutputWorkspace='raw_ws',Operation='Multiply',Factor=1e-06)
     
-    function_str = \
-        "composite=ComptonScatteringCountRate,NumDeriv=1,IntensityConstraints=\"Matrix(1|3)0|-1|3\";"\
-        "name=GramCharlierComptonProfile,WorkspaceIndex=0,Mass=1.007940,HermiteCoeffs=1 0 1;"\
-        "name=GaussianComptonProfile,WorkspaceIndex=0,Mass=27.000000;"\
-        "name=GaussianComptonProfile,WorkspaceIndex=0,Mass=91.000000"
-
     if k_is_free:
         ties_str = "f1.Width=10.000000,f2.Width=25.000000"
     else:
@@ -40,7 +58,7 @@ def _do_fit(k_is_free):
 class VesuvioFittingTest(stresstesting.MantidStressTest):
 
     def runTest(self):
-        _do_fit(k_is_free=False)
+        do_fit_no_background(k_is_free=False)
 
         self.assertTrue(WS_PREFIX + "_Workspace" in mtd, "Expected function workspace in ADS")
         self.assertTrue(WS_PREFIX + "_Parameters" in mtd, "Expected parameters workspace in ADS")        
@@ -55,7 +73,22 @@ class VesuvioFittingTest(stresstesting.MantidStressTest):
 class VesuvioFittingWithKFreeTest(stresstesting.MantidStressTest):
 
     def runTest(self):
-        _do_fit(k_is_free=True)
+        do_fit_no_background(k_is_free=True)
+
+        self.assertTrue(WS_PREFIX + "_Workspace" in mtd, "Expected function workspace in ADS")
+        self.assertTrue(WS_PREFIX + "_Parameters" in mtd, "Expected parameters workspace in ADS")        
+        self.assertTrue(WS_PREFIX + "_NormalisedCovarianceMatrix" in mtd, "Expected covariance workspace in ADS")
+        
+    def validate(self):
+        self.tolerance = 1e-06
+        return "fit_Workspace","VesuvioFittingWithKFreeTest.nxs"
+
+#------------------------------------------------------------------------------------------------------------------
+
+class VesuvioFittingWithQuadraticBackgroundTest(stresstesting.MantidStressTest):
+
+    def runTest(self):
+        do_fit_with_quadratic_background()
 
         self.assertTrue(WS_PREFIX + "_Workspace" in mtd, "Expected function workspace in ADS")
         self.assertTrue(WS_PREFIX + "_Parameters" in mtd, "Expected parameters workspace in ADS")        
