@@ -12,6 +12,8 @@ def _do_fit(k_is_free):
     LoadVesuvio(Filename='14188-14190',OutputWorkspace='raw_ws',SpectrumList='135',Mode='SingleDifference',
                 InstrumentParFile=r'IP0005.dat')
     CropWorkspace(InputWorkspace='raw_ws',OutputWorkspace='raw_ws',XMin=50,XMax=562)
+    # Convert to seconds
+    ScaleX(InputWorkspace='raw_ws',OutputWorkspace='raw_ws',Operation='Multiply',Factor=1e-06)
     
     function_str = \
         "composite=ComptonScatteringCountRate,NumDeriv=1,IntensityConstraints=\"Matrix(1|3)0|-1|3\";"\
@@ -29,6 +31,8 @@ def _do_fit(k_is_free):
     Fit(InputWorkspace='raw_ws',Function=function_str,Ties=ties_str,Constraints=constraints_str,
         Output=WS_PREFIX, CreateOutput=True,OutputCompositeMembers=True,MaxIterations=5000,
         Minimizer="Levenberg-Marquardt,AbsError=1e-08,RelError=1e-08")
+    # Convert to microseconds
+    ScaleX(InputWorkspace=WS_PREFIX + '_Workspace',OutputWorkspace=WS_PREFIX + '_Workspace',Operation='Multiply',Factor=1e06)
     
 
 #------------------------------------------------------------------------------------------------------------------
