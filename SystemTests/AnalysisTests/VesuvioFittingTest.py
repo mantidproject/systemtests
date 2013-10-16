@@ -96,4 +96,4 @@ class VesuvioFittingWithQuadraticBackgroundTest(stresstesting.MantidStressTest):
         
     def validate(self):
         self.tolerance = 1e-06
-        return "fit_Workspace","VesuvioFittingWithKFreeTest.nxs"
+        return "fit_Workspace","VesuvioFittingWithQuadraticBackgroundTest.nxs"
