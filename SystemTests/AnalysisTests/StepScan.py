@@ -5,7 +5,7 @@ from mantid.simpleapi import *
 class StepScanWorkflowAlgorithm(stresstesting.MantidStressTest):
 
   def runTest(self):
-    LoadMask(Instrument='HYSA',InputFile=r'HYSA_mask.xml',OutputWorkspace='HYSA_mask')
+    LoadMask(Instrument='HYS',InputFile=r'HYSA_mask.xml',OutputWorkspace='HYSA_mask')
     Load(Filename='HYSA_2934.nxs.h5',OutputWorkspace='HYSA_2934',LoadMonitors='1')
     StepScan(InputWorkspace='HYSA_2934',OutputWorkspace='StepScan',MaskWorkspace='HYSA_mask',XMin='3.25',XMax='3.75',RangeUnit='dSpacing')
 
