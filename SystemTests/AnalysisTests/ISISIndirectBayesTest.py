@@ -31,7 +31,7 @@ class QLresTest(stresstesting.MantidStressTest):
         rsname = ''
         wfile = ''
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', False, False]
         loopOp = False
         verbOp = False
         plotOp = False
@@ -141,7 +141,7 @@ class QSeTest(stresstesting.MantidStressTest):
         rsname = ''
         wfile = ''
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', False, False]
         loopOp = False
         verbOp = False
         plotOp = False
@@ -179,7 +179,7 @@ class QLDataTest(stresstesting.MantidStressTest):
         rsname = ''
         wfile = ''
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', False, False]
         loopOp = False
         verbOp = False
         plotOp = False
