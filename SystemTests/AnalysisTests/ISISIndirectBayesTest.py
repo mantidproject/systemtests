@@ -104,7 +104,7 @@ class QuestTest(stresstesting.MantidStressTest):
         rname = 'irs26173_graphite002_res'
         resNormFile = ''
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', 0, 0] #elastic, background, width, resnorm
         loopOp = False
         verbOp = False
         plotOp = 'None'
@@ -143,7 +143,7 @@ class QuestResNormTest(stresstesting.MantidStressTest):
         rname = 'irs26173_graphite002_res'
         resNormFile = 'irs26173_graphite002_ResNorm'
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 1]
+        fitOp = [True, 'Sloping', False, True] #elastic, background, width, resnorm
         loopOp = False
         verbOp = False
         plotOp = 'None'
