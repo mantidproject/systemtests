@@ -13,6 +13,7 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'BioSANS_flood_data.xml',
                 'BioSANS_sample_trans.xml',
                 'BioSANS_test_data.xml',
+                'CNCS_TS_2008_08_18.dat',
                 'DISF_NaF.cdl',
                 'det_corrected7.dat',
                 'eqsans_configuration.1463',
@@ -56,7 +57,8 @@ BANNED_REGEXP = [r'SANS2D\d+.log$',
                  r'.*\.map',
                  r'.*\.irf',
                  r'.*\.hkl',
-                 r'EVS.*\.raw']
+                 r'EVS.*\.raw',
+                 r'.*_pulseid\.dat']
 
 def useDir(direc):
     """Only allow directories that aren't test output or 
