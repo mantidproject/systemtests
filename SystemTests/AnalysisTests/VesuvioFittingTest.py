@@ -59,7 +59,10 @@ def tolerance():
     # The results however are still acceptable
     system = platform.system()
     if system == "Windows":
-        return 1e-2 # Other fitting tests seem to require this level too.
+        if platform.architecture()[0] == "64bit":
+            return 1e-2 # Other fitting tests seem to require this level too.
+        else
+            return 1e-1
     elif system == "Darwin":
         return 1e-1 # Other fitting tests seem to require this level too.
     else:
