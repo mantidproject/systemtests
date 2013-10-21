@@ -21,6 +21,8 @@ class SANSUtilityTest(stresstesting.MantidStressTest):
         add.add_runs(('LOQ54432','LOQ54432'),'LOQ','.raw')
         ws = Load('LOQ54432-add')
         file_path =  unixLikePathFromWorkspace(ws)
+        logger.information("File Path from -add: "+str(file_path))
+        file_path.replace('-ADD','-add') # MAC seems to report that the file is LOQ54432-ADD.nxs
         self.assertTrue('logs/LOQ54432-add' in file_path)
         os.remove(file_path)
         
