@@ -16,32 +16,46 @@ def getSaveDir():
         return os.path.abspath(os.path.curdir)
 
 class VulcanExamineProfile(stresstesting.MantidStressTest):
-    irf_file = 'xxx.irf'
-    hkl_file = 'xxx.hkl'
-    dat_file = 'PG3_???.dat'
+    irf_file = 'arg_powder.irf'
+    dat_file = 'arg_si.dat'
+    bkgd_file = 'arg_si_bkgd_polynomial.nxs'
 
     def requiredFiles(self):
-        files = [self.irf_file, self.hkl_file, self.dat_file]
+        files = [self.irf_file, self.dat_file, self.bkgd_file]
         return files
 
     def runTest(self):
         savedir = getSaveDir()
 
+        LoadAscii(Filename=self.dat_file, OutputWorkspace='arg_si',Unit='TOF')
+
+        LoadNexusProcessed(Filename=self.bkgd_file, OutputWorkspace='Arg_Si_Bkgd_Parameter')
+
+        CreateLeBailFitInput(FullprofParameterFile=self.irf_file,
+                GenerateBraggReflections='1',LatticeConstant='5.4313640',
+                InstrumentParameterWorkspace='Arg_Bank1', BraggPeakParameterWorkspace='ReflectionTable')
+
         # run the actual code
 	ExaminePowderDiffProfile(
-	    InputFilename	= self.dat_file,
-	    ProfileFilename	= self.irf_file,
-	    ReflectonFilename	= self.hkl_file,
-	    OutputWorkspacd	= "PG3_???_Calculated")
+	    InputWorkspace      = 'arg_si',
+            StartX              = 1990.,
+            EndX                = 29100.,
+            ProfileType         = 'Back-to-back exponential convoluted with PseudoVoigt',
+            ProfileWorkspace    = 'Arg_Bank1',
+            BraggPeakWorkspace  = 'ReflectionTable',
+            BackgroundParameterWorkspace = 'Arg_Si_Bkgd_Parameter',
+            BackgroundType      = 'Polynomial',
+            BackgroundWorkspace = 'Arg_Si_Background',
+            OutputWorkspace     = 'Arg_Si_Calculated')
 
 
         # load output gsas file and the golden one
-	Load(Filename = "PG3_???_ref.nxs", OutputWorkspace = "PG3_???_golden")
+	Load(Filename = "Arg_Si_ref.nxs", OutputWorkspace = "Arg_Si_golden")
 
     def validateMethod(self):
         return "ValidateWorkspaceToWorkspace"
 
     def validate(self):
-        return ('PG3_???_Calculated','PG3_???_golden')
+        return ('Arg_Si_Calculated','Arg_Si_golden')
 
 
