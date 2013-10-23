@@ -31,7 +31,7 @@ class QLresTest(stresstesting.MantidStressTest):
         rsname = ''
         wfile = ''
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', False, False]
         loopOp = False
         verbOp = False
         plotOp = False
@@ -102,8 +102,9 @@ class QuestTest(stresstesting.MantidStressTest):
         nbs = [50, 30]
         sname = 'irs26176_graphite002_red'
         rname = 'irs26173_graphite002_res'
+        resNormFile = ''
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', 0, 0] #elastic, background, width, resnorm
         loopOp = False
         verbOp = False
         plotOp = 'None'
@@ -113,7 +114,7 @@ class QuestTest(stresstesting.MantidStressTest):
         LoadNexusProcessed(Filename=spath, OutputWorkspace=sname)
         rpath = rname+'.nxs'    # path name for res nxs file
         LoadNexusProcessed(Filename=rpath, OutputWorkspace=rname)
-        Main.QuestRun(sname,rname,nbs,erange,nbins,fitOp,loopOp,verbOp,plotOp,saveOp)
+        Main.QuestRun(sname,rname,resNormFile,nbs,erange,nbins,fitOp,loopOp,verbOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-1 
@@ -123,6 +124,49 @@ class QuestTest(stresstesting.MantidStressTest):
         filenames = ['irs26176_graphite002_Qst.lpt','irs26176_graphite002_Qss.ql2',
                      'irs26176_graphite002_Qsb.ql1']
         _cleanup_files(config['defaultsave.directory'], filenames)
+
+#=========================================================================
+class QuestResNormTest(stresstesting.MantidStressTest):
+    
+    def skipTests(self):
+        if is_supported_f2py_platform():
+            return False
+        else:
+            return True
+    
+    def runTest(self):
+        import IndirectBayes as Main
+
+        nbins = [1, 1]
+        nbs = [50, 30]
+        sname = 'irs26176_graphite002_red'
+        rname = 'irs26173_graphite002_res'
+        resNormFile = 'irs26173_graphite002_ResNorm'
+        erange = [-0.5, 0.5]
+        fitOp = [True, 'Sloping', False, True] #elastic, background, width, resnorm
+        loopOp = False
+        verbOp = False
+        plotOp = 'None'
+        saveOp = False
+
+        spath = sname+'.nxs'   # path name for sample nxs file
+        LoadNexusProcessed(Filename=spath, OutputWorkspace=sname)
+        rpath = rname+'.nxs'    # path name for res nxs file
+        LoadNexusProcessed(Filename=rpath, OutputWorkspace=rname)
+        rspath = resNormFile+'_Paras.nxs'    # path name for resNorm nxs file
+        LoadNexusProcessed(Filename=rspath, OutputWorkspace=resNormFile)
+        Main.QuestRun(sname,rname,resNormFile,nbs,erange,nbins,fitOp,loopOp,verbOp,plotOp,saveOp)
+
+    def validate(self):
+        self.tolerance = 1e-1 
+        return 'irs26176_graphite002_Qst_Fit','ISISIndirectBayes_QuestResNormTest.nxs'
+
+    def cleanup(self):
+        filenames = ['irs26176_graphite002_Qst.lpt','irs26176_graphite002_Qss.ql2',
+                     'irs26176_graphite002_Qsb.ql1']
+        _cleanup_files(config['defaultsave.directory'], filenames)
+
+
 
 #=============================================================================
 class QSeTest(stresstesting.MantidStressTest):
@@ -141,7 +185,7 @@ class QSeTest(stresstesting.MantidStressTest):
         rsname = ''
         wfile = ''
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', False, False]
         loopOp = False
         verbOp = False
         plotOp = False
@@ -179,7 +223,7 @@ class QLDataTest(stresstesting.MantidStressTest):
         rsname = ''
         wfile = ''
         erange = [-0.5, 0.5]
-        fitOp = [1, 2, 0, 0]
+        fitOp = [True, 'Sloping', False, False]
         loopOp = False
         verbOp = False
         plotOp = False
@@ -202,6 +246,89 @@ class QLDataTest(stresstesting.MantidStressTest):
         _cleanup_files(config['defaultsave.directory'], filenames)
 
 #=============================================================================
+class QLResNormTest(stresstesting.MantidStressTest):
+    
+    def skipTests(self):
+        if is_supported_f2py_platform():
+            return False
+        else:
+            return True
+    
+    def runTest(self):
+        import IndirectBayes as Main
+
+        nbins = ['1', '1']
+        sname = 'irs26176_graphite002_red'
+        rname = 'irs26173_graphite002_res'
+        rsname = 'irs26173_graphite002_ResNorm'
+        wfile = ''
+        erange = [-0.5, 0.5]
+        fitOp = [True, 'Sloping', False, True] #elastic, background, width, resnorm
+        loopOp = True
+        verbOp = True
+        plotOp = False
+        saveOp = False
+
+        spath = sname+'.nxs'    # path name for sample nxs file
+        LoadNexusProcessed(Filename=spath, OutputWorkspace=sname)
+        rpath = rname+'.nxs'    # path name for res nxs file
+        LoadNexusProcessed(Filename=rpath, OutputWorkspace=rname)
+        rspath = rsname+'_Paras.nxs'    # path name for resNorm nxs file
+        LoadNexusProcessed(Filename=rspath, OutputWorkspace=rsname)
+        Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
+
+    def validate(self):
+        self.tolerance = 1e-1
+        return 'irs26176_graphite002_QLr_Result','ISISIndirectBayes_QLr_ResNorm_Test.nxs'
+
+    def cleanup(self):
+        filenames = ['irs26176_graphite002_QLd.lpt','irs26176_graphite002_QLd.ql1',
+                     'irs26176_graphite002_QLd.ql2','irs26176_graphite002_QLd.ql3',
+                     'irs26176_graphite002_QLd_Parameters.nxs']
+        _cleanup_files(config['defaultsave.directory'], filenames)
+
+#=============================================================================
+class QLWidthTest(stresstesting.MantidStressTest):
+    
+    def skipTests(self):
+        if is_supported_f2py_platform():
+            return False
+        else:
+            return True
+    
+    def runTest(self):
+        import IndirectBayes as Main
+
+        nbins = ['1', '1']
+        sname = 'irs26176_graphite002_red'
+        rname = 'irs26173_graphite002_res'
+        rsname = ''
+        wfile = 'irs26176_graphite002_width_water.dat'
+        erange = [-0.5, 0.5]
+        fitOp = [True, 'Sloping', True, False] #elastic, background, width, resnorm
+        loopOp = False
+        verbOp = True
+        plotOp = False
+        saveOp = False
+
+        spath = sname+'.nxs'    # path name for sample nxs file
+        LoadNexusProcessed(Filename=spath, OutputWorkspace=sname)
+        rpath = rname+'.nxs'    # path name for res nxs file
+        LoadNexusProcessed(Filename=rpath, OutputWorkspace=rname)
+        Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
+
+    def validate(self):
+        self.tolerance = 1e-1
+        return 'irs26176_graphite002_QLr_Result','ISISIndirectBayes_QLr_width_Test.nxs'
+
+    def cleanup(self):
+        filenames = ['irs26176_graphite002_QLd.lpt','irs26176_graphite002_QLd.ql1',
+                     'irs26176_graphite002_QLd.ql2','irs26176_graphite002_QLd.ql3',
+                     'irs26176_graphite002_QLd_Parameters.nxs']
+        _cleanup_files(config['defaultsave.directory'], filenames)
+
+#=============================================================================
+
 class JumpCETest(stresstesting.MantidStressTest):
     
     def skipTests(self):
