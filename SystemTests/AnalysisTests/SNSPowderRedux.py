@@ -37,9 +37,11 @@ class PG3Analysis(stresstesting.MantidStressTest):
         LoadGSS(Filename=self.ref_file, OutputWorkspace="PG3_4844_golden")
 
     def validateMethod(self):
+	self.tolerance = 1.0e-2
         return "ValidateWorkspaceToWorkspace"
 
     def validate(self):
+	self.tolerance = 1.0e-2
         return ('PG3_4844','PG3_4844_golden')
 
 class PG3StripPeaks(stresstesting.MantidStressTest):
@@ -134,9 +136,11 @@ class PG3StripPeaks(stresstesting.MantidStressTest):
         LoadGSS(Filename=self.ref_file, OutputWorkspace="PG3_4866_golden")
 
     def validateMethod(self):
+	self.tolerance = 1.0e-2
         return "ValidateWorkspaceToWorkspace"
 
     def validate(self):
+	self.tolerance = 1.0e-2
         return ('PG3_4866','PG3_4866_golden')
 
 class SeriesAndConjoinFilesTest(stresstesting.MantidStressTest):
@@ -199,5 +203,6 @@ class SeriesAndConjoinFilesTest(stresstesting.MantidStressTest):
         return None # it running is all that we need
 
     def validate(self):
+	self.tolerance = 1.0e-2
         return ('PG3_9829','PG3_9829_golden')
         #return ('PG3_9830','PG3_9830_golden') # can only validate one workspace

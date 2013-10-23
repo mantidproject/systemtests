@@ -15,7 +15,7 @@ class EQSANSFlatTest(stresstesting.MantidStressTest):
         files.append(FILE_LOCATION+"EQSANS_5729_event.nxs")
         files.append(FILE_LOCATION+"EQSANS_5737_event.nxs")
         files.append(FILE_LOCATION+"EQSANS_5703_event.nxs")
-        files.append(FILE_LOCATION+"bl6_flux_at_sample")
+        files.append("bl6_flux_at_sample")
         return files
     
     def runTest(self):
@@ -28,10 +28,9 @@ class EQSANSFlatTest(stresstesting.MantidStressTest):
         config = ConfigService.Instance()
         config["facilityName"]='SNS'
         EQSANS(True)
-        DataPath(FILE_LOCATION)
         SolidAngle()
         DarkCurrent(FILE_LOCATION+"EQSANS_5704_event.nxs")
-        TotalChargeNormalization(beam_file=FILE_LOCATION+"bl6_flux_at_sample")
+        TotalChargeNormalization(beam_file="bl6_flux_at_sample")
         AzimuthalAverage(n_bins=100, n_subpix=1, log_binning=False)
         IQxQy(nbins=100)
         UseConfigTOFTailsCutoff(True)

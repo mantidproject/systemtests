@@ -16,7 +16,7 @@ class TOPAZPeakFinding(stresstesting.MantidStressTest):
     def runTest(self):
         # Load then convert to Q in the lab frame
         LoadEventNexus(Filename=r'TOPAZ_3132_event.nxs',OutputWorkspace='topaz_3132')
-        ConvertToDiffractionMDWorkspace(InputWorkspace='topaz_3132',OutputWorkspace='topaz_3132_MD',LorentzCorrection='1',SplitInto='2',SplitThreshold='150')
+        ConvertToDiffractionMDWorkspace(InputWorkspace='topaz_3132',OutputWorkspace='topaz_3132_MD',LorentzCorrection='1',SplitInto='2',SplitThreshold='150',OneEventPerBin='0')
         
         # Find peaks and UB matrix
         FindPeaksMD(InputWorkspace='topaz_3132_MD',PeakDistanceThreshold='0.12',MaxPeaks='200',OutputWorkspace='peaks')
