@@ -278,7 +278,7 @@ class QLResNormTest(stresstesting.MantidStressTest):
         Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
 
     def validate(self):
-        self.tolerance = 1e-3
+        self.tolerance = 1e-1
         return 'irs26176_graphite002_QLr_Result','ISISIndirectBayes_QLr_ResNorm_Test.nxs'
 
     def cleanup(self):
@@ -318,7 +318,7 @@ class QLWidthTest(stresstesting.MantidStressTest):
         Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
 
     def validate(self):
-        self.tolerance = 1e-2
+        self.tolerance = 1e-1
         return 'irs26176_graphite002_QLr_Result','ISISIndirectBayes_QLr_width_Test.nxs'
 
     def cleanup(self):
