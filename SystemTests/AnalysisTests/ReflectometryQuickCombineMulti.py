@@ -1,7 +1,7 @@
 import stresstesting
 from mantid.simpleapi import *
-from isis_reflgui import quick
-from isis_reflgui import combineMulti
+from isis_reflectometry import quick
+from isis_reflectometry import combineMulti
 
 class ReflectometryQuickCombineMulti(stresstesting.MantidStressTest):
     """
