@@ -286,30 +286,22 @@ class QLWidthTest(stresstesting.MantidStressTest):
 #=============================================================================
 
 class JumpCETest(stresstesting.MantidStressTest):
-    
-    def skipTests(self):
-        if is_supported_f2py_platform():
-            return False
-        else:
-            return True
 
     def runTest(self):
-        import IndirectBayes as Main
-        sname = 'irs26176_graphite002_QLr'
-        cropOp = False
+        from IndirectJumpFit import JumpRun
+        sname = 'iris21360_graphite002_QLd_Workspace'
         qrange = [0.0, 5.0]
         verbOp = False
         plotOp = False
         saveOp = False
 
-        filename = sname+'_Parameters.nxs' # path name for nxs file
-        LoadNexusProcessed(Filename=filename, OutputWorkspace=sname+'_Parameters')
-        
-        Main.JumpRun(sname,'CE','QLr','FW11',cropOp,qrange,verbOp,plotOp,saveOp)
+        filename = sname+'.nxs' # path name for nxs file
+        LoadNexusProcessed(Filename=filename, OutputWorkspace=sname)
+        JumpRun(sname,'CE',0,qrange[0],qrange[1],verbOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-5 
-        return 'irs26176_graphite002_QLr_CEfit_FW11','ISISIndirectBayes_JumpCETest.nxs'
+        return 'iris21360_graphite002_QLd_Workspace_CEfit_Workspace','ISISIndirectBayes_JumpCETest.nxs'
 
     def cleanup(self):
         filenames = ['irs26176_graphite002_QLr_CEfit_FW11.lpt']
@@ -317,29 +309,22 @@ class JumpCETest(stresstesting.MantidStressTest):
 
 #=============================================================================
 class JumpSSTest(stresstesting.MantidStressTest):
-    
-    def skipTests(self):
-        if is_supported_f2py_platform():
-            return False
-        else:
-            return True
-    
+
     def runTest(self):
-        import IndirectBayes as Main
-        sname = 'irs26176_graphite002_QLr'
-        cropOp = False
+        from IndirectJumpFit import JumpRun
+        sname = 'iris21360_graphite002_QLd_Workspace'
         qrange = [0.0, 5.0]
         verbOp = False
         plotOp = False
         saveOp = False
 
-        path = sname+'_Parameters.nxs'  # path name for nxs file
-        LoadNexusProcessed(Filename=path, OutputWorkspace=sname+'_Parameters')
-        Main.JumpRun(sname,'SS','QLr','FW11',cropOp,qrange,verbOp,plotOp,saveOp)
+        path = sname+'.nxs'  # path name for nxs file
+        LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
+        JumpRun(sname,'SS',0,qrange[0],qrange[1],verbOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-5 
-        return 'irs26176_graphite002_QLr_SSfit_FW11','ISISIndirectBayes_JumpSSTest.nxs'
+        return 'iris21360_graphite002_QLd_Workspace_SSfit_Workspace','ISISIndirectBayes_JumpSSTest.nxs'
 
     def cleanup(self):
         filenames = ['irs26176_graphite002_QLr_SSfit_FW11.lpt']

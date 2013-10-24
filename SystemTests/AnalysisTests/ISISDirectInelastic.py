@@ -380,7 +380,6 @@ class LETReduction(stresstesting.MantidStressTest):
       
       white_ws = 'wb_wksp'
       LoadRaw(Filename=white_run,OutputWorkspace=white_ws)
-
       sample_ws = 'w1'
       monitors_ws = sample_ws + '_monitors'
       LoadEventNexus(Filename=sample_run,OutputWorkspace=sample_ws,
@@ -402,7 +401,7 @@ class LETReduction(stresstesting.MantidStressTest):
       energybin = [ '%.4f' % elem for elem in energybin ]  
       ebinstring = str(energybin[0])+','+str(energybin[1])+','+str(energybin[2])
       argi={}
-      argi['det_cal_file']="det_corrected7.dat"
+      argi['det_cal_file']='det_corrected7.dat'
       argi['bleed'] = False
       argi['norm_method']='current'
       argi['detector_van_range']=[0.5,200]
