@@ -53,9 +53,11 @@ class VulcanExamineProfile(stresstesting.MantidStressTest):
 	Load(Filename = "Arg_Si_ref.nxs", OutputWorkspace = "Arg_Si_golden")
 
     def validateMethod(self):
+        self.tolerance=1.0e-6
         return "ValidateWorkspaceToWorkspace"
 
     def validate(self):
+        self.tolerance=1.0e-6
         return ('Arg_Si_Calculated','Arg_Si_golden')
 
 
