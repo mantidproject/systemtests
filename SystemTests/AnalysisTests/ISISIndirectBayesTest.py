@@ -301,7 +301,7 @@ class JumpCETest(stresstesting.MantidStressTest):
 
     def validate(self):
         self.tolerance = 1e-5 
-        return 'iris21360_graphite002_QLd_Workspace_CEfit_Workspace','ISISIndirectBayes_JumpCETest.nxs'
+        return 'iris21360_graphite002_QLd_CEfit_Workspace','ISISIndirectBayes_JumpCETest.nxs'
 
     def cleanup(self):
         filenames = ['irs26176_graphite002_QLr_CEfit_FW11.lpt']
@@ -324,7 +324,7 @@ class JumpSSTest(stresstesting.MantidStressTest):
 
     def validate(self):
         self.tolerance = 1e-5 
-        return 'iris21360_graphite002_QLd_Workspace_SSfit_Workspace','ISISIndirectBayes_JumpSSTest.nxs'
+        return 'iris21360_graphite002_QLd_SSfit_Workspace','ISISIndirectBayes_JumpSSTest.nxs'
 
     def cleanup(self):
         filenames = ['irs26176_graphite002_QLr_SSfit_FW11.lpt']
