@@ -50,7 +50,7 @@ class SANSAddBatch(stresstesting.MantidStressTest):
     self.disableChecking.append('SpectraMap')
     self.disableChecking.append('Axes')
     self.disableChecking.append('Instrument')
-    self.tolerance = 1.0e-13 #almost ZERO!
+    self.tolerance = 1.0e-10 #almost ZERO!
     print 'validating', self.result, self.output_file
     return self.result,self.output_file+'.nxs'
 
