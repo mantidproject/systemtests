@@ -110,14 +110,14 @@ class GEMTest(stresstesting.MantidStressTest):
                 for i in range(1,7):
                     if i > 1:
                         append=True
-                    SaveGSS(InputWorkspace='ResultTOF-%d' % i,Filename=self.gss_file,SplitFiles='False',Append=append,Bank=i)
+                    SaveGSS(InputWorkspace='ResultTOF-%d' % i,Filename=self.gss_file,SplitFiles=False,Append=append,Bank=i)
                     
                     filename= os.path.join(config['defaultsave.directory'],r'GEM58654_b%d_TOF.dat' % i)
-                    SaveFocusedXYE(InputWorkspace='ResultTOF-%d' % i,Filename=filename,SplitFiles='False',IncludeHeader='0')
+                    SaveFocusedXYE(InputWorkspace='ResultTOF-%d' % i,Filename=filename,SplitFiles=False,IncludeHeader='0')
                     self.xye_tof_files.append(filename)
                     
                     filename= os.path.join(config['defaultsave.directory'],r'GEM58654_b%d_D.dat' % i)
-                    SaveFocusedXYE(InputWorkspace='ResultD-%d' % i,Filename=filename,SplitFiles='False',IncludeHeader='0')
+                    SaveFocusedXYE(InputWorkspace='ResultD-%d' % i,Filename=filename,SplitFiles=False,IncludeHeader='0')
                     self.xye_d_files.append(filename)
 
 	def cleanup(self):
