@@ -52,7 +52,7 @@ BANNED_REGEXP = [r'SANS2D\d+.log$',
                  r'SANS2D00000808_.+.txt$',
                  r'.*_reduction.log$',
                  r'.+_characterization_\d+_\d+_\d+.*\.txt',
-                 r'.+_d\d+_\d+_\d+_\d+.cal',
+                 r'.*\.cal',
                  r'.*Grouping\.xml',
                  r'.*\.map',
                  r'.*\.irf',
@@ -81,7 +81,7 @@ def useFile(direc, filename):
 
     # list of banned files by regexp
     for regexp in BANNED_REGEXP:
-        if re.match(regexp, filename) is not None:
+        if re.match(regexp, filename, re.I) is not None:
             return (False, filename)
 
     filename = os.path.join(direc, filename)
