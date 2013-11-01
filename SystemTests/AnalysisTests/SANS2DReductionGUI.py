@@ -242,7 +242,8 @@ class SANS2DGUIReduction(SANS2DGUIBatchReduction):
     super(SANS2DGUIReduction,self).checkFittingSettings(settings)
 
 
-  def runTest(self):
+
+  def singleModePrepare(self):
     self.initialization()
 
     self.checkFirstPart()
@@ -253,7 +254,11 @@ class SANS2DGUIReduction(SANS2DGUIBatchReduction):
     
     self.applyGUISettings()
                      
-    self.applySampleSettings()
+    self.applySampleSettings()    
+
+  def runTest(self):
+    self.singleModePrepare()
+
     _user_settings_copy = copy.deepcopy(i.ReductionSingleton().user_settings)
     
     reduced = i.WavRangeReduction(full_trans_wav=False, resetSetup=False)
