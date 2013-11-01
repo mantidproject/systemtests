@@ -233,13 +233,21 @@ class SANS2DGUIReduction(SANS2DGUIBatchReduction):
     i.ReductionSingleton().get_sample().geometry.shape = 3
     i.ReductionSingleton().get_sample().geometry.height = 8
     i.ReductionSingleton().get_sample().geometry.width = 8
-    i.ReductionSingleton().get_sample().geometry.thickness = 2 #** attention gui applies: i.ReductionSingleton().get_sample().geometry.thickness = 2
+    i.ReductionSingleton().get_sample().geometry.thickness = 2
                       
 
   def checkFittingSettings(self):
     settings = {'scale':i.ReductionSingleton().instrument.getDetector('FRONT').rescaleAndShift.scale,
                 'shift':i.ReductionSingleton().instrument.getDetector('FRONT').rescaleAndShift.shift}
     super(SANS2DGUIReduction,self).checkFittingSettings(settings)
+
+
+  def cleanReduction(self, user_settings):
+    i.ReductionSingleton.clean(isis_reducer.ISISReducer)
+    i.ReductionSingleton().set_instrument(isis_instrument.SANS2D())
+    #i.ReductionSingleton().user_file_path=''
+    i.ReductionSingleton().user_settings = user_settings
+    i.ReductionSingleton().user_settings.execute(i.ReductionSingleton());
 
 
 
@@ -266,12 +274,9 @@ class SANS2DGUIReduction(SANS2DGUIBatchReduction):
     self.checkFittingSettings()
 
     RenameWorkspace(reduced, OutputWorkspace='trans_test_rear')
-  
-    i.ReductionSingleton.clean(isis_reducer.ISISReducer)
-    i.ReductionSingleton().set_instrument(isis_instrument.SANS2D())
-    i.ReductionSingleton().user_file_path='/home/gesner/Downloads'
-    i.ReductionSingleton().user_settings = _user_settings_copy
-    i.ReductionSingleton().user_settings.execute(i.ReductionSingleton());
+
+    self.cleanReduction(_user_settings_copy)
+
     _user_settings_copy = copy.deepcopy(i.ReductionSingleton().user_settings)
 
 
