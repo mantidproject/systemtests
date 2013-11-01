@@ -27,85 +27,11 @@ import isis_instrument
 import isis_reduction_steps
 import copy
 
-MASKFILE = os.path.join(os.path.curdir, 'maskfile.txt')
-BATCHFILE = os.path.join(os.path.curdir,'batch.csv')
-
-def createMaskFile():
-  f = open('maskfile.txt','w')
-  print >> f, """
-PRINT for changer
-MASK/CLEAR
-MASK/CLEAR/TIME
-L/WAV 1.5 12.5 0.125/LIN
-
-L/Q .001,.001,.0126,-.08,.2
-!L/Q .001 .8 .08/log
-L/QXY 0 0.05 .001/lin
-BACK/M1 35000 65000
-BACK/M2 85000 98000
-DET/REAR
-GRAVITY/ON
-!FIT/TRANS/OFF
-FIT/TRANS/LOG 1.5 12.5
-mask/rear h0
-mask/rear h190>h191
-mask/rear h167>h172
-mask/rear v0
-mask/rear v191
-mask/front h0
-mask/front h190>h191
-mask/front v0
-mask/front v191
-! dead wire near top
-mask/front h156>h159
-!masking off beamstop arm - 12mm wide @ 19degrees
-!mask/rear/line 12 19 
-! spot on rhs beam stop at 11m
-! mask h57>h66+v134>v141
-!
-! mask for Bragg at 12m, 26/03/11, 3 time channels
-mask/time 17500 22000
-!
-L/R 41 -1 3
-!L/Q/RCut 200
-!L/Q/WCut 8.0
-!PRINT REMOVED RCut=200 WCut=8
-!
-MON/DIRECT=DIRECTM1_15785_12m_31Oct12_v12.dat
-MON/TRANS/SPECTRUM=1/INTERPOLATE
-MON/SPECTRUM=1/INTERPOLATE
-TRANS/TRANSPEC=3
-!TRANS/TRANSPEC=4/SHIFT=-70
-!
-set centre 155.45 -169.6 5.1 5.1
-!
-! 25/10/13 centre gc 22021, fit gdw20 22023
-set scales 0.074 1.0 1.0 1.0 1.0
-! correction to actual sample position, notionally 81mm before shutter
-SAMPLE/OFFSET +53.0
-! Correction to SANS2D encoders in mm 
-DET/CORR REAR X -16.0
-DET/CORR REAR Z 47.0
-DET/CORR FRONT X -44.0
-DET/CORR FRONT Y -20.0
-DET/CORR FRONT Z 47.0
-DET/CORR FRONT ROT 0.0
-!
-!! 01/10/13 MASKSANS2d_133F M3 by M1 trans Hellsing, Rennie, Jackson, L1=L2=12m A1=20 and A2=8mm 
-"""
-  f.close()
+MASKFILE = FileFinder.getFullPath('MaskSANS2DReductionGUI.txt')
+BATCHFILE = FileFinder.getFullPath('sans2d_reduction_gui_batch.csv')
 
 def s(obj):
 	print '!'+str(obj)+'!',type(obj)
-
-def createBatchFile():
-  f = open(BATCHFILE,'w')
-  print >> f, """
-MANTID_BATCH_FILE,creaated_on,31/10/2013,GESNER
-sample_sans,22048,sample_trans,22041,sample_direct_beam,22024,can_sans,22023,can_trans,22024,can_direct_beam,22024,output_as,trans_test
-"""
-  f.close()
-
 
 class SANS2DMinimalBatchReduction(stresstesting.MantidStressTest):
   """Minimal script to perform full reduction in batch mode
@@ -113,13 +39,6 @@ class SANS2DMinimalBatchReduction(stresstesting.MantidStressTest):
   def __init__(self):
     super(SANS2DMinimalBatchReduction, self).__init__()
     config['default.instrument'] = 'SANS2D'
-    createMaskFile()
-    createBatchFile()
-
-  def __del__(self):
-    import os
-    os.remove(BATCHFILE)
-    os.remove(MASKFILE)
 
   def runTest(self):
     import SANSBatchMode as batch
@@ -290,12 +209,11 @@ class SANS2DGUIReduction(SANS2DGUIBatchReduction):
   """Script executed by SANS GUI Interface to perform reduction in single mode"""
 
   def checkAfterLoad(self):
-    print i.ReductionSingleton().samp_trans_load.direct.periods_in_file;
-    print i.ReductionSingleton().can_trans_load.direct.periods_in_file;
-    print i.GetMismatchedDetList(),;
-    print i.ReductionSingleton().samp_trans_load.direct.periods_in_file;
-    print i.ReductionSingleton().can_trans_load.direct.periods_in_file;
-    print i.GetMismatchedDetList(),;
+    self.checkFloat(i.ReductionSingleton().get_sample().loader.periods_in_file, 1)
+    self.checkFloat(i.ReductionSingleton().background_subtracter.periods_in_file, 1)
+    self.checkFloat(i.ReductionSingleton().samp_trans_load.direct.periods_in_file, 1)
+    self.checkFloat(i.ReductionSingleton().can_trans_load.direct.periods_in_file,1)
+    self.assertTrue(not  i.GetMismatchedDetList())
 
   def loadSettings(self):
     i.ReductionSingleton().instrument.setDetector('rear-detector')
