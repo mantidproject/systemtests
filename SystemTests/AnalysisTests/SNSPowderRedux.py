@@ -125,7 +125,7 @@ class PG3StripPeaks(stresstesting.MantidStressTest):
                      Target="TOF")
         SaveGSS(InputWorkspace="PG3_4866",
                 Filename=os.path.join(savedir, "PG3_4866.gsa"),
-                SplitFiles="False",
+                SplitFiles=False,
                 Append=False,
                 Format="SLOG",
                 MultiplyByBinWidth=False,
