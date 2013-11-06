@@ -164,6 +164,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_set_detector_distance(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         AppendDataFile("BioSANS_test_data.xml")
         SetSampleDetectorDistance(2500.0)
         Reduce1D()
@@ -175,6 +176,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_set_detector_offset(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         AppendDataFile("BioSANS_test_data.xml")
         SetSampleDetectorOffset(500.0)
         Reduce1D()
@@ -189,6 +191,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
         """
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         AppendDataFile("BioSANS_test_data.xml")
         SetSampleDetectorDistance(2500.0)
         SetSampleDetectorOffset(500.0)
@@ -201,6 +204,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_set_wavelength(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         AppendDataFile("BioSANS_test_data.xml")
         SetWavelength(5.0, 1.2)
         Reduce1D()
@@ -213,6 +217,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_direct_beam_center(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")
         Reduce()
@@ -247,6 +252,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_load_run(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         self.assertEqual(len(ReductionSingleton()._data_files), 0)
         AppendDataFile("BioSANS_test_data.xml")
         self.assertEqual(len(ReductionSingleton()._data_files), 1)  
@@ -254,6 +260,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_to_steps(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")
         DarkCurrent("BioSANS_dark_current.xml")
@@ -271,6 +278,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_reduction_1(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")
         SensitivityCorrection("BioSANS_flood_data.xml")
@@ -288,6 +296,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_no_solid_angle(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")
         NoSolidAngle()
@@ -304,6 +313,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_reduction_2(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")
         DarkCurrent("BioSANS_dark_current.xml")
@@ -321,6 +331,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_straight_Q1D(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")
         AzimuthalAverage(binning="0.01,0.001,0.11", error_weighting=True)
@@ -337,6 +348,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_transmission(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         TimeNormalization()
         DirectBeamTransmission(sample_file="BioSANS_sample_trans.xml",
@@ -356,6 +368,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_spreader_transmission(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AzimuthalAverage(binning="0.01,0.001,0.11", error_weighting=True)
         BeamSpreaderTransmission(sample_spreader="BioSANS_test_data.xml", 
@@ -375,6 +388,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_transmission_by_hand(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")
         SetTransmission(0.51944, 0.011078)        
@@ -390,6 +404,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_center_by_hand(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         SetBeamCenter(16, 95)
         AppendDataFile("BioSANS_test_data.xml")
         SensitivityCorrection("BioSANS_flood_data.xml", dark_current="BioSANS_dark_current.xml")
@@ -403,6 +418,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_background(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         SetBeamCenter(16, 95)
         AppendDataFile("BioSANS_test_data.xml")
         SensitivityCorrection("BioSANS_flood_data.xml", dark_current="BioSANS_dark_current.xml")
@@ -424,6 +440,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
         """
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         SetBeamCenter(16, 95)
         AppendDataFile("BioSANS_test_data.xml")
         SensitivityCorrection("BioSANS_flood_data.xml", dark_current="BioSANS_dark_current.xml")
@@ -442,6 +459,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_bck_w_transmission(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         SetBeamCenter(16, 95)
         AppendDataFile("BioSANS_test_data.xml", "test_data")
         SensitivityCorrection("BioSANS_flood_data.xml", dark_current="BioSANS_dark_current.xml")
@@ -461,6 +479,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_transmission_by_hand_w_sensitivity(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml")
         SetTransmission(0.51944, 0.011078)
@@ -482,6 +501,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
         return
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         AppendDataFile("BioSANS_test_data.xml")   
         SampleGeometry('cuboid')
         SampleThickness(2.0)
@@ -516,6 +536,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
         SetTransmission(1, 0)
         ThetaDependentTransmission(True)
         DataPath(TEST_DIR)
+		NoSaveIq()
         AppendDataFile(["BioSANS_exp61_scan0004_0001.xml"])
         Background("BioSANS_test_data.xml")
         SetBckTransmission(1, 0)
@@ -545,6 +566,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
         SetTransmission(1, 0)
         ThetaDependentTransmission(True)
         DataPath(TEST_DIR)
+		NoSaveIq()
         AppendDataFile(["BioSANS_exp61_scan0004_0001.xml"])
         Background("BioSANS_test_data.xml")
         SetBckTransmission(1, 0)
@@ -574,6 +596,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
         SetTransmission(1, 0)
         ThetaDependentTransmission(True)
         DataPath(TEST_DIR)
+		NoSaveIq()
         AppendDataFile(["BioSANS_exp61_scan0004_0001.xml"])
         Background("BioSANS_test_data.xml")
         SetBckTransmission(1, 0)
@@ -590,6 +613,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_transmission_beam_center(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml", "test_data")
         SensitivityCorrection("BioSANS_flood_data.xml", dark_current="BioSANS_dark_current.xml")
@@ -610,6 +634,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_bck_transmission_default_beam_center(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml", "test_data")
         DarkCurrent("BioSANS_dark_current.xml")
@@ -628,6 +653,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_bck_transmission_set_beam_center(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         DirectBeamCenter("BioSANS_empty_cell.xml")
         AppendDataFile("BioSANS_test_data.xml", "test_data")
         DarkCurrent("BioSANS_dark_current.xml")
@@ -646,6 +672,7 @@ class HFIRTestsAPIv2(stresstesting.MantidStressTest):
     def test_bck_transmission_direct_beam_center(self):
         GPSANS()
         DataPath(TEST_DIR)
+		NoSaveIq()
         #DirectBeamCenter("BioSANS_empty_cell.xml")
         SetBeamCenter(100,15)
         AppendDataFile("BioSANS_test_data.xml", "test_data")
