@@ -1,9 +1,41 @@
 import stresstesting
 import mantid
+from mantid.api import FileFinder
 from mantid.simpleapi import *
 from reduction_workflow.instruments.sans.hfir_command_interface import *
 
+import os
+
+def do_cleanup():
+    print "Cleaning up"
+    File1 = FileFinder.getFullPath("BioSANS_test_data_Iqxy.dat")
+    File2 = FileFinder.getFullPath("BioSANS_test_data_Iq.txt")
+    File3 = FileFinder.getFullPath("BioSANS_test_data_Iq.xml")
+    File4 = FileFinder.getFullPath("BioSANS_test_data_reduction.log")
+    print File1
+    if os.path.exists(File1):
+        os.remove(File1)
+        print "cleaned"
+    print File2
+    if os.path.exists(File2):
+        os.remove(File2)
+        print "cleaned"
+    print File3
+    if os.path.exists(File3):
+        os.remove(File3)
+        print "cleaned"
+    print File4
+    if os.path.exists(File4):
+        os.remove(File4)
+        print "cleaned"
+    return True
+
 class HFIRBackground(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     def runTest(self):
         config = ConfigService.Instance()
         config["facilityName"]='HFIR'
@@ -23,6 +55,11 @@ class HFIRBackground(stresstesting.MantidStressTest):
         return "BioSANS_test_data_Iq", 'HFIRBackground.nxs'
 
 class HFIRBackgroundTransmission(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+        
     def runTest(self):
         config = ConfigService.Instance()
         config["facilityName"]='HFIR'
@@ -42,6 +79,11 @@ class HFIRBackgroundTransmission(stresstesting.MantidStressTest):
         return "BioSANS_test_data_Iq", 'HFIRBackgroundTransmission.nxs'
 
 class HFIRBackgroundDirectBeamTrans(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+        
     def runTest(self):
         config = ConfigService.Instance()
         config["facilityName"]='HFIR'
@@ -63,6 +105,11 @@ class HFIRBackgroundDirectBeamTrans(stresstesting.MantidStressTest):
         return "BioSANS_test_data_Iq", 'HFIRBackgroundDirectBeamTrans.nxs'
 
 class HFIRBackgroundBeamSpreaderTrans(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+        
     def runTest(self):
         config = ConfigService.Instance()
         config["facilityName"]='HFIR'
@@ -87,6 +134,11 @@ class HFIRBackgroundBeamSpreaderTrans(stresstesting.MantidStressTest):
         return "BioSANS_test_data_Iq", 'HFIRBackgroundBeamSpreaderTrans.nxs'
 
 class HFIRBackgroundTransDarkCurrent(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+        
     def runTest(self):
         config = ConfigService.Instance()
         config["facilityName"]='HFIR'
@@ -109,6 +161,11 @@ class HFIRBackgroundTransDarkCurrent(stresstesting.MantidStressTest):
         return "BioSANS_test_data_Iq", 'HFIRBackgroundTransDarkCurrent.nxs'
     
 class HFIRBackgroundDirectBeamTransDC(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+        
     def runTest(self):
         config = ConfigService.Instance()
         config["facilityName"]='HFIR'
