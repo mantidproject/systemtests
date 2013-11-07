@@ -5,8 +5,20 @@ and runs Diffraction Workflow.
 import stresstesting
 import numpy
 from mantid.simpleapi import *
+from mantid.api import FileFinder
+
+import os
 
 class Diffraction_Workflow_Test(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        Files = ["TOPAZ_3132.hkl",
+        "TOPAZ_3132FFT.hkl"]
+        for file in Files:
+            absfile = FileFinder.getFullPath(file)
+            if os.path.exists(absfile):
+                os.remove(absfile)
+        return True
     
     def requiredMemoryMB(self):
         """ Require about 4GB free """
