@@ -95,8 +95,23 @@ def _check_result(ws, test_file, tolerance=1e-6):
  
     return passed
 
+def do_cleanup():
+    print "Cleaning up"
+    Files = [FileFinder.getFullPath("GPSANS_reduction.log"), FileFinder.getFullPath("BioSANS_exp61_scan0004_0001_Iq.txt"), FileFinder.getFullPath("BioSANS_exp61_scan0004_0001_Iq.xml"), FileFinder.getFullPath("BioSANS_exp61_scan0004_0001_Iqxy.dat"), FileFinder.getFullPath("BioSANS_exp61_scan0004_0001_reduction.log"), FileFinder.getFullPath("BioSANS_test_data_Iq.txt"), FileFinder.getFullPath("BioSANS_test_data_Iq.xml"), FileFinder.getFullPath("BioSANS_test_data_Iqxy.dat"), FileFinder.getFullPath("BioSANS_test_data_reduction.log"), FileFinder.getFullPath("test_data_Iq.txt"), FileFinder.getFullPath("test_data_Iq.xml"), FileFinder.getFullPath("test_data_Iqxy.dat"), FileFinder.getFullPath("test_data_reduction.log")    ]
+    for file in range(0,13):
+        print file
+        print Files[file]
+        if os.path.exists(Files[file]):
+            os.remove(Files[file])
+            print "cleaned"
+    return True
 
 class HFIRTestsAPIv2(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     def assertTrue(self, condition):
         if not condition:
             raise RuntimeError, "Condition failed"
