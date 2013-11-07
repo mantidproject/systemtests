@@ -2,8 +2,18 @@ import stresstesting
 import mantid
 from mantid.simpleapi import *
 from reduction_workflow.instruments.sans.sns_command_interface import *
+from mantid.api import FileFinder
+
+import os
 
 class EQSANSProcessedEff(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        absfile = FileFinder.getFullPath("EQSANS_1466_event_reduction.log")
+        if os.path.exists(absfile):
+            os.remove(absfile)
+        return True
+
     def runTest(self):
         """
             System test for sensitivity correction
