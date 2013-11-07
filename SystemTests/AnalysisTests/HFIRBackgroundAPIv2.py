@@ -7,27 +7,14 @@ from reduction_workflow.instruments.sans.hfir_command_interface import *
 import os
 
 def do_cleanup():
-    print "Cleaning up"
-    File1 = FileFinder.getFullPath("BioSANS_test_data_Iqxy.dat")
-    File2 = FileFinder.getFullPath("BioSANS_test_data_Iq.txt")
-    File3 = FileFinder.getFullPath("BioSANS_test_data_Iq.xml")
-    File4 = FileFinder.getFullPath("BioSANS_test_data_reduction.log")
-    print File1
-    if os.path.exists(File1):
-        os.remove(File1)
-        print "cleaned"
-    print File2
-    if os.path.exists(File2):
-        os.remove(File2)
-        print "cleaned"
-    print File3
-    if os.path.exists(File3):
-        os.remove(File3)
-        print "cleaned"
-    print File4
-    if os.path.exists(File4):
-        os.remove(File4)
-        print "cleaned"
+    Files = ["BioSANS_test_data_reduction.log",
+    "BioSANS_test_data_Iq.xml",
+    "BioSANS_test_data_Iq.txt",
+    "BioSANS_test_data_Iqxy.dat"]
+    for file in Files:
+        absfile = FileFinder.getFullPath(file)
+        if os.path.exists(absfile):
+            os.remove(absfile)
     return True
 
 class HFIRBackground(stresstesting.MantidStressTest):
