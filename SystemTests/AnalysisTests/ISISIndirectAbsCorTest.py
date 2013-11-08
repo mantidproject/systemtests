@@ -36,6 +36,12 @@ class CylAbsTest(stresstesting.MantidStressTest):
 #====================================================================================================
 class FltAbsTest(stresstesting.MantidStressTest):
 
+    def skipTests(self):
+        if is_supported_f2py_platform():
+            return False
+        else:
+            return True
+            
     def runTest(self):
         import IndirectAbsCor as Main
 
