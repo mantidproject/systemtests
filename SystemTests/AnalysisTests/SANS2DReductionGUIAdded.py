@@ -24,11 +24,13 @@ class SANS2DReductionGUIAddedFiles(sansgui.SANS2DGUIReduction):
         SANSadd2.add_runs(('22048','22048'),'SANS2D', '.nxs', rawTypes=('.add','.raw','.s*'), lowMem=False)
         SANSadd2.add_runs(('22023','22023'),'SANS2D', '.nxs', rawTypes=('.add','.raw','.s*'), lowMem=False)
         
-        self.loadSettings()
-        
-        # replace sample and can: 
+        # load values: 
+        i.SetCentre('155.45','-169.6','rear') 
+        i.SetCentre('155.45','-169.6','front')
         SCATTER_SAMPLE, logvalues = i.AssignSample(r'SANS2D00022048-add.nxs', reload = True, period = 1)
         SCATTER_SAMPLE, logvalues = i.AssignCan(r'SANS2D00022023-add.nxs', reload = True, period = 1)
+        i.TransmissionSample(r'SANS2D00022041.nxs', r'SANS2D00022024.nxs', period_t=1, period_d=1)
+        i.TransmissionCan(r'SANS2D00022024.nxs', r'SANS2D00022024.nxs', period_t=1, period_d=1)
 
         self.checkAfterLoad()
         
