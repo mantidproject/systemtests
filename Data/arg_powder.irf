@@ -1,0 +1,18 @@
+Instrumental resolution function for HRPD/ISIS L. Chapon 12/2003  ireso: 5
+! To be used with function NPROF=9 in FullProf  (Res=5)
+! ----------------------------------------------  Bank 1  
+!  Type of profile function: back-to-back exponentials * pseudo-Voigt
+NPROF 9
+!       Tof-min(us)    step      Tof-max(us)
+TOFRG   0.000          0.00000            0.000
+!        Dtt1           Dtt2       Zero
+D2TOF           7476.91000        -1.54000        -9.22700
+!     TOF-TWOTH of the bank
+TWOTH    0.000
+!       Sig-2     Sig-1     Sig-0
+SIGMA  0.000000       33.027000        3.032000
+!       Gam-2     Gam-1     Gam-0
+GAMMA          0.000000         2.604000         0.000000
+!          alph0       beta0       alph1       beta1
+ALFBE        0.000000         0.042210         0.597100         0.009460
+END
