@@ -4,7 +4,20 @@ from mantid.simpleapi import *
 from reduction_workflow.instruments.sans.sns_command_interface import *
 from mantid.api import *
 
+import os
+
+def do_cleanup():
+    absfile = FileFinder.getFullPath("EQSANS_4061_event_reduction.log")
+    if os.path.exists(absfile):
+        os.remove(absfile)
+    return True
+
 class EQSANSBeamCenter(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     def runTest(self):
         config = ConfigService.Instance()
         config["facilityName"]='SNS'
@@ -36,6 +49,11 @@ class EQSANSBeamCenter(stresstesting.MantidStressTest):
         return "EQSANS_4061_event_frame2_Iq", 'EQSANSBeamCenter.nxs'
 
 class EQSANSBeamCenterEvent(EQSANSBeamCenter):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     def runTest(self):
         config = ConfigService.Instance()
         config["facilityName"]='SNS'

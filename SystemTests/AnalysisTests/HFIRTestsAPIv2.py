@@ -11,6 +11,7 @@ from reduction_workflow.instruments.sans.hfir_command_interface import *
 import types
 import traceback
 import math
+import os
 
 # Set directory containing the test data, relative to the Mantid release directory.
 TEST_DIR = "."
@@ -95,8 +96,32 @@ def _check_result(ws, test_file, tolerance=1e-6):
  
     return passed
 
+def do_cleanup():
+    Files = ["GPSANS_reduction.log",
+    "BioSANS_exp61_scan0004_0001_Iq.txt",
+    "BioSANS_exp61_scan0004_0001_Iq.xml",
+    "BioSANS_exp61_scan0004_0001_Iqxy.dat",
+    "BioSANS_exp61_scan0004_0001_reduction.log",
+    "BioSANS_test_data_Iq.txt",
+    "BioSANS_test_data_Iq.xml",
+    "BioSANS_test_data_Iqxy.dat",
+    "BioSANS_test_data_reduction.log",
+    "test_data_Iq.txt",
+    "test_data_Iq.xml",
+    "test_data_Iqxy.dat",
+    "test_data_reduction.log"]
+    for file in Files:
+        absfile = FileFinder.getFullPath(file)
+        if os.path.exists(absfile):
+            os.remove(absfile)
+    return True
 
 class HFIRTestsAPIv2(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     def assertTrue(self, condition):
         if not condition:
             raise RuntimeError, "Condition failed"

@@ -1,15 +1,33 @@
 import stresstesting
 from mantid.simpleapi import *
+from mantid.api import FileFinder
+
+import os
 
 def getSaveDir():
         """determine where to save - the current working directory"""
         import os
         return os.path.abspath(os.path.curdir)
 
+def do_cleanup():
+    Files = ["PG3_9829.gsa",
+    "PG3_9829.py",
+    "PG3_9830.gsa",
+    "PG3_9830.py"]
+    for file in Files:
+        absfile = FileFinder.getFullPath(file)
+        if os.path.exists(absfile):
+            os.remove(absfile)
+    return True
+
 class PG3Analysis(stresstesting.MantidStressTest):
     ref_file  = 'PG3_4844_reference.gsa'
     cal_file  = "PG3_FERNS_d4832_2011_08_24.cal"
     char_file = "PG3_characterization_2011_08_31-HR.txt"
+
+    def cleanup(self):
+        do_cleanup()
+        return True
 
     def requiredFiles(self):
         files = [self.ref_file, self.cal_file, self.char_file] 
@@ -47,6 +65,10 @@ class PG3Analysis(stresstesting.MantidStressTest):
 class PG3StripPeaks(stresstesting.MantidStressTest):
     ref_file = 'PG3_4866_reference.gsa'
     cal_file  = "PG3_FERNS_d4832_2011_08_24.cal"
+
+    def cleanup(self):
+        do_cleanup()
+        return True
 
     def requiredFiles(self):
         files = [self.ref_file, self.cal_file]
@@ -148,6 +170,10 @@ class SeriesAndConjoinFilesTest(stresstesting.MantidStressTest):
     char_file  = "PG3_characterization_2012_02_23-HR-ILL.txt"
     ref_files  = ['PG3_9829_reference.gsa', 'PG3_9830_reference.gsa']
     data_files = ['PG3_9829_event.nxs', 'PG3_9830_event.nxs']
+
+    def cleanup(self):
+        do_cleanup()
+        return True
 
     def requiredMemoryMB(self):
         """Requires 3Gb"""

@@ -1,16 +1,24 @@
 import stresstesting
 from mantid.simpleapi import *
+from mantid.api import FileFinder
 from mantid import config
 import ISISCommandInterface as ici
 import SANSBatchMode as batch
 import SANSadd2 as sansadd
 
-import os.path
+import os
 
 class SANSAddBatch(stresstesting.MantidStressTest):
   output_file = '99630sannotrans'
   csv_file = 'input.csv'
   result = ''
+
+  def cleanup(self):
+    print "Cleanup"
+    absfile = FileFinder.getFullPath("input.csv")
+    if os.path.exists(absfile):
+      os.remove(absfile)
+    return True
 
   def runTest(self):
     #here we are testing the LOQ setup

@@ -3,7 +3,20 @@ from mantid.simpleapi import *
 from reduction_workflow.instruments.sans.sns_command_interface import *
 from mantid.api import *
 
+import os
+
+def do_cleanup():
+    absfile = FileFinder.getFullPath("EQSANS_1466_event_reduction.log")
+    if os.path.exists(absfile):
+        os.remove(absfile)
+        print "cleaned"
+    return True
+
 class EQSANSSolid(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
     """
         Analysis Tests for EQSANS
         Testing that the I(Q) output of is correct 
@@ -43,6 +56,10 @@ class EQSANSSolid(stresstesting.MantidStressTest):
         return "EQSANS_1466_event_Iq", 'EQSANSSolid.nxs'
 
 class EQSANSSolidEvent(EQSANSSolid):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
     """
         Analysis Tests for EQSANS
         Testing that the I(Q) output of is correct 

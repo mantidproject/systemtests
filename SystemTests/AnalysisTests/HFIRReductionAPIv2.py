@@ -1,9 +1,28 @@
 import stresstesting
 import mantid
+from mantid.api import FileFinder
 from mantid.simpleapi import *
 from reduction_workflow.instruments.sans.hfir_command_interface import *
 
+import os
+
+def do_cleanup():
+    Files = ["BioSANS_test_data_reduction.log",
+    "BioSANS_test_data_Iq.xml",
+    "BioSANS_test_data_Iq.txt",
+    "BioSANS_test_data_Iqxy.dat"]
+    for file in Files:
+        absfile = FileFinder.getFullPath(file)
+        if os.path.exists(absfile):
+            os.remove(absfile)
+    return True
+
 class HFIRReductionAPIv2(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     """
         Simple reduction example
     """
@@ -28,6 +47,11 @@ class HFIRReductionAPIv2(stresstesting.MantidStressTest):
         return "BioSANS_test_data_Iq", "HFIRReduction.nxs"
 
 class HFIRAbsoluteScalingReference(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     """
         Test absolute scaling using a reference data set
     """
@@ -52,6 +76,11 @@ class HFIRAbsoluteScalingReference(stresstesting.MantidStressTest):
         return "BioSANS_test_data_Iq", "HFIRAbsoluteScalingReference.nxs"
 
 class HFIRAbsoluteScalingValue(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     """
         Test absolute scaling using a reference data set
     """

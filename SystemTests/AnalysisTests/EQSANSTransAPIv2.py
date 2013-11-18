@@ -4,7 +4,23 @@ from mantid.simpleapi import *
 from reduction_workflow.instruments.sans.sns_command_interface import *
 from mantid.api import *
 
+import os
+
+def do_cleanup():
+    Files = ["EQSANS_4061_event_reduction.log",
+    "EQSANS_1466_event_reduction.log"]
+    for file in Files:
+        absfile = FileFinder.getFullPath(file)
+        if os.path.exists(absfile):
+            os.remove(absfile)
+    return True
+
 class EQSANSTransmission(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     def runTest(self):
         config = ConfigService.Instance()
         config["facilityName"]='SNS'
@@ -34,7 +50,12 @@ class EQSANSTransmission(stresstesting.MantidStressTest):
         self.disableChecking.append('Axes')
         return "EQSANS_1466_event_Iq", 'EQSANSTrans.nxs'
 
-class EQSANSTransmissionEvent(EQSANSTransmission):    
+class EQSANSTransmissionEvent(EQSANSTransmission):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     def runTest(self):
         config = ConfigService.Instance()
         config["facilityName"]='SNS'
@@ -65,6 +86,11 @@ class EQSANSTransmissionEvent(EQSANSTransmission):
 
 
 class EQSANSTransmissionDC(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     def runTest(self):
         """
             Check that EQSANSTofStructure returns the correct workspace
@@ -98,6 +124,11 @@ class EQSANSTransmissionDC(stresstesting.MantidStressTest):
         return "EQSANS_1466_event_Iq", 'EQSANSTransmissionDC.nxs'
 
 class EQSANSTransmissionCompatibility(EQSANSTransmission):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     """
         Analysis Tests for EQSANS
         Check that the transmission correction can be applied if the 
@@ -133,7 +164,11 @@ class EQSANSTransmissionCompatibility(EQSANSTransmission):
         return "EQSANS_1466_event_Iq", 'EQSANSTransmissionCompatibility.nxs'
 
 class EQSANSTransmissionFS(stresstesting.MantidStressTest):
-    
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     def runTest(self):
         """
             Check that EQSANSTofStructure returns the correct workspace
@@ -161,7 +196,11 @@ class EQSANSTransmissionFS(stresstesting.MantidStressTest):
         return "EQSANS_4061_event_frame1_Iq", 'EQSANSTransmissionFS.nxs' 
     
 class EQSANSDirectTransFS(stresstesting.MantidStressTest):
-    
+
+    def cleanup(self):
+        do_cleanup()
+        return True
+
     def runTest(self):
         """
             Check that EQSANSTofStructure returns the correct workspace

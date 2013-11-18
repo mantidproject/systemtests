@@ -4,7 +4,16 @@ from mantid.simpleapi import *
 from reduction_workflow.instruments.sans.sns_command_interface import *
 from mantid.api import *
 
+import os
+
 class EQSANSDarkCurrent(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        absfile = FileFinder.getFullPath("EQSANS_1466_event_reduction.log")
+        if os.path.exists(absfile):
+            os.remove(absfile)
+        return True
+
     """
         Analysis Tests for EQSANS
         Testing that the I(Q) output of is correct 

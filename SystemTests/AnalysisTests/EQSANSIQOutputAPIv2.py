@@ -3,8 +3,24 @@ import math
 import mantid
 from mantid.simpleapi import *
 from reduction_workflow.instruments.sans.sns_command_interface import *
+from mantid.api import *
+
+import os
+
+def do_cleanup():
+    Files = ["EQSANS_4061_event_reduction.log",
+    "EQSANS_1466_event_reduction.log"]
+    for file in Files:
+        absfile = FileFinder.getFullPath(file)
+        if os.path.exists(absfile):
+            os.remove(absfile)
+    return True
 
 class EQSANSIQOutput(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
     """
         Analysis Tests for EQSANS
         Testing that the I(Q) output of is correct 
@@ -43,6 +59,10 @@ class EQSANSIQOutput(stresstesting.MantidStressTest):
         return "EQSANS_1466_event_Iq", 'EQSANSIQOutput.nxs'
 
 class EQSANSBeamMonitor(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
     """
         Analysis Tests for EQSANS
         Testing that the I(Q) output of is correct 
@@ -69,6 +89,10 @@ class EQSANSBeamMonitor(stresstesting.MantidStressTest):
         return "EQSANS_1466_event_Iq", 'EQSANSBeamMonitor.nxs'
 
 class EQSANSDQPositiveOutput(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
     """
         Analysis Tests for EQSANS
         Testing that the Q resolution output of is correct 
@@ -102,6 +126,10 @@ class EQSANSDQPositiveOutput(stresstesting.MantidStressTest):
         return True
     
 class EQSANSDQOutput(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
     """
         Analysis Tests for EQSANS
         Testing that the Q resolution output of is correct 
@@ -164,6 +192,10 @@ class EQSANSDQOutput(stresstesting.MantidStressTest):
         return output
     
 class EQSANSDQOutput_FS(stresstesting.MantidStressTest):
+
+    def cleanup(self):
+        do_cleanup()
+        return True
     """
         Analysis Tests for EQSANS
         Testing that the Q resolution output of is correct 
