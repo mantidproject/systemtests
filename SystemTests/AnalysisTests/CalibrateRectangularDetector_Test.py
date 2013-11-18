@@ -16,6 +16,8 @@ def _skip_test():
         return True
 
 class PG3Calibration(stresstesting.MantidStressTest):
+    def cleanup(self):
+        os.remove(self.saved_cal_file)
 
     def skipTests(self):
         return _skip_test()
@@ -56,6 +58,8 @@ class PG3Calibration(stresstesting.MantidStressTest):
         return ('PG3_2538_offsets','PG3_2538_golden_offsets')
 
 class PG3CCCalibration(stresstesting.MantidStressTest):
+    def cleanup(self):
+        os.remove(self.saved_cal_file)
 
     def skipTests(self):
         return _skip_test()
