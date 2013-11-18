@@ -13,7 +13,7 @@ import SANS2DReductionGUI as sansgui
 class SANS2DGUISearchCentre(sansgui.SANS2DGUIReduction):
 
   def checkCentreResult(self):
-      self.checkFloat(i.ReductionSingleton().get_beam_center('rear')[0], 0.150)
+      self.checkFloat(i.ReductionSingleton().get_beam_center('rear')[0], 0.165)
       self.checkFloat(i.ReductionSingleton().get_beam_center('rear')[1], -0.145 )
 
   def runTest(self):

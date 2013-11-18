@@ -200,14 +200,47 @@ class LOQReductionOnLoadedWorkspaceMustProduceTheSameResult_1(stresstesting.Mant
         WavRangeReduction(3, 9, DefaultTrans)
     
     def validate(self):
+        return '54431main_1D_3.0_9.0','LOQCentreNoGravSearchCentreFixed.nxs'
+
+class LOQReductionOnLoadedWorkspaceMustProduceTheSameResult_2(stresstesting.MantidStressTest):
+    """Before ticket #8461 test LOQReductionOnLoadedWorkspaceMustProduceTheSameResult_1 used
+    to produce a workspace that matches LOQCentreNoGrav.nxs. This test is created to ensure
+    that if we put the same centre that was produced before, we finish in the same result
+    for the reduction"""
+    def runTest(self):
+        config["default.instrument"] = "LOQ"
+        LOQ()
+
+        Set1D()
+        Detector("rear-detector")
+        MaskFile('MASK.094AA')
+        Gravity(False)
+        Sample = LoadRaw('54431.raw')
+        Trans_Sample = LoadRaw('54435.raw')
+        Trans_Direct = LoadRaw('54433.raw')
+        Can = LoadRaw('54432.raw')
+        CanTrans_Sample = LoadRaw('54434.raw')
+        CanTrans_Direct = LoadRaw('54433.raw')
+        
+        SetCentre(324.765, 327.670)
+
+        AssignSample(Sample, False)
+        TransmissionSample(Trans_Sample, Trans_Direct, False)
+        AssignCan(Can, False)
+        TransmissionCan(CanTrans_Sample, CanTrans_Direct, False)
+        
+        WavRangeReduction(3, 9, DefaultTrans)
+
+    def validate(self):
         # Need to disable checking of the Spectra-Detector map becauseit isn't
         # fully saved out to the nexus file (it's limited to the spectra that
         # are actually present in the saved workspace).
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Axes')
         self.disableChecking.append('Instrument')
-        
+
         return '54431main_1D_3.0_9.0','LOQCentreNoGrav.nxs'
+    
 
 class SANSLOQCan2DReloadWorkspace(stresstesting.MantidStressTest):
     
