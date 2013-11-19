@@ -41,7 +41,7 @@ class FltAbsTest(stresstesting.MantidStressTest):
             return False
         else:
             return True
-
+            
     def runTest(self):
         import IndirectAbsCor as Main
 
