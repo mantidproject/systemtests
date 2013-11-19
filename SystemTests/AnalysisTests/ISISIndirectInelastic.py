@@ -95,7 +95,7 @@ class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
         '''Performs the validation for the generalised case of multiple results
         and multiple reference files.
         '''
-        self.tolerance = 1e-5
+        self.tolerance = 1e-7
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Instrument')
         self.disableChecking.append('Axes')
