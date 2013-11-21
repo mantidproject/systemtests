@@ -70,7 +70,6 @@ class BuildSQWTest(stresstesting.MantidStressTest):
                 os.remove(target)
 
             print "Converting '%s' to '%s' " % (source_path,target)
-
             _cur_spe_ws = LoadNXSPE(Filename=source_path)
             SetUB(Workspace=_cur_spe_ws,a='2.87',b='2.87',c='2.87')
             # rotated by proper number of degrees around axis Y
@@ -89,7 +88,7 @@ class BuildSQWTest(stresstesting.MantidStressTest):
         # Do the final merge
         sqw_file = os.path.join(config["defaultsave.directory"],"BuildSQWTestCurrent.nxs")
         finalSQW = MergeMDFiles(",".join(self._created_files),OutputFilename=sqw_file,Parallel='0')
-        #self._created_files.append(sqw_file)
+        self._created_files.append(sqw_file)
 
     def validate(self):
         # LoadMD is unable to load the merged output file. See ticket #8480.
