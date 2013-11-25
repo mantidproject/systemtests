@@ -151,6 +151,10 @@ class LoadSampleTestStressTest(stresstesting.MantidStressTest):
         res = runner.run(suite)
         if res.wasSuccessful():
             self._success = True
+
+    def requiredMemoryMB(self):
+        return 2000
+
     def validate(self):
         return self._success
                       
