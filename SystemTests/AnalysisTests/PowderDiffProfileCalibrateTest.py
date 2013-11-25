@@ -124,7 +124,8 @@ class VulcanSeqRefineProfileFromScratch(stresstesting.MantidStressTest):
                 Parameters2Refine = "Alph0",
                 NumRefineCycles = 1000,
                 ProfileType = "Neutron Back-to-back exponential convoluted with psuedo-voigt",
-                BackgroundType = "FullprofPolynomial")
+                BackgroundType = "FullprofPolynomial",
+                ProjectID = "IDx890")
 
         # Refine step 1
         api.RefinePowderDiffProfileSeq(
@@ -140,7 +141,8 @@ class VulcanSeqRefineProfileFromScratch(stresstesting.MantidStressTest):
                 Parameters2Refine = "Alph0",
                 NumRefineCycles = 1000,
                 ProfileType = "Neutron Back-to-back exponential convoluted with psuedo-voigt",
-                BackgroundType = "FullprofPolynomial")
+                BackgroundType = "FullprofPolynomial",
+                ProjectID = "IDx890")
 
 
         # Refine step 2
@@ -158,7 +160,7 @@ class VulcanSeqRefineProfileFromScratch(stresstesting.MantidStressTest):
                 NumRefineCycles = 100,
                 # ProfileType = "Neutron Back-to-back exponential convoluted with psuedo-voigt",
                 # BackgroundType = "FullprofPolynomial"
-                )
+                ProjectID = "IDx890")
 
 
         # Refine step 3 (not from previous cycle)
@@ -172,16 +174,15 @@ class VulcanSeqRefineProfileFromScratch(stresstesting.MantidStressTest):
                 Parameters2Refine = "Beta0, Beta1",
                 NumRefineCycles = 100,
                 FromStep = 1,
-                )
+                ProjectID = "IDx890")
 
         # Save
         api.RefinePowderDiffProfileSeq(
                 InputWorkspace      = "VULCAN_22946_NOM",
                 SeqControlInfoWorkspace = "RecordIDx890Table",
                 FunctionOption = "Save", 
-                OutputProjectFilename = "/tmp/temp.nxs"
-                )
-
+                OutputProjectFilename = "temp991.nxs",
+                ProjectID = "IDx890")
 
         return
         
@@ -209,7 +210,8 @@ class VulcanSeqRefineProfileLoadPlus(stresstesting.MantidStressTest):
         # Load
         api.RefinePowderDiffProfileSeq(
                 FunctionOption = "Load", 
-                InputProjectFilename = self.seqfile)
+                InputProjectFilename = self.seqfile,
+                ProjectID = "IDx890")
 
         # Refine step 4
         api.RefinePowderDiffProfileSeq(
@@ -220,7 +222,8 @@ class VulcanSeqRefineProfileLoadPlus(stresstesting.MantidStressTest):
                 FunctionOption = "Refine", # or "Refine"
                 RefinementOption = "Random Walk",
                 Parameters2Refine = "Alph1",
-                NumRefineCycles = 200)
+                NumRefineCycles = 200,
+                ProjectID = "IDx890")
 
 
     def validateMethod(self):
