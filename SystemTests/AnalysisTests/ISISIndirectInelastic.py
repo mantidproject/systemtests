@@ -419,7 +419,7 @@ class ISISIndirectInelasticDiagnostics(ISISIndirectInelasticBase):
 
 #------------------------- OSIRIS tests ---------------------------------------
 
-class OSIRISDiagnostics(ISISIndirectInelasticDiagnostics):
+class IRISDiagnostics(ISISIndirectInelasticDiagnostics):
 
     def __init__(self):
         ISISIndirectInelasticDiagnostics.__init__(self)
@@ -429,11 +429,11 @@ class OSIRISDiagnostics(ISISIndirectInelasticDiagnostics):
         self.suffix = 'graphite002'
     
     def get_reference_files(self):
-        return ["II.OSIRISDiagnostics.nxs"]
+        return ["II.IRISDiagnostics.nxs"]
 
 #------------------------- IRIS tests -----------------------------------------
 
-class IRISDiagnostics(ISISIndirectInelasticDiagnostics):
+class OSIRISDiagnostics(ISISIndirectInelasticDiagnostics):
 
     def __init__(self):
         ISISIndirectInelasticDiagnostics.__init__(self)
@@ -443,7 +443,7 @@ class IRISDiagnostics(ISISIndirectInelasticDiagnostics):
         self.suffix = 'graphite002'
     
     def get_reference_files(self):
-        return ["II.IRISDiagnostics.nxs"]
+        return ["II.OSIRISDiagnostics.nxs"]
         
 
 #==============================================================================
