@@ -121,9 +121,9 @@ class VulcanSeqRefineProfileFromScratch(stresstesting.MantidStressTest):
                 EndX = 33000.,
                 FunctionOption = "Setup", # or "Refine"
                 RefinementOption = "Random Walk",
-                Parameters2Refine = "Alph0",
+                ParametersToRefine = "Alph0",
                 NumRefineCycles = 1000,
-                ProfileType = "Neutron Back-to-back exponential convoluted with psuedo-voigt",
+                ProfileType = "Neutron Back-to-back exponential convoluted with pseudo-voigt",
                 BackgroundType = "FullprofPolynomial",
                 ProjectID = "IDx890")
 
@@ -138,9 +138,9 @@ class VulcanSeqRefineProfileFromScratch(stresstesting.MantidStressTest):
                 EndX = 33000.,
                 FunctionOption = "Refine", # or "Refine"
                 RefinementOption = "Random Walk",
-                Parameters2Refine = "Alph0",
+                ParametersToRefine = "Alph0",
                 NumRefineCycles = 1000,
-                ProfileType = "Neutron Back-to-back exponential convoluted with psuedo-voigt",
+                ProfileType = "Neutron Back-to-back exponential convoluted with pseudo-voigt",
                 BackgroundType = "FullprofPolynomial",
                 ProjectID = "IDx890")
 
@@ -156,7 +156,7 @@ class VulcanSeqRefineProfileFromScratch(stresstesting.MantidStressTest):
                 EndX = 33000.,
                 FunctionOption = "Refine", # or "Refine"
                 RefinementOption = "Random Walk",
-                Parameters2Refine = "Beta0, Beta1",
+                ParametersToRefine = "Beta0, Beta1",
                 NumRefineCycles = 100,
                 # ProfileType = "Neutron Back-to-back exponential convoluted with psuedo-voigt",
                 # BackgroundType = "FullprofPolynomial"
@@ -171,7 +171,7 @@ class VulcanSeqRefineProfileFromScratch(stresstesting.MantidStressTest):
                 EndX = 33000.,
                 FunctionOption = "Refine", # or "Refine"
                 RefinementOption = "Random Walk",
-                Parameters2Refine = "Beta0, Beta1",
+                ParametersToRefine = "Beta0, Beta1",
                 NumRefineCycles = 100,
                 FromStep = 1,
                 ProjectID = "IDx890")
@@ -221,7 +221,7 @@ class VulcanSeqRefineProfileLoadPlus(stresstesting.MantidStressTest):
                 EndX = 33000.,
                 FunctionOption = "Refine", # or "Refine"
                 RefinementOption = "Random Walk",
-                Parameters2Refine = "Alph1",
+                ParametersToRefine = "Alph1",
                 NumRefineCycles = 200,
                 ProjectID = "IDx890")
 
