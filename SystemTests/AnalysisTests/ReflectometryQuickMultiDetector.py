@@ -7,24 +7,19 @@ class ReflectometryQuickMultiDetector(stresstesting.MantidStressTest):
     This is a system test for the top-level quick routines. Quick is the name given to the 
     ISIS reflectometry reduction scripts.
     
+    This test uses the multidetector functionality within the script. No transmission runs are passed, so it uses correction algorithms instead.
     """
     
     def runTest(self):
-        defaultInstKey = 'default.instrument'
-        defaultInstrument = config[defaultInstKey]
-        try:
-            config[defaultInstKey] = 'INTER'
-            LoadISISNexus(Filename='13463', OutputWorkspace='13463')
-            LoadISISNexus(Filename='13464', OutputWorkspace='13464')
-            LoadISISNexus(Filename='13460', OutputWorkspace='13460')
-    
-            transmissionRuns = '13463,13464'
-            runNo = '13460'
-            incidentAngle = 0.7
-            quick.quick(runNo, trans=transmissionRuns, theta=incidentAngle) 
-        finally:
-            config[defaultInstKey] = defaultInstrument
+        workspace_name = "POLREF4699"
+        workspace_nexus_file = workspace_name + ".nxs"
+        ws = Load(workspace_nexus_file, OutputWorkspace=workspace_name)
+        
+        first_ws = ws[0]
+        
+        quick.quick_explicit(first_ws, i0_monitor_index=0, lambda_min=0.8, lambda_max=14.5,  background_min=0.8, background_max=14.5, int_min=0.8, int_max=14.5,
+                   point_detector_start=0, point_detector_stop=245, multi_detector_start=1, theta=0, pointdet=False,  roi=[74,74], db=[28,28])
             
     def validate(self):
         self.disableChecking.append('Instrument')
-        return '13460_IvsQ','QuickReferenceResult.nxs'
+        return '4699_IvsQ','4699_IvsQ_Result.nxs'
