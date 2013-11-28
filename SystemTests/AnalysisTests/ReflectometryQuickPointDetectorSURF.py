@@ -3,8 +3,7 @@ from mantid.simpleapi import *
 from isis_reflectometry import quick
 reload(quick)
 
-#class ReflectometryQuick(object):
-class ReflectometryQuick(stresstesting.MantidStressTest):
+class ReflectometryQuickPointDetectorSURF(stresstesting.MantidStressTest):
     """
     This is a system test for the top-level quick routines. Quick is the name given to the 
     ISIS reflectometry reduction scripts.
