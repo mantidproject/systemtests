@@ -45,6 +45,7 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'testCansas1DMultiEntry.xml',
                 'Wish_Diffuse_Scattering_ISAW_UB.mat',
                 'WSH_test.dat',
+                'SANS2D_multiPeriodTests.csv',
                 'SANS2D_periodTests.csv'
                 ]
 
