@@ -13,7 +13,7 @@ class ReflectometryQuickPointDetectorSURF(stresstesting.MantidStressTest):
     def runTest(self):
         defaultInstKey = 'default.instrument'
         defaultInstrument = config[defaultInstKey]
-        try
+        try:
             config[defaultInstKey] = 'SURF'
             LoadISISNexus(Filename='102951', OutputWorkspace='102951')
             LoadISISNexus(Filename='102935', OutputWorkspace='102935')
