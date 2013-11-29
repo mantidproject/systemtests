@@ -638,7 +638,12 @@ class TestSuite(object):
     '''
     def __init__(self, modname, testname, filename = None):
         self._modname = modname
-        self._fullname = modname + '.' + testname
+        self._fullname = modname
+        # A None testname indicates the source did not load properly
+        # It has come this far so that it gets reported as a proper failure
+        # by the framework
+        if testname is not None:
+            self._fullname += '.' + testname
 
         self._result = TestResult()
         # Add some results that are not linked to the actually test itself
@@ -673,8 +678,6 @@ class TestSuite(object):
 
     def execute(self, runner):
         print time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime()) + ': Executing ' + self._fullname
-        #         + 'from stresstesting import MantidStressTest\n'\
-        #         + "if not issubclass(" + self._fullname + ", MantidStressTest): sys.exit("+str(PythonTestRunner.NOT_A_TEST)+")\n"\
         pycode = 'import ' + self._modname + ';'\
                  + 'systest = ' + self._fullname + '();'\
                  + 'systest.execute();'\
@@ -844,8 +847,10 @@ class TestManager(object):
                 if self.isValidTestClass(value):
                     test_name = key
                     tests.append(TestSuite(modname, test_name, filename))
-        except RuntimeError:
-            pass
+        except Exception:
+            # Error loading the source, add fake unnamed test so that an error
+            # will get generated when the tests are run and it will be counted properly
+            tests.append(TestSuite(modname, None, filename))
         finally:
             pyfile.close()
         return tests
