@@ -46,7 +46,11 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'Wish_Diffuse_Scattering_ISAW_UB.mat',
                 'WSH_test.dat',
                 'SANS2D_multiPeriodTests.csv',
-                'SANS2D_periodTests.csv'
+                'SANS2D_periodTests.csv',
+                'MANTID_FLAT_CELL.115',
+                'MaskLOQData.txt',
+                'DIRECTHAB.983',
+                'loq_batch_mode_reduction.csv'
                 ]
 
 EXPECTED_EXT = '.expected'
