@@ -1,0 +1,18 @@
+Instrumental resolution function for VULCAN  ireso: 5
+! To be used with function NPROF=9 in FullProf (Res=5)
+! ----------------------------------------------------  Bank 1
+!  Type of profile function: back-to-back expon * pseudo-Voigt
+NPROF   9
+!       Tof-min(us)    step      Tof-max(us)
+TOFRG   7000.0000      6.0000   34972.00000
+!        Dtt1           Dtt2       Zero
+D2TOF    16373.989      -0.424    0.000
+!     TOF-TWOTH of the bank
+TWOTH    270.00
+!       Sig-2     Sig-1     Sig-0
+SIGMA   91.127    993.725      0.000
+!       Gam-2     Gam-1     Gam-0
+GAMMA   0.000     0.000   0.000
+!          alph0       beta0       alph1       beta1
+ALFBE    0.100000    0.109036    0.000000    0.009834
+END
