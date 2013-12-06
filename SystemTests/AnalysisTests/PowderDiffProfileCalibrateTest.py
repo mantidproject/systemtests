@@ -37,8 +37,8 @@ class VulcanExamineProfile(stresstesting.MantidStressTest):
                 InstrumentParameterWorkspace='Arg_Bank1', BraggPeakParameterWorkspace='ReflectionTable')
 
         # run the actual code
-	ExaminePowderDiffProfile(
-	    InputWorkspace      = 'arg_si',
+        ExaminePowderDiffProfile(
+            InputWorkspace      = 'arg_si',
             StartX              = 1990.,
             EndX                = 29100.,
             ProfileType         = 'Back-to-back exponential convoluted with PseudoVoigt',
@@ -51,7 +51,7 @@ class VulcanExamineProfile(stresstesting.MantidStressTest):
 
 
         # load output gsas file and the golden one
-	Load(Filename = "Arg_Si_ref.nxs", OutputWorkspace = "Arg_Si_golden")
+        Load(Filename = "Arg_Si_ref.nxs", OutputWorkspace = "Arg_Si_golden")
 
     def validateMethod(self):
         self.tolerance=1.0e-6
