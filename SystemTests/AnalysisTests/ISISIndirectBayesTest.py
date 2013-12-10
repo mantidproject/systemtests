@@ -290,14 +290,14 @@ class JumpCETest(stresstesting.MantidStressTest):
     def runTest(self):
         from IndirectJumpFit import JumpRun
         sname = 'iris21360_graphite002_QLd_Workspace'
-        qrange = [0.0, 5.0]
+        qrange = [0.6, 1.0]
         verbOp = False
         plotOp = False
         saveOp = False
 
         filename = sname+'.nxs' # path name for nxs file
         LoadNexusProcessed(Filename=filename, OutputWorkspace=sname)
-        JumpRun(sname,'CE',0,qrange[0],qrange[1],verbOp,plotOp,saveOp)
+        JumpRun(sname,'CE',1,qrange[0],qrange[1],verbOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-5 
@@ -313,14 +313,14 @@ class JumpSSTest(stresstesting.MantidStressTest):
     def runTest(self):
         from IndirectJumpFit import JumpRun
         sname = 'iris21360_graphite002_QLd_Workspace'
-        qrange = [0.0, 5.0]
+        qrange = [0.6, 1.0]
         verbOp = False
         plotOp = False
         saveOp = False
 
         path = sname+'.nxs'  # path name for nxs file
         LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
-        JumpRun(sname,'SS',0,qrange[0],qrange[1],verbOp,plotOp,saveOp)
+        JumpRun(sname,'SS',1,qrange[0],qrange[1],verbOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-5 
@@ -328,6 +328,52 @@ class JumpSSTest(stresstesting.MantidStressTest):
 
     def cleanup(self):
         filenames = ['irs26176_graphite002_QLr_SSfit_FW11.lpt']
+        _cleanup_files(config['defaultsave.directory'], filenames)
+
+#=============================================================================
+class JumpFickTest(stresstesting.MantidStressTest):
+
+    def runTest(self):
+        from IndirectJumpFit import JumpRun
+        sname = 'iris21360_graphite002_QLd_Workspace'
+        qrange = [0.6, 1.0]
+        verbOp = False
+        plotOp = False
+        saveOp = False
+
+        path = sname+'.nxs'  # path name for nxs file
+        LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
+        JumpRun(sname,'Fick',1,qrange[0],qrange[1],verbOp,plotOp,saveOp)
+
+    def validate(self):
+        self.tolerance = 1e-5 
+        return 'iris21360_graphite002_QLd_Fickfit_Workspace','ISISIndirectBayes_JumpFickTest.nxs'
+
+    def cleanup(self):
+        filenames = ['irs26176_graphite002_QLr_Fickfit_FW11.lpt']
+        _cleanup_files(config['defaultsave.directory'], filenames)
+
+#=============================================================================
+class JumpTeixeiraTest(stresstesting.MantidStressTest):
+
+    def runTest(self):
+        from IndirectJumpFit import JumpRun
+        sname = 'iris21360_graphite002_QLd_Workspace'
+        qrange = [0.6, 1.0]
+        verbOp = False
+        plotOp = False
+        saveOp = False
+
+        path = sname+'.nxs'  # path name for nxs file
+        LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
+        JumpRun(sname,'Teixeira',1,qrange[0],qrange[1],verbOp,plotOp,saveOp)
+
+    def validate(self):
+        self.tolerance = 1e-5 
+        return 'iris21360_graphite002_QLd_Teixeirafit_Workspace','ISISIndirectBayes_JumpTeixeiraTest.nxs'
+
+    def cleanup(self):
+        filenames = ['irs26176_graphite002_QLr_Teixeirafit_FW11.lpt']
         _cleanup_files(config['defaultsave.directory'], filenames)
 
 #=============================================================================
