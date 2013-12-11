@@ -111,24 +111,39 @@ class VesuvioTests(unittest.TestCase):
         self.assertEqual(1, len(param))
         self.assertAlmostEqual(-0.4157, param[0],places=4)
 
-    def _run_load(self, runs, spectra, diff_opt, ip_file=""):
+    def test_sumspectra_set_to_true_gives_single_spectra_summed_over_all_inputs(self):
+        self._run_load("14188", "135-142", "SingleDifference","IP0005.dat",sum=True)
+        evs_raw = mtd[self.ws_name]
+
+        # Verify
+        self.assertEquals(1, evs_raw.getNumberHistograms())
+        self.assertAlmostEqual(-1.5288171762918328, evs_raw.readY(0)[0], places=DIFF_PLACES)
+        self.assertAlmostEqual(-0.079412793053402098, evs_raw.readY(0)[-1], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.52109203357613976, evs_raw.readE(0)[0], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.10617318614513051, evs_raw.readE(0)[-1], places=DIFF_PLACES)
+
+
+    def _run_load(self, runs, spectra, diff_opt, ip_file="", sum=False):
         LoadVesuvio(Filename=runs,OutputWorkspace=self.ws_name,
-            SpectrumList=spectra,Mode=diff_opt,InstrumentParFile=ip_file)
+                    SpectrumList=spectra,Mode=diff_opt,InstrumentParFile=ip_file,
+                    SumSpectra=sum)
 
         self._do_ads_check(self.ws_name)
 
-        def expected_size(str_param):
-            if "-" in str_param:
-                elements = str_param.split("-")
+        def expected_size():
+            if sum:
+                return 1
+            elif "-" in spectra:
+                elements = spectra.split("-")
                 min,max=(int(elements[0]), int(elements[1]))
                 return max - min + 1
-            elif "," in str_param:
-                elements = str_param.strip().split(",")
+            elif "," in spectra:
+                elements = spectra.strip().split(",")
                 return len(elements)
             else:
                 return 1
 
-        self._do_size_check(self.ws_name, expected_size(spectra))
+        self._do_size_check(self.ws_name, expected_size())
         loaded_data = mtd[self.ws_name]
         if "Difference" in diff_opt:
             self.assertTrue(not loaded_data.isHistogramData())
