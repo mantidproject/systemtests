@@ -369,7 +369,7 @@ class JumpTeixeiraTest(stresstesting.MantidStressTest):
         JumpRun(sname,'Teixeira',1,qrange[0],qrange[1],verbOp,plotOp,saveOp)
 
     def validate(self):
-        self.tolerance = 1e-5 
+        self.tolerance = 1e-2
         return 'iris21360_graphite002_QLd_Teixeirafit_Workspace','ISISIndirectBayes_JumpTeixeiraTest.nxs'
 
     def cleanup(self):
