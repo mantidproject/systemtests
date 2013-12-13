@@ -303,10 +303,6 @@ class JumpCETest(stresstesting.MantidStressTest):
         self.tolerance = 1e-5 
         return 'iris21360_graphite002_QLd_CEfit_Workspace','ISISIndirectBayes_JumpCETest.nxs'
 
-    def cleanup(self):
-        filenames = ['irs26176_graphite002_QLr_CEfit_FW11.lpt']
-        _cleanup_files(config['defaultsave.directory'], filenames)
-
 #=============================================================================
 class JumpSSTest(stresstesting.MantidStressTest):
 
@@ -325,10 +321,6 @@ class JumpSSTest(stresstesting.MantidStressTest):
     def validate(self):
         self.tolerance = 1e-5 
         return 'iris21360_graphite002_QLd_SSfit_Workspace','ISISIndirectBayes_JumpSSTest.nxs'
-
-    def cleanup(self):
-        filenames = ['irs26176_graphite002_QLr_SSfit_FW11.lpt']
-        _cleanup_files(config['defaultsave.directory'], filenames)
 
 #=============================================================================
 class JumpFickTest(stresstesting.MantidStressTest):
@@ -349,10 +341,6 @@ class JumpFickTest(stresstesting.MantidStressTest):
         self.tolerance = 1e-5 
         return 'iris21360_graphite002_QLd_Fickfit_Workspace','ISISIndirectBayes_JumpFickTest.nxs'
 
-    def cleanup(self):
-        filenames = ['irs26176_graphite002_QLr_Fickfit_FW11.lpt']
-        _cleanup_files(config['defaultsave.directory'], filenames)
-
 #=============================================================================
 class JumpTeixeiraTest(stresstesting.MantidStressTest):
 
@@ -371,9 +359,5 @@ class JumpTeixeiraTest(stresstesting.MantidStressTest):
     def validate(self):
         self.tolerance = 1e-2
         return 'iris21360_graphite002_QLd_Teixeirafit_Workspace','ISISIndirectBayes_JumpTeixeiraTest.nxs'
-
-    def cleanup(self):
-        filenames = ['irs26176_graphite002_QLr_Teixeirafit_FW11.lpt']
-        _cleanup_files(config['defaultsave.directory'], filenames)
 
 #=============================================================================
