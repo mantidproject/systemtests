@@ -1,5 +1,6 @@
 from mantid.simpleapi import *
 from mantid.api import FrameworkManager
+import copy
 import os
 import re
 import stresstesting
@@ -47,6 +48,9 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'WSH_test.dat',
                 'SANS2D_multiPeriodTests.csv',
                 'SANS2D_periodTests.csv',
+                'DIRECTM1_15785_12m_31Oct12_v12.dat',
+                'MaskSANS2DReductionGUI.txt',
+                'sans2d_reduction_gui_batch.csv'
                 'MANTID_FLAT_CELL.115',
                 'MaskLOQData.txt',
                 'DIRECTHAB.983',
@@ -67,6 +71,15 @@ BANNED_REGEXP = [r'SANS2D\d+.log$',
                  r'.*\.hkl',
                  r'EVS.*\.raw',
                  r'.*_pulseid\.dat']
+
+# This list stores files that will be loaded first.
+# Implemented as simple solution to avoid failures on 
+# WinXP where small files have trouble allocating larger
+# amounts of contiguous memory.
+# Usage of XP is getting lower so we don't want to compromise the
+# performance of the code elsewhere just to pass here
+PRIORITY_FILES = ['ILLIN5_Sample_096003.nxs',
+                  'ILLIN5_Vana_095893.nxs']
 
 def useDir(direc):
     """Only allow directories that aren't test output or 
@@ -107,14 +120,32 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
         # Files and their corresponding sizes. the low-memory win machines
         # fair better loading the big files first
         files = {}
+        priority_abspaths = copy.deepcopy(PRIORITY_FILES)
         for direc in dirs:
             myFiles = os.listdir(direc)
             for filename in myFiles:
-                (good, filename) = useFile(direc, filename)
+                (good, fullpath) = useFile(direc, filename)
                 #print "***", good, filename
                 if good:
-                    files[filename] = os.path.getsize(filename)
-        return sorted(files, key=lambda key: files[key], reverse=True)
+                    files[fullpath] = os.path.getsize(fullpath)
+                    try:
+                        cur_index = PRIORITY_FILES.index(filename)
+                        priority_abspaths[cur_index] = fullpath
+                    except ValueError:
+                        pass
+                    
+        datafiles = sorted(files, key=lambda key: files[key], reverse=True)
+
+        # Put the priority ones first
+        for insertion_index, fname in enumerate(priority_abspaths):
+            try:
+                cur_index = datafiles.index(fname)
+            except ValueError:
+                continue
+            value = datafiles.pop(cur_index)
+            datafiles.insert(insertion_index, fname)
+
+        return datafiles
 
     def __runExtraTests__(self, wksp, filename):
         """Runs extra tests that are specified in '.expected' files
