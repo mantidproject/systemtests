@@ -289,8 +289,8 @@ class JumpCETest(stresstesting.MantidStressTest):
 
     def runTest(self):
         from IndirectJumpFit import JumpRun
-        sname = 'iris21360_graphite002_QLd_Workspace'
-        qrange = [0.6, 1.0]
+        sname = 'irs26176_graphite002_QLr_Workspace'
+        qrange = [0.6, 1.6]
         verbOp = False
         plotOp = False
         saveOp = False
@@ -301,7 +301,7 @@ class JumpCETest(stresstesting.MantidStressTest):
 
     def validate(self):
         self.tolerance = 1e-5 
-        return 'iris21360_graphite002_QLd_CEfit_Workspace','ISISIndirectBayes_JumpCETest.nxs'
+        return 'irs26176_graphite002_QLr_CEfit_Workspace','ISISIndirectBayes_JumpCETest.nxs'
 
 #=============================================================================
 class JumpSSTest(stresstesting.MantidStressTest):
@@ -309,7 +309,7 @@ class JumpSSTest(stresstesting.MantidStressTest):
     def runTest(self):
         from IndirectJumpFit import JumpRun
         sname = 'iris21360_graphite002_QLd_Workspace'
-        qrange = [0.6, 1.0]
+        qrange = [0.6, 1.6]
         verbOp = False
         plotOp = False
         saveOp = False
@@ -328,7 +328,7 @@ class JumpFickTest(stresstesting.MantidStressTest):
     def runTest(self):
         from IndirectJumpFit import JumpRun
         sname = 'iris21360_graphite002_QLd_Workspace'
-        qrange = [0.6, 1.0]
+        qrange = [0.6, 1.6]
         verbOp = False
         plotOp = False
         saveOp = False
@@ -347,7 +347,7 @@ class JumpTeixeiraTest(stresstesting.MantidStressTest):
     def runTest(self):
         from IndirectJumpFit import JumpRun
         sname = 'iris21360_graphite002_QLd_Workspace'
-        qrange = [0.6, 1.0]
+        qrange = [0.6, 1.6]
         verbOp = False
         plotOp = False
         saveOp = False
