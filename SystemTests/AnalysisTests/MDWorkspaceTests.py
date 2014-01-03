@@ -156,7 +156,7 @@ class MergeMDTest(stresstesting.MantidStressTest):
         self._saved_filenames.append(filename)
 
         # 5 times the number of events in the output workspace.
-        self.assertDelta( mtd['merged'].getNPoints(), 553035, 1)
+        self.assertDelta( mtd['merged'].getNPoints(), 554355, 1000 )
 
     def doValidation(self):
         # If we reach here, no validation failed
