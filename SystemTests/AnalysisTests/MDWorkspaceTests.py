@@ -138,9 +138,9 @@ class MergeMDTest(stresstesting.MantidStressTest):
             MinRecursionDepth='3', OutputWorkspace='CNCS_7860_event_MD')
             
             # Convert events to MD events
-            AddSampleLog("CNCS_7860_event_NXS", "omega", "%s" % omega, "Number Series")
-            AddSampleLog("CNCS_7860_event_NXS", "chi", "%s" % 0, "Number Series")
-            AddSampleLog("CNCS_7860_event_NXS", "phi", "%s" % 0, "Number Series")
+            AddSampleLog("CNCS_7860_event_NXS", "omega", "%s.0" % omega, "Number Series")
+            AddSampleLog("CNCS_7860_event_NXS", "chi", "%s" % 0.0, "Number Series")
+            AddSampleLog("CNCS_7860_event_NXS", "phi", "%s" % 0.0, "Number Series")
             # V2 of ConvertToDiffractionMD needs Goniometer to be set on workspace.
             SetGoniometer(Workspace='CNCS_7860_event_NXS',Axis0='omega,0,0,1,1',Axis1='chi,1,0,0,1',Axis2='phi,0,1,0,1')
 
