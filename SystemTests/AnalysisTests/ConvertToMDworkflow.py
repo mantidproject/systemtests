@@ -18,7 +18,7 @@ class ConvertToMDworkflow(stresstesting.MantidStressTest):
         # this workspace has been  obtained from an inelastic experiment with input energy Ei = 3. 
         # Usually this energy is stored in workspace
         # but if it is not, we have to provide it for inelastic conversion to work.
-        AddSampleLog(Workspace=WS_Name,LogName='Ei',LogText='3',LogType='Number')
+        AddSampleLog(Workspace=WS_Name,LogName='Ei',LogText='3.0',LogType='Number')
         # disable multithreaded splitting as BoxID-s are assigned in random manner
         # AddSampleLog(Workspace=WS_Name,LogName='NUM_THREADS',LogText='0',LogType='Number')
         #
@@ -40,7 +40,7 @@ class ConvertToMDworkflow(stresstesting.MantidStressTest):
             # using scattering on a crystal with cubic lattice and 1,0,0 direction along the beam.
             SetUB(Workspace=SourceWS,a='1.4165',b='1.4165',c='1.4165',u='1,0,0',v='0,1,0')	
             # rotated by proper number of degrees around axis Y
-            AddSampleLog(Workspace=SourceWS,LogName='Psi',LogText=str(i),LogType='Number Series')
+            AddSampleLog(Workspace=SourceWS,LogName='Psi',LogText=str(i)+'.0',LogType='Number Series')
             SetGoniometer(Workspace=SourceWS,Axis0='Psi,0,1,0,1')
             # ws emulation, end ---------------------------------------------------------------------------------------
  

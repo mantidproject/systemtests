@@ -43,7 +43,7 @@ class WishDiffuseScattering(stresstesting.MantidStressTest):
         
         LoadIsawUB(InputWorkspace='CminusB_smooth',Filename='Wish_Diffuse_Scattering_ISAW_UB.mat')
 
-	AddSampleLog(Workspace='CminusB_smooth',LogName='psi',LogText='0',LogType='Number Series')	
+	AddSampleLog(Workspace='CminusB_smooth',LogName='psi',LogText='0.0',LogType='Number Series')	
 	SetGoniometer(Workspace='CminusB_smooth',Axis0='psi,0,1,0,1')	
 	ConvertToDiffractionMDWorkspace(InputWorkspace='CminusB_smooth',OutputWorkspace='CminusB_smooth_MD_HKL',OutputDimensions='HKL',Version=2)
 
