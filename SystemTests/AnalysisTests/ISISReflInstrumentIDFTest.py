@@ -4,7 +4,7 @@ These system tests are to verify that the IDF and parameter files for POLREF, CR
 
 import stresstesting
 from mantid.simpleapi import *
-
+import os
 from abc import ABCMeta, abstractmethod
 
 class ISISReflInstrumentIDFTest(stresstesting.MantidStressTest):
@@ -17,10 +17,9 @@ class ISISReflInstrumentIDFTest(stresstesting.MantidStressTest):
       raise NotImplementedError("Implement get_IDF_name to return ")
     
     def runTest(self):
-        IDF_path = os.path.join(config['instrumentDefinition.directory'], get_IDF_name())
+        IDF_path = os.path.join(config['instrumentDefinition.directory'], self.get_IDF_name())
         ws = LoadEmptyInstrument(IDF_path)
         inst = ws.getInstrument()
-        float( instrument.getNumberParameter('LambdaMin')[0] )
         self.assertTrue(isinstance(inst.getNumberParameter('MonitorIntegralMin')[0] , float))
         self.assertTrue(isinstance(inst.getNumberParameter('MonitorIntegralMax')[0] , float))
         self.assertTrue(isinstance(inst.getNumberParameter('MonitorBackgroundMin')[0] , float))
@@ -39,20 +38,20 @@ class ISISReflInstrumentIDFTest(stresstesting.MantidStressTest):
    
 # Specialisation for testing POLREF
 class POLREF_ISISReflInstrumentIDFTest(ISISReflInstrumentIDFTest):
-    def get_workspace_name(self):
+    def get_IDF_name(self):
         return "POLREF_Definition.xml"
    
 # Specialisation for testing INTER
 class INTER_ISISReflInstrumentIDFTest(ISISReflInstrumentIDFTest):
-    def get_workspace_name(self):
+    def get_IDF_name(self):
         return "INTER_Definition.xml"
    
 # Specialisation for testing SURF
 class SURF_ISISReflInstrumentIDFTest(ISISReflInstrumentIDFTest):
-    def get_workspace_name(self):
+    def get_IDF_name(self):
         return "SURF_Definition.xml"
    
 # Specialisation for testing CRISP
 class CRISP_ISISReflInstrumentIDFTest(ISISReflInstrumentIDFTest):
-    def get_workspace_name(self):
+    def get_IDF_name(self):
         return "CRISP_Definition.xml"
