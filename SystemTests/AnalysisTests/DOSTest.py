@@ -13,7 +13,7 @@ class DOSPhononTest(stresstesting.MantidStressTest):
       DensityOfStates(File=file_name,OutputWorkspace=self.ouput_ws_name)
 
     def validate(self):
-        return self.ouput_ws_name, self.ref_result
+      return self.ouput_ws_name, self.ref_result
 
 #------------------------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ class DOSCastepTest(stresstesting.MantidStressTest):
       DensityOfStates(File=file_name,OutputWorkspace=self.ouput_ws_name)
     
     def validate(self):
-        return self.ouput_ws_name, self.ref_result
+      return self.ouput_ws_name, self.ref_result
 
 #------------------------------------------------------------------------------------
 
@@ -42,7 +42,8 @@ class DOSRamanActiveTest(stresstesting.MantidStressTest):
       DensityOfStates(File=file_name, SpectrumType=spec_type, OutputWorkspace=self.ouput_ws_name)
     
     def validate(self):
-        return self.ouput_ws_name, self.ref_result
+      self.tolerance = 1e-3
+      return self.ouput_ws_name, self.ref_result
 
 #------------------------------------------------------------------------------------
 
@@ -57,5 +58,5 @@ class DOSIRActiveTest(stresstesting.MantidStressTest):
       DensityOfStates(File=file_name, SpectrumType=spec_type, OutputWorkspace=self.ouput_ws_name)
 
     def validate(self):
-        return self.ouput_ws_name, self.ref_result
+      return self.ouput_ws_name, self.ref_result
 
