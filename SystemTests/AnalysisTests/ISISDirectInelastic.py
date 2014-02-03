@@ -51,6 +51,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       # Disable auto save
       args['save_format'] = []
       args['hard_mask_file'] = self.hard_mask
+      #args['use_hard_mask_only'] = True #  local testing, should not be used in master tests
       args['monovan_mapfile'] = self.map_file
       args['det_cal_file']=self.white_beam #"11060"
 
@@ -58,12 +59,13 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       #prepare the worksapce name expected by the framework
       if isinstance(self.sample_run, Workspace ):
         # reduction from workspace currently needs detector_calibration file
-        # HACK! but MARI calibration file does not work/does  not exist. Use vanadium run for calibration
+        # MARI calibration uses one of data files defined on instrument. Here vanadium run is used for calibration
         args['det_cal_file']=self.white_beam
 
 
       monovan_run=self.mono_van
       # Do the reduction -- when monovan run is not None, it does absolute units 
+      #monovan_run=None # local testing, should not be used in master tests
       outWS=dgreduce.arb_units(self.white_beam,self.sample_run,self.incident_energy,self.bins,self.map_file,monovan_run,**args)
 
       #SaveNexus(outWS,'MAR_reduction2.nxs')
@@ -194,7 +196,7 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
 
 
      # reduction from workspace currently needs detector_calibration file
-      # HACK! but MARI calibration file does not work/does  not exist. Use vanadium run for calibration. for ethotheric reasons it works in the following form only
+     # MARI calibration uses one of data files defined on instrument. Here vanadium run is used for calibration
       args['det_cal_file']="11060"
 
 
@@ -212,7 +214,6 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
 class MARIReductionSum(ISISDirectInelasticReduction):
 
   def __init__(self):
-    ISISDirectInelasticReduction.__init__(self)
 
     ISISDirectInelasticReduction.__init__(self)
     self.instr_name = 'MARI'
@@ -240,6 +241,7 @@ class MARIReductionSum(ISISDirectInelasticReduction):
       args['save_format'] = []
       args['hard_mask_file'] = self.hard_mask
       args['sum_runs']    = True
+      # this is default setting in MARI_Parameters.xml
       #args['monovan_mapfile'] = self.map_file
 
       run_nums=[self.sample_run,self.mono_van]
@@ -348,7 +350,7 @@ class MERLINReduction(ISISDirectInelasticReduction):
       return "outWS"
 
   def validate(self):
-      self.tolerance = 1e-4
+      self.tolerance = 1e-6
       self.tolerance_is_reller=True
       self.disableChecking.append('SpectraMap')
       self.disableChecking.append('Instrument')
