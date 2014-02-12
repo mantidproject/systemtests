@@ -95,7 +95,7 @@ class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
         '''Performs the validation for the generalised case of multiple results
         and multiple reference files.
         '''
-        self.tolerance = 1e-5
+
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Instrument')
         self.disableChecking.append('Axes')
@@ -139,6 +139,7 @@ class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
     __metaclass__ = ABCMeta # Mark as an abstract class
     
     def _run(self):
+        self.tolerance = 1e-7
         '''Defines the workflow for the test'''
         reducer = IndirectReducer()
         reducer.set_instrument_name(self.instr_name)
@@ -224,6 +225,7 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
     __metaclass__ = ABCMeta # Mark as an abstract class
     
     def _run(self):
+        self.tolerance = 1e-7
         '''Defines the workflow for the test'''
         calib = CreateCalibrationWorkspace()
         calib.set_files([self.data_file])
@@ -303,6 +305,7 @@ class ISISIndirectInelasticResolution(ISISIndirectInelasticBase):
     __metaclass__ = ABCMeta # Mark as an abstract class
     
     def _run(self):
+        self.tolerance = 1e-7
         '''Defines the workflow for the test'''
         self.result_names = [resolution(self.files,
                                         self.icon_opt,
@@ -387,6 +390,7 @@ class ISISIndirectInelasticDiagnostics(ISISIndirectInelasticBase):
     __metaclass__ = ABCMeta # Mark as an abstract class
     
     def _run(self):
+        self.tolerance = 1e-7
         '''Defines the workflow for the test'''
         slice(self.rawfiles,
               '',# No calib file.
@@ -457,7 +461,7 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
     
     def _run(self):
         '''Defines the workflow for the test'''
-
+        self.tolerance = 1e-7
         elwin_results = elwin(self.files,
                               self.eRange,
                               Save=False,
@@ -577,7 +581,7 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
     
     def _run(self):
         '''Defines the workflow for the test'''
-
+        self.tolerance = 1e-7
         self.samples = [sample[:-4] for sample in self.samples]
 
         #load files into mantid
@@ -667,7 +671,7 @@ class ISISConvFit(ISISIndirectInelasticBase):
     
     def _run(self):
         '''Defines the workflow for the test'''
-
+        self.tolerance = 1e-4
         LoadNexus(self.sample, OutputWorkspace=self.sample)
 
         confitSeq(
