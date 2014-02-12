@@ -95,7 +95,7 @@ class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
         '''Performs the validation for the generalised case of multiple results
         and multiple reference files.
         '''
-        self.tolerance = 1e-7
+        self.tolerance = 1e-5
         self.disableChecking.append('SpectraMap')
         self.disableChecking.append('Instrument')
         self.disableChecking.append('Axes')
@@ -694,7 +694,6 @@ class OSIRISConvFit(ISISConvFit):
 
     def __init__(self):
         ISISConvFit.__init__(self)
-        # Fury
         self.sample = 'osi97935_graphite002_red.nxs'
         self.resolution = FileFinder.getFullPath('osi97935_graphite002_res.nxs')
         #ConvFit fit function
@@ -718,7 +717,6 @@ class IRISConvFit(ISISConvFit):
 
     def __init__(self):
         ISISConvFit.__init__(self)
-        # Fury
         self.sample = 'irs53664_graphite002_red.nxs'
         self.resolution = FileFinder.getFullPath('irs53664_graphite002_res.nxs')
         #ConvFit fit function
