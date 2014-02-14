@@ -463,7 +463,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       """
 
       dgreduce.setup('LET')
-      wb=11869   # enter whitebeam run number here
+      wb=5545 #11869   # enter whitebeam run number here
         
       run_no=[14305] 
       ei=[3.4,8.] # multiple energies provided in the data file
@@ -481,7 +481,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
             wb_wksp=mtd['wb_wksp']
       else:  #only load whitebeam if not already there
         dgreduce.getReducer().det_cal_file = 'det_LET_cycle133.dat'
-        wb_wksp = dgreduce.getReducer().load_data('LET000'+str(wb)+'.raw','wb_wksp')
+        wb_wksp = dgreduce.getReducer().load_data('LET0000'+str(wb)+'.raw','wb_wksp')
         dgreduce.getReducer().det_cal_file = wb_wksp;
 
 ######################################################################
