@@ -246,7 +246,8 @@ class MantidStressTest(object):
         nunRezToCheck=len(valNames)
         WorkspaceName=None;
 
-        for ik in range(0,nunRezToCheck,2):
+        validatrionRez=True;
+        for ik in range(0,nunRezToCheck,2): # check All results
             workspace2 = valNames[ik+1]
             if workspace2.endswith('.nxs'):
                 Load(Filename=workspace2,OutputWorkspace="RefFile")
@@ -257,9 +258,11 @@ class MantidStressTest(object):
             if nunRezToCheck>2:
                 WorkspaceName = valNames[ik];
 
-            if not(self.validateWorkspaces(valPair),WorkspaceName):
+            if not(self.validateWorkspaces(valPair,WorkspaceName)):
                 validatrionRez = False;
                 print 'Workspace {0} not equal to its reference file'.format(valNames[ik]);
+        #end check All results
+
         return validatrionRez;
 
     def validateWorkspaceToWorkspace(self):

@@ -468,8 +468,8 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       run_no=[14305] 
       ei=[3.4,8.] # multiple energies provided in the data file
       ebin=[-4,0.002,0.8]    #binning of the energy for the spe file. The numbers are as a fraction of ei [from ,step, to ]
-      mapping='LET_rings_133'  # rings mapping file for powders, liquout=iliad("wb_wksp","w1reb",energy,ebinstring,mapping,bleed=False,norm_method='current',det_cal_file='det_corrected7.dat',detector_van_range=[0.5,200],bkgd_range=[int(t_elastic),int(tmax)])
-      mask_file = 'hard_133.msk'
+      mapping='rings_103.map'  # rings mapping file for powders, liquout=iliad("wb_wksp","w1reb",energy,ebinstring,mapping,bleed=False,norm_method='current',det_cal_file='det_corrected7.dat',detector_van_range=[0.5,200],bkgd_range=[int(t_elastic),int(tmax)])
+      mask_file = 'LET_hard.msk'
       # currently done here on-
       remove_background = True  #if true then will subtract a flat background in time from the time range given below otherwise put False
       bg_range=[92000,98000] # range of times to take background in
@@ -480,7 +480,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       if 'wb_wksp' in mtd:
             wb_wksp=mtd['wb_wksp']
       else:  #only load whitebeam if not already there
-        dgreduce.getReducer().det_cal_file = 'det_LET_cycle133.dat'
+        dgreduce.getReducer().det_cal_file = 'det_corrected7.dat'
         wb_wksp = dgreduce.getReducer().load_data('LET0000'+str(wb)+'.raw','wb_wksp')
         dgreduce.getReducer().det_cal_file = wb_wksp;
 
@@ -491,7 +491,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       sampleMass=20.79 # 17.25  # mass of your sample (PrAl3)
       sampleRMM= 50.9415 # 221.854  # molecular weight of your sample
       MonoVanRun=14319 # vanadium run in the same configuration as your sample
-      monovan_mapfile='LET_rings_133.map'  # to be checked
+      monovan_mapfile='rings_103.map'  #
 
 ######################################################################
 
