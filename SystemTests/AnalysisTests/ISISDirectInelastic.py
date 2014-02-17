@@ -560,5 +560,5 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       self.disableChecking.append('SpectraMap')
       self.disableChecking.append('Instrument')
 
-      return "LETreducedEi3.4","LET14305_3_4mev.nxs","LETreducedEi8.0", "LET14305_8_0mev.nxs",
+      return "LETreducedEi3.4","LET14305_3_4mev.nxs","LETreducedEi8.0", "LET14305_8_0mev.nxs"
 
