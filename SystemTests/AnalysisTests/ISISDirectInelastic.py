@@ -466,7 +466,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       wb=5545 #11869   # enter whitebeam run number here
         
       run_no=[14305] 
-      ei=[3.4,8.] # multiple energies provided in the data file
+      ei=[3.4] #,8.] # multiple energies provided in the data file
       ebin=[-4,0.002,0.8]    #binning of the energy for the spe file. The numbers are as a fraction of ei [from ,step, to ]
       mapping='rings_103.map'  # rings mapping file for powders, liquout=iliad("wb_wksp","w1reb",energy,ebinstring,mapping,bleed=False,norm_method='current',det_cal_file='det_corrected7.dat',detector_van_range=[0.5,200],bkgd_range=[int(t_elastic),int(tmax)])
       mask_file = 'LET_hard.msk'
@@ -524,7 +524,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
                 if len(ei)>1:
                     CloneWorkspace(InputWorkspace = 'w1_storage',OutputWorkspace='w1')
                 else:
-                    Rename(InputWorkspace = 'w1_storage',OutputWorkspace='w1');
+                    RenameWorkspace(InputWorkspace = 'w1_storage',OutputWorkspace='w1');
 
                 if remove_background:
                     w1=Rebin(InputWorkspace='w1',OutputWorkspace='w1',Params=tbin,PreserveEvents=False)            
@@ -545,7 +545,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
                 argi['sample_rmm'] =sampleRMM;
                 argi['monovan_mapfile']=monovan_mapfile;
                 # ensure correct round-off procedure
-                argi['monovan_integr_range']=[round(ebin[0]*energy,4),round(ebin[2]*energy,4)]; # integration range of the vanadium 
+                argi['monovan_integr_range']=[round(ebin[0]*energy,4),ebin[2]*energy] #round(ebin[2]*energy,4)]; # integration range of the vanadium 
                 #MonoVanWSName = None;
 
                 # absolute unit reduction -- if you provided MonoVan run or relative units if monoVan is not present
@@ -560,5 +560,5 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       self.disableChecking.append('SpectraMap')
       self.disableChecking.append('Instrument')
 
-      return "LETreducedEi3.4","LET14305_3_4mev.nxs","LETreducedEi8.0", "LET14305_8_0mev.nxs",
+      return "LETreducedEi3.4","LET14305_3_4mev.nxs"#,"LETreducedEi8.0", "LET14305_8_0mev.nxs",
 
