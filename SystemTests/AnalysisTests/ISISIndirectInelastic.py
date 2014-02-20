@@ -724,7 +724,7 @@ class IRISConvFit(ISISConvFit):
         self.sample = 'irs53664_graphite002_red.nxs'
         self.resolution = FileFinder.getFullPath('irs53664_graphite002_res.nxs')
         #ConvFit fit function
-        self.func = 'name=LinearBackground,A0=0.060238,A1=0.001267;(composite=Convolution,FixResolution=true,NumDeriv=true;name=Resolution,FileName=\"%s\";name=Lorentzian,Amplitude=1.028561,PeakCentre=-0.000855,FWHM=0.001575)' % self.resolution
+        self.func = 'name=LinearBackground,A0=0.060623,A1=0.001343;(composite=Convolution,FixResolution=true,NumDeriv=true;name=Resolution,FileName=\"%s\";name=Lorentzian,Amplitude=1.033150,PeakCentre=-0.000841,FWHM=0.001576)' % self.resolution
         self.ftype = '1L'
         self.startx = -0.2
         self.endx = 0.2
