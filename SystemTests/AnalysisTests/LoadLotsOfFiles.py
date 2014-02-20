@@ -56,7 +56,7 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'MANTID_FLAT_CELL.115',
                 'MaskLOQData.txt',
                 'DIRECTHAB.983',
-                'loq_batch_mode_reduction.csv'
+                'loq_batch_mode_reduction.csv',
                 'det_corrected7.nxs' # this file can be loaded by LoadDetectorInfo but I am not sure if generic loader should ever deal with it
                 ]
 
