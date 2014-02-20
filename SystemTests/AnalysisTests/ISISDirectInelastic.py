@@ -480,7 +480,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       if 'wb_wksp' in mtd:
             wb_wksp=mtd['wb_wksp']
       else:  #only load whitebeam if not already there
-        dgreduce.getReducer().det_cal_file = 'det_corrected7.dat'
+        dgreduce.getReducer().det_cal_file = 'det_corrected7.nxs'
         wb_wksp = dgreduce.getReducer().load_data('LET0000'+str(wb)+'.raw','wb_wksp')
         dgreduce.getReducer().det_cal_file = wb_wksp;
 
@@ -555,7 +555,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
 
 
   def validate(self):
-      self.tolerance = 1e-2
+      self.tolerance = 1e-6
       self.tolerance_is_reller=False
       self.disableChecking.append('SpectraMap')
       self.disableChecking.append('Instrument')
