@@ -653,16 +653,18 @@ class IRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
         return ['II.IRISFury.nxs',
                 'II.IRISFuryFitSeq.nxs']
 
+
 #==============================================================================
 class ISISConvFit(ISISIndirectInelasticBase):
     '''A base class for the ISIS indirect inelastic ConvFit tests
-    
+
     The workflow is defined in the _run() method, simply
     define an __init__ method and set the following properties
     on the object
     '''
-    __metaclass__ = ABCMeta # Mark as an abstract class
-    
+    # Mark as an abstract class
+    __metaclass__ = ABCMeta
+
     def _run(self):
         '''Defines the workflow for the test'''
         self.tolerance = 1e-4
@@ -670,24 +672,23 @@ class ISISConvFit(ISISIndirectInelasticBase):
 
         confitSeq(
             self.sample,
-            self.func, 
-            self.startx, 
-            self.endx, 
-            False, 
-            False, 
-            self.ftype, 
-            self.bg, 
-            self.spectra_min, 
-            self.spectra_max, 
-            self.ties, 
-            False)
+            self.func,
+            self.startx,
+            self.endx,
+            self.ftype,
+            self.bg,
+            self.spectra_min,
+            self.spectra_max,
+            Verbose=False,
+            Plot='None',
+            Save=False)
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
         pass
 
-#------------------------- OSIRIS tests ---------------------------------------
 
+#------------------------- OSIRIS tests ---------------------------------------
 class OSIRISConvFit(ISISConvFit):
 
     def __init__(self):
@@ -709,8 +710,8 @@ class OSIRISConvFit(ISISConvFit):
     def get_reference_files(self):
         return ['II.OSIRISConvFitSeq.nxs']
 
-#------------------------- IRIS tests -----------------------------------------
 
+#------------------------- IRIS tests -----------------------------------------
 class IRISConvFit(ISISConvFit):
 
     def __init__(self):
@@ -731,5 +732,3 @@ class IRISConvFit(ISISConvFit):
 
     def get_reference_files(self):
         return ['II.IRISConvFitSeq.nxs']
-
-
