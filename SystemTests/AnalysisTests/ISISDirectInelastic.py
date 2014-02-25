@@ -480,9 +480,10 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       if 'wb_wksp' in mtd:
             wb_wksp=mtd['wb_wksp']
       else:  #only load whitebeam if not already there
-        dgreduce.getReducer().det_cal_file = 'det_corrected7.nxs'
-        wb_wksp = dgreduce.getReducer().load_data('LET0000'+str(wb)+'.raw','wb_wksp')
-        dgreduce.getReducer().det_cal_file = wb_wksp;
+          LoadRaw(Filename='LET0000'+str(wb)+'.raw',OutputWorkspace='wb_wksp')
+        #dgreduce.getReducer().det_cal_file = 'det_corrected7.nxs'
+        #wb_wksp = dgreduce.getReducer().load_data('LET0000'+str(wb)+'.raw','wb_wksp')
+        #dgreduce.getReducer().det_cal_file = wb_wksp;
 
 ######################################################################
 
@@ -499,7 +500,8 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       for run in run_no:     #loop around runs
           fname='LET0000'+str(run)+'.nxs'
           print ' processing file ', fname
-          w1 = dgreduce.getReducer().load_data(run,'w1')
+          #w1 = dgreduce.getReducer().load_data(run,'w1')
+          Load(Filename=fname,OutputWorkspace='w1',LoadMonitors='1');
 
     
           if remove_background:
@@ -513,18 +515,21 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
           print (ei)
 
           RenameWorkspace(InputWorkspace = 'w1',OutputWorkspace='w1_storage');
+          RenameWorkspace(InputWorkspace = 'w1_monitors',OutputWorkspace='w1_mon_storage');
                     
          #now loop around all energies for the run
           result =[];
-          for energy in ei:
+          for ind,energy in enumerate(ei):
                 print float(energy)
                 (energybin,tbin,t_elastic) = find_binning_range(energy,ebin);
                 print " Rebinning will be performed in the range: ",energybin
                 # if we calculate more then one energy, initial workspace will be used more then once
-                if len(ei)>1:
+                if ind <len(ei)-1:
                     CloneWorkspace(InputWorkspace = 'w1_storage',OutputWorkspace='w1')
+                    CloneWorkspace(InputWorkspace = 'w1_mon_storage',OutputWorkspace='w1_monitors')
                 else:
                     RenameWorkspace(InputWorkspace = 'w1_storage',OutputWorkspace='w1');
+                    RenameWorkspace(InputWorkspace = 'w1_mon_storage',OutputWorkspace='w1_monitors');
 
                 if remove_background:
                     w1=Rebin(InputWorkspace='w1',OutputWorkspace='w1',Params=tbin,PreserveEvents=False)            
@@ -534,7 +539,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
                 ######################################################################
                 argi={};
                 argi['norm_method']='current'
-                argi['det_cal_file']=wb_wksp
+                argi['det_cal_file']='det_corrected7.nxs'
                 argi['detector_van_range']=[2,7]
                 argi['bkgd_range']=[bg_range[0],bg_range[1]]
                 argi['hardmaskOnly']=mask_file   # diag does not work well on LET. At present only use a hard mask RIB has created
@@ -549,8 +554,10 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
                 #MonoVanWSName = None;
 
                 # absolute unit reduction -- if you provided MonoVan run or relative units if monoVan is not present
-                out=dgreduce.arb_units(wb_wksp,w1,energy,energybin,mapping,MonoVanRun,**argi)
-                RenameWorkspace(InputWorkspace=out,OutputWorkspace='LETreducedEi{0:2.1f}'.format(energy));
+                out=dgreduce.arb_units("wb_wksp","w1",energy,energybin,mapping,MonoVanRun,**argi)
+                ws_name = 'LETreducedEi{0:2.1f}'.format(energy);
+                RenameWorkspace(InputWorkspace=out,OutputWorkspace=ws_name);
+                #SaveNXSPE(InputWorkspace=ws_name,Filename=ws_name+'.nxspe');
 
 
 
