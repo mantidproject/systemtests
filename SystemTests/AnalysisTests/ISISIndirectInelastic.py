@@ -677,8 +677,8 @@ class ISISConvFit(ISISIndirectInelasticBase):
             self.endx,
             self.ftype,
             self.bg,
-            self.spectra_min,
-            self.spectra_max,
+            specMin=self.spectra_min,
+            specMax=self.spectra_max,
             Verbose=False,
             Plot='None',
             Save=False)
@@ -705,7 +705,7 @@ class OSIRISConvFit(ISISConvFit):
         self.spectra_max = 41
         self.ties = False
 
-        self.result_names = ['osi97935_graphite002_conv_1LFitL_s0_to_41_Workspace']
+        self.result_names = ['osi97935_graphite002_conv_1LFitL_s0_to_41_Result']
 
     def get_reference_files(self):
         return ['II.OSIRISConvFitSeq.nxs']
@@ -728,7 +728,7 @@ class IRISConvFit(ISISConvFit):
         self.spectra_max = 50
         self.ties = False
 
-        self.result_names = ['irs53664_graphite002_conv_1LFitL_s0_to_50_Workspace']
+        self.result_names = ['irs53664_graphite002_conv_1LFitL_s0_to_50_Result']
 
     def get_reference_files(self):
         return ['II.IRISConvFitSeq.nxs']
