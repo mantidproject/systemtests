@@ -3,6 +3,8 @@ import mantid
 from mantid.simpleapi import *
 import re
 
+MAX_ALG_LEN = 40 # TODO convention says 20 is the maximum
+
 SPECIAL = ["InputWorkspace", "OutputWorkspace", "Workspace",
            "ReductionProperties"]
 SPECIAL_UPPER = [name.upper for name in SPECIAL]
@@ -33,17 +35,33 @@ ALG_BAD_PARAMS = {
     "ViewBOA(v1)":("CD-Distance")
     }
 
+# TODO this list should be empty
+FUNC_BAD_NAME = ("Muon_ExpDecayOscTest")
 
-class CodeConventAlgorithms(stresstesting.MantidStressTest):
+# TODO this list should be empty
+FUNC_BAD_PARAMS = {
+    "Bk2BkExpConvPV":("TOF_h"),
+    "CubicSpline":("y0", "y1", "y2"),
+    "DiffRotDiscreteCircle":("f0.Height", "f0.Radius"),
+    "DiffSphere":("f0.Height", "f0.Radius"),
+    "LatticeErrors":("p0", "p1", "p2", "p3", "p4", "p5"),
+    "Muon_ExpDecayOscTest":("lambda", "frequency", "phi"),
+    "SCDPanelErrors":("f0_detWidthScale", "f0_detHeightScale",
+                      "f0_Xoffset", "f0_Yoffset", "f0_Zoffset",
+                      "f0_Xrot", "f0_Yrot", "f0_Zrot",
+                      "l0", "t0"),
+    "StretchedExpFT":("height", "tau", "beta")
+    }
+
+class Algorithms(stresstesting.MantidStressTest):
     def verifyAlgName(self, name):
         if not self.algRegExp.match(name):
-            print name + " has a name that violates conventions"
+            print "Algorithm " + name + " has a name that violates conventions"
             return False
 
-        MAX_LEN = 40 # TODO convention says 20 is the maximum
-        if bool(len(name) > MAX_LEN):
+        if bool(len(name) > MAX_ALG_LEN):
             print "%s has a name that is longer than " % name, \
-                "%d characters (%d > %d)" % (MAX_LEN, len(name), MAX_LEN)
+                "%d characters (%d > %d)" % (MAX_ALG_LEN, len(name), MAX_ALG_LEN)
             return False
 
         # passed all of the checks
@@ -95,6 +113,62 @@ class CodeConventAlgorithms(stresstesting.MantidStressTest):
                     if not self.verifyProperty(alg_descr, prop.name):
                         self.__ranOk += 1
 
+
+    def validate(self):
+        if self.__ranOk > 0:
+            print "Found %d errors. Coding conventions found at" % self.__ranOk,\
+                "http://www.mantidproject.org/Mantid_Standards"
+            return False
+
+        return True
+
+class FitFunctions(stresstesting.MantidStressTest):
+    def verifyFuncName(self, name):
+        if name in FUNC_BAD_NAME:
+            return True
+
+        if not self.funcRegExp.match(name):
+            print "Function " + name + " has a name that violates conventions"
+            return False
+
+        if bool(len(name) > MAX_ALG_LEN):
+            print "%s has a name that is longer than " % name, \
+                "%d characters (%d > %d)" % (MAX_ALG_LEN, len(name), MAX_ALG_LEN)
+            return False
+
+        # passed all of the checks
+        return True
+
+    def checkAllowed(self, func, name):
+        if func not in FUNC_BAD_PARAMS.keys():
+            return False
+
+        return name in  FUNC_BAD_PARAMS[func]
+
+    def verifyParameter(self, alg_descr, name):
+
+        if not self.paramRegExp.match(name):
+            if not self.checkAllowed(alg_descr, name):
+                print alg_descr + " property (" + name +") violates conventions"
+                return False
+
+        # passed all of the checks
+        return True
+
+    def runTest(self):
+        self.__ranOk = 0
+        self.funcRegExp = re.compile(r'^[A-Z][a-zA-Z0-9]+$')
+        self.paramRegExp = re.compile(r'^[A-Z][a-zA-Z0-9]*$')
+
+        functions = mantid.api.FunctionFactory.getFunctionNames()
+        for name in functions:
+            if not self.verifyFuncName(name):
+                self.__ranOk += 1
+                continue
+            function = mantid.api.FunctionFactory.createFunction(name)
+            for i in xrange(function.numParams()):
+                if not self.verifyParameter(name, function.getParamName(i)):
+                    self.__ranOk += 1
 
     def validate(self):
         if self.__ranOk > 0:
