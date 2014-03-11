@@ -67,6 +67,17 @@ class Algorithms(stresstesting.MantidStressTest):
         # passed all of the checks
         return True
 
+    def verifyCategories(self, name, categories):
+        if len(categories) <= 0:
+            print name + " has no categories"
+
+        for category in categories:
+            if not self.categoryRegExp.match(category):
+                print name + " has a bad category " + category
+                return False
+
+        return True
+
     def checkAllowed(self, alg_descr, name):
         if alg_descr not in ALG_BAD_PARAMS.keys():
             return False
@@ -93,6 +104,7 @@ class Algorithms(stresstesting.MantidStressTest):
         self.__ranOk = 0
         self.algRegExp = re.compile(r'^[A-Z][a-zA-Z0-9]+$')
         self.paramRegExp = re.compile(r'^[A-Z][a-zA-Z0-9]*$')
+        self.categoryRegExp = re.compile(r'^([A-Z][a-zA-Z]+\\?)+$')
 
         algs = AlgorithmFactory.getRegisteredAlgorithms(True)
 
@@ -106,6 +118,8 @@ class Algorithms(stresstesting.MantidStressTest):
                 alg_descr = "%s(v%d)" % (name, version)
 
                 # verify the categories
+                if not self.verifyCategories(alg_descr, alg.categories()):
+                    self.__ranOk += 1
 
                 # verify the properties
                 props = alg.getProperties()
@@ -139,6 +153,21 @@ class FitFunctions(stresstesting.MantidStressTest):
         # passed all of the checks
         return True
 
+    def verifyCategories(self, name, categories):
+        if len(categories) <= 0:
+            print name + " has no categories"
+
+        for category in categories:
+            # TODO remove the special case
+            if category == "C++ User Defined":
+                return True
+
+            if not self.categoryRegExp.match(category):
+                print name + " has a bad category " + category
+                return False
+
+        return True
+
     def checkAllowed(self, func, name):
         if func not in FUNC_BAD_PARAMS.keys():
             return False
@@ -159,13 +188,19 @@ class FitFunctions(stresstesting.MantidStressTest):
         self.__ranOk = 0
         self.funcRegExp = re.compile(r'^[A-Z][a-zA-Z0-9]+$')
         self.paramRegExp = re.compile(r'^[A-Z][a-zA-Z0-9]*$')
+        self.categoryRegExp = re.compile(r'^([A-Z][a-zA-Z]+\\?)+$')
 
         functions = mantid.api.FunctionFactory.getFunctionNames()
         for name in functions:
             if not self.verifyFuncName(name):
                 self.__ranOk += 1
                 continue
+
             function = mantid.api.FunctionFactory.createFunction(name)
+
+            if not self.verifyCategories(name, function.categories()):
+                self.__ranOk += 1
+
             for i in xrange(function.numParams()):
                 if not self.verifyParameter(name, function.getParamName(i)):
                     self.__ranOk += 1
