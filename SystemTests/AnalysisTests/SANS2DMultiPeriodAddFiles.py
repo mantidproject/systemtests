@@ -5,6 +5,10 @@ from ISISCommandInterface import *
 
 class SANS2DMultiPeriodAddFiles(stresstesting.MantidStressTest):
     
+  def requiredMemoryMB(self):
+    """Requires 2.5Gb"""
+    return 2500
+
   def runTest(self):
     
     SANS2D()
