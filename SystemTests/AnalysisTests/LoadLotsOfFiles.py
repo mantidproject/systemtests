@@ -83,7 +83,8 @@ BANNED_REGEXP = [r'SANS2D\d+.log$',
 # amounts of contiguous memory.
 # Usage of XP is getting lower so we don't want to compromise the
 # performance of the code elsewhere just to pass here
-PRIORITY_FILES = ['ILLIN5_Sample_096003.nxs',
+PRIORITY_FILES = ['HYS_13658_event.nxs',
+                  'ILLIN5_Sample_096003.nxs',
                   'ILLIN5_Vana_095893.nxs']
 
 def useDir(direc):
