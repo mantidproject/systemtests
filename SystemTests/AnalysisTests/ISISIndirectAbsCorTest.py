@@ -64,6 +64,7 @@ class FltAbsTest(stresstesting.MantidStressTest):
         return 'irs26176_graphite002_flt_Abs', 'ISISIndirectAbsCor_FltAbsTest.nxs'
 
 
+#====================================================================================================
 class FltAbsTSecCloseTo90Test(stresstesting.MantidStressTest):
 
     def skipTests(self):
@@ -91,4 +92,4 @@ class FltAbsTSecCloseTo90Test(stresstesting.MantidStressTest):
     
     def validate(self):
         self.tolerance = 1e-3
-        return 'irs59330_graphite002_flt_Abs', 'ISISIndirectAbsCor_FltAbsTSecCloseTo90Test.nxs'
+        return 'iris59330_graphite002_flt_Abs', 'ISISIndirectAbsCor_FltAbsTSecCloseTo90Test.nxs'
