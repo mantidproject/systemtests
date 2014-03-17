@@ -30,14 +30,14 @@ class POLDIPeakSearchTest(stresstesting.MantidStressTest):
       referencePeaks = mtd["%s_reference_Peaks" % (dataFile)]
       self.assertEqual(calculatedPeaks.rowCount(), referencePeaks.rowCount())
       
-      positions = calculatedPeaks.column(0)
+      positions = calculatedPeaks.column(2)
       referencePositions = referencePeaks.column(0)
       
       for position, referencePosition in zip(positions, referencePositions):
-          self.assertDelta(position, referencePosition, 1e-6)
+          self.assertDelta(float(position), referencePosition, 1e-6)
 
-      intensities = calculatedPeaks.column(1)
+      intensities = calculatedPeaks.column(3)
       referenceIntensities = referencePeaks.column(1)
       
       for intensity, referenceIntensity in zip(intensities, referenceIntensities):
-          self.assertDelta(intensity, referenceIntensity, 1e-3)
+          self.assertDelta(float(intensity), referenceIntensity, 1e-3)
