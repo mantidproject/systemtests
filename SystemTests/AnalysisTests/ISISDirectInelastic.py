@@ -360,8 +360,11 @@ class MERLINReduction(ISISDirectInelasticReduction):
 
 #------------------------- LET tests -------------------------------------------------
 #
-def find_binning_range(energy,ebin):
+def find_binning_range(energy,ebin,ls,lm2,mult,dt_DAE):
     """ function finds the binning range used in multirep mode 
+        for merlin ls=11.8,lm2=10. mult=2.8868 dt_DAE=1;
+        for LET    ls=25,lm2=23.5 mult=4.1     dt_DAE=1.6;
+        all these values have to be already present in IDF and should be taken from there
 
         # THIS FUNCTION SHOULD BE MADE GENERIG AND MOVED OUT OF HERE
     """
@@ -370,25 +373,29 @@ def find_binning_range(energy,ebin):
     emin=(1.0-ebin[2])*energy   #minimum energy is with 80% energy loss
     lam=(81.81/energy)**0.5
     lam_max=(81.81/emin)**0.5
-    tsam=252.82*lam*25   #time at sample
-    tmon2=252.82*lam*23.5 #time to monitor 6 on LET
-    tmax=tsam+(252.82*lam_max*4.1) #maximum time to measure inelastic signal to
-    t_elastic=tsam+(252.82*lam*4.1)   #maximum time of elastic signal
-    tbin=[int(tmon2),1.6,int(tmax)]				
+    tsam=252.82*lam*ls   #time at sample
+    tmon2=252.82*lam*lm2 #time to monitor 6 on LET
+    tmax=tsam+(252.82*lam_max*mult) #maximum time to measure inelastic signal to
+    t_elastic=tsam+(252.82*lam*mult)   #maximum time of elastic signal
+    tbin=[int(tmon2),dt_DAE,int(tmax)]				
     energybin=[float("{0: 6.4f}".format(elem*energy)) for elem in ebin]
 
     return (energybin,tbin,t_elastic);
 #--------------------------------------------------------------------------------------------------------
-def find_background(ws_name,bg_range):
+def find_background(ws_name,bg_range,dt_DAE):
     """ Function to find background from multirep event workspace
+    dt_DAE = 1 for MERLIN and 1.6 for LET
+     should be precalculated or taken from IDF
 
         # THIS FUNCTION SHOULD BE MADE GENERIC AND MOVED OUT OF HERE
     """
+    bg_ws_name = 'bg';
     delta=bg_range[1]-bg_range[0]
-    Rebin(InputWorkspace='w1',OutputWorkspace='bg',Params=[bg_range[0],delta,bg_range[1]],PreserveEvents=False)	
-    v=(delta)/1.6
+    Rebin(InputWorkspace='w1',OutputWorkspace=bg_ws_name,Params=[bg_range[0],delta,bg_range[1]],PreserveEvents=False)	
+    v=(delta)/dt_DAE
     CreateSingleValuedWorkspace(OutputWorkspace='d',DataValue=v)
-    Divide(LHSWorkspace='bg',RHSWorkspace='d',OutputWorkspace='bg')
+    Divide(LHSWorkspace=bg_ws_name,RHSWorkspace='d',OutputWorkspace=bg_ws_name)
+    return bg_ws_name;
 
 
 
@@ -505,7 +512,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
 
     
           if remove_background:
-                find_background('w1',bg_range);
+                find_background('w1',bg_range,1.6);
 
         #############################################################################################
         # this section finds all the transmitted incident energies if you have not provided them
@@ -521,7 +528,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
           result =[];
           for ind,energy in enumerate(ei):
                 print float(energy)
-                (energybin,tbin,t_elastic) = find_binning_range(energy,ebin);
+                (energybin,tbin,t_elastic) = find_binning_range(energy,ebin,25,23.5,4.1,1.6);
                 print " Rebinning will be performed in the range: ",energybin
                 # if we calculate more then one energy, initial workspace will be used more then once
                 if ind <len(ei)-1:
