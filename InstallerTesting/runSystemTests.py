@@ -3,7 +3,7 @@
 import os
 # set up the command line options
 VERSION = "1.1"
-DEFAULT_FRAMEWORK_LOC = os.path.dirname(os.path.realpath(__file__)) + "../StressTestFramework"
+DEFAULT_FRAMEWORK_LOC = os.path.dirname(os.path.realpath(__file__)) + "/../StressTestFramework"
 
 info = []
 info.append("This program will configure mantid run all of the system tests located in")
