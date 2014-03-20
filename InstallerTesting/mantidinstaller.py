@@ -54,18 +54,14 @@ def scriptfailure(txt, installer=None):
     sys.exit(1)
 
 
-def get_installer(do_install=True, nsis=True):
+def get_installer(do_install=True):
     """
     Creates the correct class for the current platform
         @param do_install :: True if installation is to be performed
-        @param nsis :: If True (default) the Windows installer is created for the NSIS style
     """
     system = platform.system()
     if system == 'Windows':
-        if nsis:
-            return NSISInstaller(do_install)
-        else:
-            return MSIInstaller(do_install)
+        return NSISInstaller(do_install)
     elif system == 'Linux':
         dist = platform.dist()
         if dist[0] == 'Ubuntu':
@@ -163,26 +159,6 @@ class NSISInstaller(MantidInstaller):
         "Runs the uninstall exe"
         uninstall_path = 'C:/MantidInstall/Uninstall.exe'
         run('start "Uninstaller" /wait ' + uninstall_path + ' /S')
-
-class MSIInstaller(MantidInstaller):
-    """Uses an MSI installer to install Mantid
-    """
-
-    def __init__(self, do_install):
-        MantidInstaller.__init__(self, do_install, 'mantid-*.msi')
-        self.mantidPlotPath = 'C:/MantidInstall/bin/MantidPlot.exe'
-        self.python_cmd = "C:/MantidInstall/bin/python.exe"
-        
-    def do_install(self):
-        """Uses msiexec to run the install
-        """
-        run('msiexec /quiet /i '+ self.mantidInstaller)
-
-    def do_uninstall(self):
-        """Uses msiexec to run the install
-        """
-        run('msiexec /quiet /uninstall /i '+ self.mantidInstaller)
-
 
 class DebInstaller(MantidInstaller):
     """Uses a deb package to install mantid

@@ -27,13 +27,11 @@ if ('-h','') in opt:
     print "       -n Run tests without installing Mantid (it must be already installed)"
     print "       -o Output to the screen instead of log files"
     print "       -h Display the usage"
-    print "       -v Run the newer version (NSIS) of the windows installer"
     print "       -R Optionally only run the test matched by the regex"
     print "       -l Log level"
     sys.exit(0)
 
 doInstall = True
-useNSISWindowsInstaller = False
 test_regex = None
 out2stdout = False
 log_level = 'notice'
@@ -42,8 +40,6 @@ for option, arg in opt:
         doInstall = False
     if option == '-o':
         out2stdout = True
-    if option == '-v':
-        useNSISWindowsInstaller = True
     if option == '-R' and arg != "":
         test_regex = arg
     if option == '-l' and arg != "":
@@ -59,7 +55,7 @@ testRunLogPath = parentDir + '/logs/testsRun.log'
 testRunErrPath = parentDir + '/logs/testsRun.err'
 
 log('Starting system tests')
-installer = get_installer(doInstall, useNSISWindowsInstaller)
+installer = get_installer(doInstall)
 
 # Install the found package
 if doInstall:
