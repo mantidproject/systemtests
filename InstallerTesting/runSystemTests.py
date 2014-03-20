@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 # set up the command line options
 VERSION = "1.1"
 DEFAULT_FRAMEWORK_LOC = os.path.dirname(os.path.realpath(__file__)) + "../StressTestFramework"
