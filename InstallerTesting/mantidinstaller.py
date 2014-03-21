@@ -248,7 +248,7 @@ class DMGInstaller(MantidInstaller):
         run('hdiutil attach '+ self.mantidInstaller)
         mantidInstallerName = os.path.basename(self.mantidInstaller)
         mantidInstallerName = mantidInstallerName.replace('.dmg','')
-        run('sudo installer -pkg /Volumes/'+ mantidInstallerName+'/'+ mantidInstallerName+'.pkg -target "/"')
+        run('sudo cp -r /Volumes/'+ mantidInstallerName+'/MantidPlot.app /Applications/' )
         run('hdiutil detach /Volumes/'+ mantidInstallerName+'/')
 
     def do_uninstall(self):
