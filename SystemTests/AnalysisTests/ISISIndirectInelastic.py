@@ -442,7 +442,62 @@ class OSIRISDiagnostics(ISISIndirectInelasticDiagnostics):
     
     def get_reference_files(self):
         return ["II.OSIRISDiagnostics.nxs"]
-        
+
+
+#==============================================================================
+class ISISIndirectInelasticMoments(ISISIndirectInelasticBase):
+    '''A base class for the ISIS indirect inelastic Fury/FuryFit tests
+
+    The output of Elwin is usually used with MSDFit and so we plug one into
+    the other in this test.
+    '''
+    # Mark as an abstract class
+    __metaclass__ = ABCMeta
+
+    def _run(self):
+        '''Defines the workflow for the test'''
+
+        LoadNexus(self.input_workspace,
+                  OutputWorkspace=self.input_workspace)
+
+        SofQWMoments(Sample=self.input_workspace, EnergyMin=self.e_min,
+                     EnergyMax=self.e_max, Scale=self.scale,
+                     Verbose=False, Plot=False, Save=False, OutputWorkspace=self.input_workspace + '_Moments')
+
+        self.result_names = [self.input_workspace + '_Moments']
+
+    def _validate_properties(self):
+        '''Check the object properties are in an expected state to continue'''
+        pass
+
+
+#------------------------- OSIRIS tests ---------------------------------------
+class OSIRISMoments(ISISIndirectInelasticMoments):
+
+    def __init__(self):
+        ISISIndirectInelasticMoments.__init__(self)
+        self.input_workspace = 'osi97935_graphite002_sqw.nxs'
+        self.e_min = -0.4
+        self.e_max = 0.4
+        self.scale = 1
+
+    def get_reference_files(self):
+        return ['II.OSIRISMoments.nxs']
+
+
+#------------------------- IRIS tests -----------------------------------------
+class IRISMoments(ISISIndirectInelasticMoments):
+
+    def __init__(self):
+        ISISIndirectInelasticMoments.__init__(self)
+        self.input_workspace = 'irs53664_graphite002_sqw.nxs'
+        self.e_min = -0.4
+        self.e_max = 0.4
+        self.scale = 1
+
+    def get_reference_files(self):
+        return ['II.IRISMoments.nxs']
+
 
 #==============================================================================
 class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
@@ -731,5 +786,3 @@ class IRISConvFit(ISISConvFit):
 
     def get_reference_files(self):
         return ['II.IRISConvFitSeq.nxs']
-
-

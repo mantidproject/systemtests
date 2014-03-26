@@ -243,14 +243,27 @@ class MantidStressTest(object):
         '''
         valNames = list(self.validate())
         from mantid.simpleapi import Load
-        workspace2 = valNames[1]
-        if workspace2.endswith('.nxs'):
-            Load(Filename=workspace2,OutputWorkspace="RefFile")
-            workspace2 = "RefFile"
-        else:
-            raise RuntimeError("Should supply a NeXus file: %s" % workspace2)
-        valNames[1] = "RefFile"
-        return self.validateWorkspaces(valNames)
+        numRezToCheck=len(valNames)
+        mismatchName=None;
+
+        validationResult =True;
+        for ik in range(0,numRezToCheck,2): # check All results
+            workspace2 = valNames[ik+1]
+            if workspace2.endswith('.nxs'):
+                Load(Filename=workspace2,OutputWorkspace="RefFile")
+                workspace2 = "RefFile"
+            else:
+                raise RuntimeError("Should supply a NeXus file: %s" % workspace2)
+            valPair=(valNames[ik],"RefFile");
+            if numRezToCheck>2:
+                mismatchName = valNames[ik];
+
+            if not(self.validateWorkspaces(valPair,mismatchName)):
+                validationResult = False;
+                print 'Workspace {0} not equal to its reference file'.format(valNames[ik]);
+        #end check All results
+
+        return validationResult;
 
     def validateWorkspaceToWorkspace(self):
         '''
@@ -260,7 +273,7 @@ class MantidStressTest(object):
         valNames = list(self.validate())
         return self.validateWorkspaces(valNames)
 
-    def validateWorkspaces(self, valNames=None):
+    def validateWorkspaces(self, valNames=None,mismatchName=None):
         '''
         Performs a check that two workspaces are equal using the CheckWorkspacesMatch
         algorithm. Loads one workspace from a nexus file if appropriate.
@@ -284,7 +297,10 @@ class MantidStressTest(object):
         checker.execute()
         if checker.getPropertyValue("Result") != 'Success!':
             print self.__class__.__name__
-            SaveNexus(InputWorkspace=valNames[0],Filename=self.__class__.__name__+'-mismatch.nxs')
+            if mismatchName:
+                SaveNexus(InputWorkspace=valNames[0],Filename=self.__class__.__name__+mismatchName+'-mismatch.nxs')
+            else:
+                SaveNexus(InputWorkspace=valNames[0],Filename=self.__class__.__name__+'-mismatch.nxs')
             return False
                     
         return True
