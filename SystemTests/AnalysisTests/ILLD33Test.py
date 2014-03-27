@@ -94,6 +94,10 @@ class ILLD33SANSTest(unittest.TestCase):
 
 class ILLD33Test(stresstesting.MantidStressTest):
 
+    def requiredMemoryMB(self):
+        """Set a limit of 2.5Gb to avoid 32-bit environment"""
+        return 2500
+
     def runTest(self):
         self._success = False
         # Custom code to create and run this single test suite
