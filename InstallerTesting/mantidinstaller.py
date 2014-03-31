@@ -245,7 +245,9 @@ class DMGInstaller(MantidInstaller):
     def do_install(self):
         """Mounts the dmg and copies the application into the right place.
         """
-        run('yes | hdiutil attach '+ self.mantidInstaller + ' > /dev/null')
+        p = subprocess.Popen(['hdiutil','attach',self.mantidInstaller],stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+        p.stdin.write('yes') # This accepts the GPL
+        p.communicate()[0] # This captures (and discards) the GPL text
         mantidInstallerName = os.path.basename(self.mantidInstaller)
         mantidInstallerName = mantidInstallerName.replace('.dmg','')
         run('sudo cp -r /Volumes/'+ mantidInstallerName+'/MantidPlot.app /Applications/' )
