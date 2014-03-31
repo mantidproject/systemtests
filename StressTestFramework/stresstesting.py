@@ -284,8 +284,8 @@ class MantidStressTest(object):
         if valNames is None:
             valNames = self.validate()
 
-        from mantid.simpleapi import SaveNexus, FrameworkManager
-        checker = FrameworkManager.createAlgorithm("CheckWorkspacesMatch")
+        from mantid.simpleapi import SaveNexus, AlgorithmManager
+        checker = AlgorithmManager.create("CheckWorkspacesMatch")
         checker.setLogging(True)
         checker.setPropertyValue("Workspace1",valNames[0])
         checker.setPropertyValue("Workspace2",valNames[1])
