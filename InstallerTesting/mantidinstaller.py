@@ -243,9 +243,9 @@ class DMGInstaller(MantidInstaller):
         self.mantidPlotPath = '/Applications/MantidPlot.app/Contents/MacOS/MantidPlot'
         
     def do_install(self):
-        """Uses rpm to run the install
+        """Mounts the dmg and copies the application into the right place.
         """
-        run('hdiutil attach '+ self.mantidInstaller)
+        run('yes | hdiutil attach '+ self.mantidInstaller + ' > /dev/null')
         mantidInstallerName = os.path.basename(self.mantidInstaller)
         mantidInstallerName = mantidInstallerName.replace('.dmg','')
         run('sudo cp -r /Volumes/'+ mantidInstallerName+'/MantidPlot.app /Applications/' )
