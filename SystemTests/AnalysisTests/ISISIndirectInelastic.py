@@ -657,7 +657,7 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
                         Verbose=False)
 
         self.result_names = [fury_ws[0],
-                             furyfitSeq_ws.getName()]
+                             furyfitSeq_ws]
 
         #remove workspaces from mantid
         for sample in self.samples:
