@@ -59,7 +59,7 @@ class IN13CaFTest(stresstesting.MantidStressTest):
     # Used when the result of a test produces more than a single workspace
     def checkWorkspacesMatch(self, ws1, ws2):
         from mantid.simpleapi import SaveNexus, AlgorithmManager
-        checker = AlgorithmManager.createAlgorithm("CheckWorkspacesMatch")
+        checker = AlgorithmManager.create("CheckWorkspacesMatch")
         checker.setLogging(True)
         checker.setPropertyValue("Workspace1", ws1)
         checker.setPropertyValue("Workspace2", ws2)
@@ -133,7 +133,7 @@ class MolDynCdlTest(stresstesting.MantidStressTest):
     # Used when the result of a test produces more than a single workspace
     def checkWorkspacesMatch(self, ws1, ws2):
         from mantid.simpleapi import SaveNexus, AlgorithmManager
-        checker = AlgorithmManager.createAlgorithm("CheckWorkspacesMatch")
+        checker = AlgorithmManager.create("CheckWorkspacesMatch")
         checker.setLogging(True)
         checker.setPropertyValue("Workspace1", ws1)
         checker.setPropertyValue("Workspace2", ws2)
