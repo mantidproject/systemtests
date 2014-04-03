@@ -32,12 +32,8 @@ class POLDIPeakSearchTest(stresstesting.MantidStressTest):
       
       positions = calculatedPeaks.column(2)
       referencePositions = referencePeaks.column(0)
-      
-      for position, referencePosition in zip(positions, referencePositions):
-          self.assertDelta(float(position), referencePosition, 1e-6)
 
-      intensities = calculatedPeaks.column(3)
-      referenceIntensities = referencePeaks.column(1)
-      
-      for intensity, referenceIntensity in zip(intensities, referenceIntensities):
-          self.assertDelta(float(intensity), referenceIntensity, 1e-3)
+      for position in positions[:10]:
+          deltas = [np.abs(float(position) - x) for x in referencePositions]
+
+          self.assertDelta(min(deltas), 0.0, 1e-6)
