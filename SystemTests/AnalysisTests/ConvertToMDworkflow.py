@@ -64,7 +64,7 @@ class ConvertToMDworkflow(stresstesting.MantidStressTest):
       
       Load(Filename=reference,OutputWorkspace=valNames[1])
 
-      checker = FrameworkManager.createAlgorithm("CompareMDWorkspaces")
+      checker = AlgorithmManager.create("CompareMDWorkspaces")
       checker.setLogging(True)
       checker.setPropertyValue("Workspace1",result)
       checker.setPropertyValue("Workspace2",valNames[1])
