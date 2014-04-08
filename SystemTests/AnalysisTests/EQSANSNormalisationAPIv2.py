@@ -80,10 +80,8 @@ class EQSANSNormalisationInputFlux(stresstesting.MantidStressTest):
         """
         config = ConfigService.Instance()
         config["facilityName"]='SNS'
-        ws = "__eqsans_normalisation_test"
-        
-        parentDir = os.path.abspath('..')
-        spectrum_file = os.path.join(parentDir, "Data", "eqsans_beam_flux.txt")
+        ws = "__eqsans_normalisation_test"        
+        spectrum_file = "eqsans_beam_flux.txt"
         
         EQSANSLoad(Filename="EQSANS_1466_event.nxs", OutputWorkspace=ws, 
                    PreserveEvents=False, LoadMonitors=False)
