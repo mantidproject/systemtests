@@ -57,7 +57,9 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'MaskLOQData.txt',
                 'DIRECTHAB.983',
                 'loq_batch_mode_reduction.csv',
-                'det_corrected7.nxs' # this file can be loaded by LoadDetectorInfo but I am not sure if generic loader should ever deal with it
+                'det_corrected7.nxs', # this file can be loaded by LoadDetectorInfo but I am not sure if generic loader should ever deal with it
+                'poldi2013n006903.hdf',
+                'poldi2013n006904.hdf'
                 ]
 
 EXPECTED_EXT = '.expected'
@@ -81,7 +83,8 @@ BANNED_REGEXP = [r'SANS2D\d+.log$',
 # amounts of contiguous memory.
 # Usage of XP is getting lower so we don't want to compromise the
 # performance of the code elsewhere just to pass here
-PRIORITY_FILES = ['ILLIN5_Sample_096003.nxs',
+PRIORITY_FILES = ['HYS_13658_event.nxs',
+                  'ILLIN5_Sample_096003.nxs',
                   'ILLIN5_Vana_095893.nxs']
 
 def useDir(direc):

@@ -243,12 +243,14 @@ class DMGInstaller(MantidInstaller):
         self.mantidPlotPath = '/Applications/MantidPlot.app/Contents/MacOS/MantidPlot'
         
     def do_install(self):
-        """Uses rpm to run the install
+        """Mounts the dmg and copies the application into the right place.
         """
-        run('hdiutil attach '+ self.mantidInstaller)
+        p = subprocess.Popen(['hdiutil','attach',self.mantidInstaller],stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+        p.stdin.write('yes') # This accepts the GPL
+        p.communicate()[0] # This captures (and discards) the GPL text
         mantidInstallerName = os.path.basename(self.mantidInstaller)
         mantidInstallerName = mantidInstallerName.replace('.dmg','')
-        run('sudo installer -pkg /Volumes/'+ mantidInstallerName+'/'+ mantidInstallerName+'.pkg -target "/"')
+        run('sudo cp -r /Volumes/'+ mantidInstallerName+'/MantidPlot.app /Applications/' )
         run('hdiutil detach /Volumes/'+ mantidInstallerName+'/')
 
     def do_uninstall(self):
