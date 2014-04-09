@@ -719,7 +719,7 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
     
     def _run(self):
         '''Defines the workflow for the test'''
-        self.tolerance = 1e-7
+        self.tolerance = 1e-6
         self.samples = [sample[:-4] for sample in self.samples]
 
         #load files into mantid
@@ -768,10 +768,10 @@ class OSIRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
         self.resolution = 'osi97935_graphite002_res.nxs'
         self.rebin = '-0.400000,0.002000,0.400000'
         # Fury Seq Fit
-        self.func = r'name=LinearBackground,A0=0,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp( -(x/Tau)^Beta),Intensity=0.304185,Tau=100,Beta=0.763509;ties=(f1.Intensity=1-f0.A0)'
+        self.func = r'name=LinearBackground,A0=0.510595,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp( -(x/Tau)^Beta),Intensity=0.489405,Tau=0.105559,Beta=1.61112e-14;ties=(f1.Intensity=1-f0.A0)'
         self.ftype = '1E_s'
-        self.startx = 0.022861
-        self.endx = 0.118877
+        self.startx = 0.0
+        self.endx = 0.119681
 
     def get_reference_files(self):
         return ['II.OSIRISFury.nxs',
@@ -788,10 +788,10 @@ class IRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
         self.resolution = 'irs53664_graphite002_res.nxs'
         self.rebin = '-0.400000,0.002000,0.400000'
         # Fury Seq Fit
-        self.func = r'name=LinearBackground,A0=0,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp( -(x/Tau)^Beta),Intensity=0.355286,Tau=100,Beta=0.763509;ties=(f1.Intensity=1-f0.A0)'
+        self.func = r'name=LinearBackground,A0=0.584488,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp( -(x/Tau)^Beta),Intensity=0.415512,Tau=4.848013e-14,Beta=0.022653;ties=(f1.Intensity=1-f0.A0)'
         self.ftype = '1S_s'
-        self.startx = 0.013717
-        self.endx = 0.169171
+        self.startx = 0.0
+        self.endx = 0.156250
 
     def get_reference_files(self):
         return ['II.IRISFury.nxs',
