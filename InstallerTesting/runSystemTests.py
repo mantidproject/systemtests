@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
+import os
 # set up the command line options
 VERSION = "1.1"
-DEFAULT_FRAMEWORK_LOC = "../StressTestFramework"
+DEFAULT_FRAMEWORK_LOC = os.path.dirname(os.path.realpath(__file__)) + "/../StressTestFramework"
 
 info = []
 info.append("This program will configure mantid run all of the system tests located in")
@@ -47,7 +48,7 @@ import os
 sys.path.append(options.frameworkLoc)
 import stresstesting
 
-# Make sure the specifed MantidFramework is picked up
+# Make sure the specified MantidFramework is picked up
 # Use specified option if given
 mantid_module_path = None
 if options.mantidpath is not None:
