@@ -12,8 +12,8 @@ class PolrefExample(stresstesting.MantidStressTest):
     
   def runTest(self):
     LoadRaw(Filename="POLREF00003014.raw",OutputWorkspace="W",SpectrumMax="4",LoadMonitors="Separate")
-    ConvertUnits(InputWorkspace="W_Monitors",OutputWorkspace="M",Target="Wavelength",AlignBins="1")
-    DeleteWorkspace(Workspace="W_Monitors")
+    ConvertUnits(InputWorkspace="W_monitors",OutputWorkspace="M",Target="Wavelength",AlignBins="1")
+    DeleteWorkspace(Workspace="W_monitors")
     CalculateFlatBackground(InputWorkspace="M",OutputWorkspace="M",WorkspaceIndexList="0,1,2",StartX="15",EndX="17")
     ConvertUnits(InputWorkspace="W",OutputWorkspace="D",Target="Wavelength",AlignBins="1")
     DeleteWorkspace(Workspace="W")
