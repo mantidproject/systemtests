@@ -360,7 +360,7 @@ class MERLINReduction(ISISDirectInelasticReduction):
 
 #------------------------- LET tests -------------------------------------------------
 #
-def find_binning_range(energy,ebin,ls,lm2,mult,dt_DAE):
+def find_binning_range(energy,ebin):
     """ function finds the binning range used in multirep mode 
         for merlin ls=11.8,lm2=10. mult=2.8868 dt_DAE=1;
         for LET    ls=25,lm2=23.5 mult=4.1     dt_DAE=1.6;
@@ -368,6 +368,21 @@ def find_binning_range(energy,ebin,ls,lm2,mult,dt_DAE):
 
         # THIS FUNCTION SHOULD BE MADE GENERIG AND MOVED OUT OF HERE
     """
+
+    InstrName =  config['default.instrument'][0:3];
+    if InstrName.find('LET')>-1:
+        ls  =25;
+        lm2 =23.5;
+        mult=4.1;
+        dt_DAE = 1.6
+    elif InstrName.find('MER')>-1:
+        ls =11.8;
+        lm2=10;
+        mult=2.8868;
+        dt_DAE = 1
+    else:
+       raise RuntimeError("Find_binning_range: unsupported/unknown instrument found")
+
     energy=float(energy)
 
     emin=(1.0-ebin[2])*energy   #minimum energy is with 80% energy loss
@@ -382,13 +397,21 @@ def find_binning_range(energy,ebin,ls,lm2,mult,dt_DAE):
 
     return (energybin,tbin,t_elastic);
 #--------------------------------------------------------------------------------------------------------
-def find_background(ws_name,bg_range,dt_DAE):
+def find_background(ws_name,bg_range):
     """ Function to find background from multirep event workspace
-    dt_DAE = 1 for MERLIN and 1.6 for LET
+     dt_DAE = 1 for MERLIN and 1.6 for LET
      should be precalculated or taken from IDF
 
         # THIS FUNCTION SHOULD BE MADE GENERIC AND MOVED OUT OF HERE
     """
+    InstrName =  config['default.instrument'][0:3];
+    if InstrName.find('LET')>-1:
+        dt_DAE = 1.6
+    elif InstrName.find('MER')>-1:
+        dt_DAE = 1
+    else:
+       raise RuntimeError("Find_binning_range: unsupported/unknown instrument found")
+
     bg_ws_name = 'bg';
     delta=bg_range[1]-bg_range[0]
     Rebin(InputWorkspace='w1',OutputWorkspace=bg_ws_name,Params=[bg_range[0],delta,bg_range[1]],PreserveEvents=False)	
@@ -396,7 +419,6 @@ def find_background(ws_name,bg_range,dt_DAE):
     CreateSingleValuedWorkspace(OutputWorkspace='d',DataValue=v)
     Divide(LHSWorkspace=bg_ws_name,RHSWorkspace='d',OutputWorkspace=bg_ws_name)
     return bg_ws_name;
-
 
 
 class LETReduction(stresstesting.MantidStressTest):
@@ -512,7 +534,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
 
     
           if remove_background:
-                find_background('w1',bg_range,1.6);
+                find_background('w1',bg_range);
 
         #############################################################################################
         # this section finds all the transmitted incident energies if you have not provided them
@@ -528,7 +550,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
           result =[];
           for ind,energy in enumerate(ei):
                 print float(energy)
-                (energybin,tbin,t_elastic) = find_binning_range(energy,ebin,25,23.5,4.1,1.6);
+                (energybin,tbin,t_elastic) = find_binning_range(energy,ebin);
                 print " Rebinning will be performed in the range: ",energybin
                 # if we calculate more then one energy, initial workspace will be used more then once
                 if ind <len(ei)-1:
