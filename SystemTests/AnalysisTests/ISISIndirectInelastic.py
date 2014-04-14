@@ -636,6 +636,7 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
         #load files into mantid
         for sample in self.samples:
             LoadNexus(sample, OutputWorkspace=sample)
+        LoadNexus(self.resolution, OutputWorkspace=self.resolution)
 
         fury_ws = fury(self.samples, 
                        self.resolution, 
