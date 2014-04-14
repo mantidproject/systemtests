@@ -188,6 +188,8 @@ class RPMInstaller(MantidInstaller):
         package = os.path.basename(self.mantidInstaller)
         if 'mantidnightly' in package:
             self.mantidPlotPath = '/opt/mantidnightly/bin/MantidPlot'
+        elif 'mantidunstable' in package:
+            self.mantidPlotPath = '/opt/mantidunstable/bin/MantidPlot'
         else:
             self.mantidPlotPath = '/opt/Mantid/bin/MantidPlot'
         
