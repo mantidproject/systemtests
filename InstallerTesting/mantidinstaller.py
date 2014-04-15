@@ -165,7 +165,7 @@ class DebInstaller(MantidInstaller):
     """
 
     def __init__(self, do_install):
-        MantidInstaller.__init__(self, do_install, 'mantid_[0-9]*.deb')
+        MantidInstaller.__init__(self, do_install, 'mantid*.deb')
         self.mantidPlotPath = '/opt/Mantid/bin/MantidPlot'
         
     def do_install(self):
