@@ -166,7 +166,13 @@ class DebInstaller(MantidInstaller):
 
     def __init__(self, do_install):
         MantidInstaller.__init__(self, do_install, 'mantid*.deb')
-        self.mantidPlotPath = '/opt/Mantid/bin/MantidPlot'
+        package = os.path.basename(self.mantidInstaller)
+        if 'mantidnightly' in package:
+            self.mantidPlotPath = '/opt/mantidnightly/bin/MantidPlot'
+        elif 'mantidunstable' in package:
+            self.mantidPlotPath = '/opt/mantidunstable/bin/MantidPlot'
+        else:
+            self.mantidPlotPath = '/opt/Mantid/bin/MantidPlot'
         
     def do_install(self):
         """Uses gdebi to run the install
