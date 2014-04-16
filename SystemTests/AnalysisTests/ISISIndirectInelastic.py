@@ -12,7 +12,7 @@ from mantid.api import AnalysisDataService, FileFinder
 from inelastic_indirect_reducer import IndirectReducer
 from inelastic_indirect_reduction_steps import CreateCalibrationWorkspace
 from IndirectEnergyConversion import resolution, slice
-from IndirectDataAnalysis import elwin, msdfit, fury, furyfitSeq, confitSeq
+from IndirectDataAnalysis import elwin, msdfit, fury, furyfitSeq, furyfitMult, confitSeq
 
 '''
 - TOSCA only supported by "Reduction" (the Energy Transfer tab of C2E).
@@ -659,7 +659,7 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
                         Verbose=False)
 
         self.result_names = [fury_ws[0],
-                             furyfitSeq_ws.getName()]
+                             furyfitSeq_ws]
 
         #remove workspaces from mantid
         for sample in self.samples:
@@ -712,6 +712,94 @@ class IRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
         return ['II.IRISFury.nxs',
                 'II.IRISFuryFitSeq.nxs']
 
+#==============================================================================
+class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
+    '''A base class for the ISIS indirect inelastic Fury/FuryFit tests
+    
+    The output of Elwin is usually used with MSDFit and so we plug one into
+    the other in this test.
+    '''
+    __metaclass__ = ABCMeta # Mark as an abstract class
+    
+    def _run(self):
+        '''Defines the workflow for the test'''
+        self.tolerance = 1e-6
+        self.samples = [sample[:-4] for sample in self.samples]
+
+        #load files into mantid
+        for sample in self.samples:
+            LoadNexus(sample, OutputWorkspace=sample)
+
+        fury_ws = fury(self.samples, 
+                       self.resolution, 
+                       self.rebin, 
+                       Save=False, 
+                       Verbose=False, 
+                       Plot=False)
+
+        """TODO: Move Fury code to Python so that we can call it here."""
+
+        # Test FuryFit Sequential
+        furyfitSeq_ws = furyfitMult(fury_ws[0],
+                        self.func,
+                        self.ftype, 
+                        self.startx, 
+                        self.endx,
+                        Save=False,
+                        Plot='None',
+                        Verbose=False)
+
+        self.result_names = [fury_ws[0],
+                             furyfitSeq_ws]
+
+        #remove workspaces from mantid
+        for sample in self.samples:
+            DeleteWorkspace(sample)
+        
+    def _validate_properties(self):
+        """Check the object properties are in an expected state to continue"""
+        # TODO!
+        pass
+
+#------------------------- OSIRIS tests ---------------------------------------
+
+class OSIRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
+
+    def __init__(self):
+        ISISIndirectInelasticFuryAndFuryFitMulti.__init__(self)
+        # Fury
+        self.samples = ['osi97935_graphite002_red.nxs'] 
+        self.resolution = 'osi97935_graphite002_res.nxs'
+        self.rebin = '-0.400000,0.002000,0.400000'
+        # Fury Seq Fit
+        self.func = r'name=LinearBackground,A0=0.510595,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp( -(x/Tau)^Beta),Intensity=0.489405,Tau=0.105559,Beta=1.61112e-14;ties=(f1.Intensity=1-f0.A0)'
+        self.ftype = '1E_s'
+        self.startx = 0.0
+        self.endx = 0.119681
+
+    def get_reference_files(self):
+        return ['II.OSIRISFury.nxs',
+                'II.OSIRISFuryFitMulti.nxs']
+
+#------------------------- IRIS tests -----------------------------------------
+
+class IRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
+
+    def __init__(self):
+        ISISIndirectInelasticFuryAndFuryFitMulti.__init__(self)
+        # Fury
+        self.samples = ['irs53664_graphite002_red.nxs']
+        self.resolution = 'irs53664_graphite002_res.nxs'
+        self.rebin = '-0.400000,0.002000,0.400000'
+        # Fury Seq Fit
+        self.func = r'name=LinearBackground,A0=0.584488,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp( -(x/Tau)^Beta),Intensity=0.415512,Tau=4.848013e-14,Beta=0.022653;ties=(f1.Intensity=1-f0.A0)'
+        self.ftype = '1S_s'
+        self.startx = 0.0
+        self.endx = 0.156250
+
+    def get_reference_files(self):
+        return ['II.IRISFury.nxs',
+                'II.IRISFuryFitMulti.nxs']
 
 #==============================================================================
 class ISISConvFit(ISISIndirectInelasticBase):
