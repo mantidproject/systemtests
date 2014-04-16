@@ -664,6 +664,8 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
         #remove workspaces from mantid
         for sample in self.samples:
             DeleteWorkspace(sample)
+
+        DeleteWorkspace(self.resolution)
         
     def _validate_properties(self):
         """Check the object properties are in an expected state to continue"""
