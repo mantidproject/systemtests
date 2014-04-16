@@ -729,6 +729,7 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
         #load files into mantid
         for sample in self.samples:
             LoadNexus(sample, OutputWorkspace=sample)
+        LoadNexus(self.resolution, OutputWorkspace=self.resolution)
 
         fury_ws = fury(self.samples, 
                        self.resolution, 
@@ -755,6 +756,7 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
         #remove workspaces from mantid
         for sample in self.samples:
             DeleteWorkspace(sample)
+        DeleteWorkspace(self.resolution)
         
     def _validate_properties(self):
         """Check the object properties are in an expected state to continue"""
