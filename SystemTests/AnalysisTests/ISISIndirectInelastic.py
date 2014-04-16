@@ -621,9 +621,10 @@ class IRISElwinAndMSDFit(ISISIndirectInelasticElwinAndMSDFit):
 
 #==============================================================================
 class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
-    '''A base class for the ISIS indirect inelastic Fury/FuryFit tests
+    '''
+    A base class for the ISIS indirect inelastic Fury/FuryFit tests
     
-    The output of Elwin is usually used with MSDFit and so we plug one into
+    The output of Fury is usually used with FuryFit and so we plug one into
     the other in this test.
     '''
     __metaclass__ = ABCMeta # Mark as an abstract class
