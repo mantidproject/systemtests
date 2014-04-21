@@ -23,7 +23,7 @@ class TobyFitResolutionSimulationTest(MantidStressTest):
         return False
 
     def requiredMemoryMB(self):
-        return 3000
+        return 16000
 
     def runTest(self):
         ei = 300.
