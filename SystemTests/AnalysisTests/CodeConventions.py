@@ -115,7 +115,7 @@ class Algorithms(stresstesting.MantidStressTest):
                 continue
             for version in versions:
                 # get an instance
-                alg = mantid.FrameworkManager.createAlgorithm(name, version)
+                alg = mantid.AlgorithmManager.create(name, version)
                 alg_descr = "%s(v%d)" % (name, version)
 
                 # verify the categories
