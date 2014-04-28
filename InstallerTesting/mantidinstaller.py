@@ -54,18 +54,14 @@ def scriptfailure(txt, installer=None):
     sys.exit(1)
 
 
-def get_installer(do_install=True, nsis=True):
+def get_installer(do_install=True):
     """
     Creates the correct class for the current platform
         @param do_install :: True if installation is to be performed
-        @param nsis :: If True (default) the Windows installer is created for the NSIS style
     """
     system = platform.system()
     if system == 'Windows':
-        if nsis:
-            return NSISInstaller(do_install)
-        else:
-            return MSIInstaller(do_install)
+        return NSISInstaller(do_install)
     elif system == 'Linux':
         dist = platform.dist()
         if dist[0] == 'Ubuntu':
@@ -164,33 +160,19 @@ class NSISInstaller(MantidInstaller):
         uninstall_path = 'C:/MantidInstall/Uninstall.exe'
         run('start "Uninstaller" /wait ' + uninstall_path + ' /S')
 
-class MSIInstaller(MantidInstaller):
-    """Uses an MSI installer to install Mantid
-    """
-
-    def __init__(self, do_install):
-        MantidInstaller.__init__(self, do_install, 'mantid-*.msi')
-        self.mantidPlotPath = 'C:/MantidInstall/bin/MantidPlot.exe'
-        self.python_cmd = "C:/MantidInstall/bin/python.exe"
-        
-    def do_install(self):
-        """Uses msiexec to run the install
-        """
-        run('msiexec /quiet /i '+ self.mantidInstaller)
-
-    def do_uninstall(self):
-        """Uses msiexec to run the install
-        """
-        run('msiexec /quiet /uninstall /i '+ self.mantidInstaller)
-
-
 class DebInstaller(MantidInstaller):
     """Uses a deb package to install mantid
     """
 
     def __init__(self, do_install):
-        MantidInstaller.__init__(self, do_install, 'mantid_[0-9]*.deb')
-        self.mantidPlotPath = '/opt/Mantid/bin/MantidPlot'
+        MantidInstaller.__init__(self, do_install, 'mantid*.deb')
+        package = os.path.basename(self.mantidInstaller)
+        if 'mantidnightly' in package:
+            self.mantidPlotPath = '/opt/mantidnightly/bin/MantidPlot'
+        elif 'mantidunstable' in package:
+            self.mantidPlotPath = '/opt/mantidunstable/bin/MantidPlot'
+        else:
+            self.mantidPlotPath = '/opt/Mantid/bin/MantidPlot'
         
     def do_install(self):
         """Uses gdebi to run the install
@@ -212,6 +194,8 @@ class RPMInstaller(MantidInstaller):
         package = os.path.basename(self.mantidInstaller)
         if 'mantidnightly' in package:
             self.mantidPlotPath = '/opt/mantidnightly/bin/MantidPlot'
+        elif 'mantidunstable' in package:
+            self.mantidPlotPath = '/opt/mantidunstable/bin/MantidPlot'
         else:
             self.mantidPlotPath = '/opt/Mantid/bin/MantidPlot'
         
@@ -241,14 +225,17 @@ class DMGInstaller(MantidInstaller):
     def __init__(self, do_install):
         MantidInstaller.__init__(self, do_install, 'mantid-*.dmg')
         self.mantidPlotPath = '/Applications/MantidPlot.app/Contents/MacOS/MantidPlot'
+        os.environ['DYLD_LIBRARY_PATH'] = '/Applications/MantidPlot.app/Contents/MacOS'
         
     def do_install(self):
-        """Uses rpm to run the install
+        """Mounts the dmg and copies the application into the right place.
         """
-        run('hdiutil attach '+ self.mantidInstaller)
+        p = subprocess.Popen(['hdiutil','attach',self.mantidInstaller],stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+        p.stdin.write('yes') # This accepts the GPL
+        p.communicate()[0] # This captures (and discards) the GPL text
         mantidInstallerName = os.path.basename(self.mantidInstaller)
         mantidInstallerName = mantidInstallerName.replace('.dmg','')
-        run('sudo installer -pkg /Volumes/'+ mantidInstallerName+'/'+ mantidInstallerName+'.pkg -target "/"')
+        run('sudo cp -r /Volumes/'+ mantidInstallerName+'/MantidPlot.app /Applications/' )
         run('hdiutil detach /Volumes/'+ mantidInstallerName+'/')
 
     def do_uninstall(self):

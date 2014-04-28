@@ -4,7 +4,11 @@ import DirectEnergyConversion as reduction
 import os
 
 class DirectInelasticDiagnostic(MantidStressTest):
-    
+
+    def requiredMemoryMB(self):
+        """Requires 4Gb"""
+        return 4000    
+
     def runTest(self):
         white = 'MAP17186.raw'
         sample = 'MAP17269.raw'
