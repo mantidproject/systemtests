@@ -304,7 +304,7 @@ class JumpCETest(stresstesting.MantidStressTest):
         return 'irs26176_graphite002_QLr_CEfit_Workspace','ISISIndirectBayes_JumpCETest.nxs'
 
 #=============================================================================
-class JumpSSTest(stresstesting.MantidStressTest):
+class JumpHallRossTest(stresstesting.MantidStressTest):
 
     def runTest(self):
         from IndirectJumpFit import JumpRun
@@ -316,11 +316,11 @@ class JumpSSTest(stresstesting.MantidStressTest):
 
         path = sname+'.nxs'  # path name for nxs file
         LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
-        JumpRun(sname,'SS',2,qrange[0],qrange[1],verbOp,plotOp,saveOp)
+        JumpRun(sname,'HallRoss',2,qrange[0],qrange[1],verbOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-5 
-        return 'irs26176_graphite002_QLr_SSfit_Workspace','ISISIndirectBayes_JumpSSTest.nxs'
+        return 'irs26176_graphite002_QLr_HallRossfit_Workspace','ISISIndirectBayes_JumpHallRossTest.nxs'
 
 #=============================================================================
 class JumpFickTest(stresstesting.MantidStressTest):
