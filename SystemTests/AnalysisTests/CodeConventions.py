@@ -13,8 +13,8 @@ SPECIAL_UPPER = [name.upper for name in SPECIAL]
 ALG_BAD_PARAMS = {
     "CalculateUMatrix(v1)":("a", "b", "c", "alpha", "beta", "gamma"),
     "ConvertToMD(v1)":("dEAnalysisMode"),
-    "ConvertToMDHelper(v1)":("dEAnalysisMode"),
-    "ConvertToMDHelper(v2)":("dEAnalysisMode"),
+    "ConvertToMDMinMaxLocal(v1)":("dEAnalysisMode"),
+    "ConvertToMDMinMaxGlobal(v1)":("dEAnalysisMode"),
     "FindUBUsingLatticeParameters(v1)":("a", "b", "c", "alpha", "beta", "gamma"),
     "IndexSXPeaks(v1)":("a", "b", "c", "alpha", "beta", "gamma", "dTolerance"),
     "ModeratorTzero(v1)":("tolTOF"),
