@@ -533,8 +533,8 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
             SaveNexusProcessed(Filename=filename,
                                InputWorkspace=ws)
             
-
-        msdfit_result = msdfit(inputs=int_files,
+        eq2_file = elwin_results[1]
+        msdfit_result = msdfit(eq2_file,
                                startX=self.startX,
                                endX=self.endX,
                                Save=False,
@@ -591,8 +591,8 @@ class OSIRISElwinAndMSDFit(ISISIndirectInelasticElwinAndMSDFit):
         self.files = ['osi97935_graphite002_red.nxs',
                       'osi97936_graphite002_red.nxs']
         self.eRange = [-0.02,0.02]
-        self.startX = 0.208716
-        self.endX = 3.162844
+        self.startX = 0.195082
+        self.endX = 3.202128
 
 	
     def get_reference_files(self):
