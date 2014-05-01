@@ -6,6 +6,9 @@ import os
 def _skip_test():
     """Helper function to determine if we run the test"""
     import platform
+
+    return False
+
     # Only runs on RHEL6 at the moment
     if "Linux" not in platform.platform():
         return True
@@ -33,13 +36,17 @@ class PG3Calibration(stresstesting.MantidStressTest):
     def runTest(self):
         # determine where to save
         savedir = os.path.abspath(os.path.curdir)
-        self.saved_cal_file = savedir+"/PG3_calibrate_d2538"+strftime("_%Y_%m_%d.cal")
 
         # run the actual code
-        CalibrateRectangularDetectors(OutputDirectory = savedir, SaveAs = 'calibration', FilterBadPulses = True,
+        output = CalibrateRectangularDetectors(OutputDirectory = savedir, SaveAs = 'calibration', FilterBadPulses = True,
                           GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.0004, 2.5', 
                           MaxOffset=0.01, PeakPositions = '.6866,.7283,.8185,.8920,1.0758,1.2615,2.0599', 
                           CrossCorrelation = False, Instrument = 'PG3', RunNumber = '2538', Extension = '_event.nxs')
+
+        if isinstance(output, basestring):
+            self.saved_cal_file = output
+        else:
+            raise NotImplementedError("Output from CalibrateRectangularDetectors is NOT string for calibration file name!")
 
         # load saved cal file
         LoadCalFile(InputWorkspace="PG3_2538_calibrated", CalFileName=self.saved_cal_file, WorkspaceName="PG3_2538", 
@@ -75,13 +82,17 @@ class PG3CCCalibration(stresstesting.MantidStressTest):
     def runTest(self):
         # determine where to save
         savedir = os.path.abspath(os.path.curdir)
-        self.saved_cal_file = savedir+"/PG3_calibrate_d2538"+strftime("_%Y_%m_%d.cal")
 
         # run the actual code
-        CalibrateRectangularDetectors(OutputDirectory = savedir, SaveAs = 'calibration', FilterBadPulses = True,
+        output = CalibrateRectangularDetectors(OutputDirectory = savedir, SaveAs = 'calibration', FilterBadPulses = True,
                           GroupDetectorsBy = 'All', DiffractionFocusWorkspace = False, Binning = '0.5, -0.0004, 2.5',
                           MaxOffset=0.01, PeakPositions = '0.7282933,1.261441',DetectorsPeaks = '17,6',
                           CrossCorrelation = True, Instrument = 'PG3', RunNumber = '2538', Extension = '_event.nxs')
+
+        if isinstance(output, basestring):
+            self.saved_cal_file = output
+        else:
+            raise NotImplementedError("Output from CalibrateRectangularDetectors is NOT string for calibration file name!")
 
         # load saved cal file
         LoadCalFile(InputWorkspace="PG3_2538_calibrated", CalFileName=self.saved_cal_file, WorkspaceName="PG3_2538", 
