@@ -362,34 +362,63 @@ class MERLINReduction(ISISDirectInelasticReduction):
 #
 def find_binning_range(energy,ebin):
     """ function finds the binning range used in multirep mode 
+        for merlin ls=11.8,lm2=10. mult=2.8868 dt_DAE=1;
+        for LET    ls=25,lm2=23.5 mult=4.1     dt_DAE=1.6;
+        all these values have to be already present in IDF and should be taken from there
 
         # THIS FUNCTION SHOULD BE MADE GENERIG AND MOVED OUT OF HERE
     """
+
+    InstrName =  config['default.instrument'][0:3];
+    if InstrName.find('LET')>-1:
+        ls  =25;
+        lm2 =23.5;
+        mult=4.1;
+        dt_DAE = 1.6
+    elif InstrName.find('MER')>-1:
+        ls =11.8;
+        lm2=10;
+        mult=2.8868;
+        dt_DAE = 1
+    else:
+       raise RuntimeError("Find_binning_range: unsupported/unknown instrument found")
+
     energy=float(energy)
 
     emin=(1.0-ebin[2])*energy   #minimum energy is with 80% energy loss
     lam=(81.81/energy)**0.5
     lam_max=(81.81/emin)**0.5
-    tsam=252.82*lam*25   #time at sample
-    tmon2=252.82*lam*23.5 #time to monitor 6 on LET
-    tmax=tsam+(252.82*lam_max*4.1) #maximum time to measure inelastic signal to
-    t_elastic=tsam+(252.82*lam*4.1)   #maximum time of elastic signal
-    tbin=[int(tmon2),1.6,int(tmax)]				
+    tsam=252.82*lam*ls   #time at sample
+    tmon2=252.82*lam*lm2 #time to monitor 6 on LET
+    tmax=tsam+(252.82*lam_max*mult) #maximum time to measure inelastic signal to
+    t_elastic=tsam+(252.82*lam*mult)   #maximum time of elastic signal
+    tbin=[int(tmon2),dt_DAE,int(tmax)]				
     energybin=[float("{0: 6.4f}".format(elem*energy)) for elem in ebin]
 
     return (energybin,tbin,t_elastic);
 #--------------------------------------------------------------------------------------------------------
 def find_background(ws_name,bg_range):
     """ Function to find background from multirep event workspace
+     dt_DAE = 1 for MERLIN and 1.6 for LET
+     should be precalculated or taken from IDF
 
         # THIS FUNCTION SHOULD BE MADE GENERIC AND MOVED OUT OF HERE
     """
-    delta=bg_range[1]-bg_range[0]
-    Rebin(InputWorkspace='w1',OutputWorkspace='bg',Params=[bg_range[0],delta,bg_range[1]],PreserveEvents=False)	
-    v=(delta)/1.6
-    CreateSingleValuedWorkspace(OutputWorkspace='d',DataValue=v)
-    Divide(LHSWorkspace='bg',RHSWorkspace='d',OutputWorkspace='bg')
+    InstrName =  config['default.instrument'][0:3];
+    if InstrName.find('LET')>-1:
+        dt_DAE = 1.6
+    elif InstrName.find('MER')>-1:
+        dt_DAE = 1
+    else:
+       raise RuntimeError("Find_binning_range: unsupported/unknown instrument found")
 
+    bg_ws_name = 'bg';
+    delta=bg_range[1]-bg_range[0]
+    Rebin(InputWorkspace='w1',OutputWorkspace=bg_ws_name,Params=[bg_range[0],delta,bg_range[1]],PreserveEvents=False)	
+    v=(delta)/dt_DAE
+    CreateSingleValuedWorkspace(OutputWorkspace='d',DataValue=v)
+    Divide(LHSWorkspace=bg_ws_name,RHSWorkspace='d',OutputWorkspace=bg_ws_name)
+    return bg_ws_name;
 
 
 class LETReduction(stresstesting.MantidStressTest):
