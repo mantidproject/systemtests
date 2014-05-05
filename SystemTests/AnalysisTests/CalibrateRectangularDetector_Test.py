@@ -7,8 +7,6 @@ def _skip_test():
     """Helper function to determine if we run the test"""
     import platform
 
-    return False
-
     # Only runs on RHEL6 at the moment
     if "Linux" not in platform.platform():
         return True
