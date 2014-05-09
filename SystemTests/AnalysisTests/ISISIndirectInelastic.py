@@ -468,7 +468,15 @@ class ISISIndirectInelasticMoments(ISISIndirectInelasticBase):
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
-        pass
+
+        if type(self.input_workspace) != str:
+            raise RuntimeError("Input workspace should be a string.")
+        if type(self.e_min) != float:
+            raise RuntimeError("Energy min should be a float")
+        if type(self.e_max) != float:
+            raise RuntimeError("Energy max should be a float")
+        if type(self.scale) != float:
+            raise RuntimeError("Scale should be a float")
 
 
 #------------------------- OSIRIS tests ---------------------------------------
@@ -479,7 +487,7 @@ class OSIRISMoments(ISISIndirectInelasticMoments):
         self.input_workspace = 'osi97935_graphite002_sqw.nxs'
         self.e_min = -0.4
         self.e_max = 0.4
-        self.scale = 1
+        self.scale = 1.0
 
     def get_reference_files(self):
         return ['II.OSIRISMoments.nxs']
@@ -493,7 +501,7 @@ class IRISMoments(ISISIndirectInelasticMoments):
         self.input_workspace = 'irs53664_graphite002_sqw.nxs'
         self.e_min = -0.4
         self.e_max = 0.4
-        self.scale = 1
+        self.scale = 1.0
 
     def get_reference_files(self):
         return ['II.IRISMoments.nxs']
@@ -666,11 +674,24 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
             DeleteWorkspace(sample)
 
         DeleteWorkspace(self.resolution)
-        
+
     def _validate_properties(self):
         """Check the object properties are in an expected state to continue"""
-        # TODO!
-        pass
+
+        if type(self.samples) != list:
+            raise RuntimeError("Samples should be a list of strings.")
+        if type(self.resolution) != str:
+            raise RuntimeError("Resolution should be a string.")
+        if type(self.rebin) != str:
+            raise RuntimeError("Rebin should be a string.")
+        if type(self.func) != str:
+            raise RuntimeError("Function should be a string.")
+        if type(self.ftype) != str:
+            raise RuntimeError("Function type should be a string.")
+        if type(self.startx) != float:
+            raise RuntimeError("startx should be a float")
+        if type(self.endx) != float:
+            raise RuntimeError("endx should be a float")
 
 #------------------------- OSIRIS tests ---------------------------------------
 
@@ -757,11 +778,24 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
         for sample in self.samples:
             DeleteWorkspace(sample)
         DeleteWorkspace(self.resolution)
-        
+
     def _validate_properties(self):
         """Check the object properties are in an expected state to continue"""
-        # TODO!
-        pass
+
+        if type(self.samples) != list:
+            raise RuntimeError("Samples should be a list of strings.")
+        if type(self.resolution) != str:
+            raise RuntimeError("Resolution should be a string.")
+        if type(self.rebin) != str:
+            raise RuntimeError("Rebin should be a string.")
+        if type(self.func) != str:
+            raise RuntimeError("Function should be a string.")
+        if type(self.ftype) != str:
+            raise RuntimeError("Function type should be a string.")
+        if type(self.startx) != float:
+            raise RuntimeError("startx should be a float")
+        if type(self.endx) != float:
+            raise RuntimeError("endx should be a float")
 
 #------------------------- OSIRIS tests ---------------------------------------
 
@@ -834,8 +868,29 @@ class ISISConvFit(ISISIndirectInelasticBase):
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
-        pass
 
+        if type(self.sample) != str:
+            raise RuntimeError("Sample should be a string.")
+        if type(self.resolution) != str:
+            raise RuntimeError("Resolution should be a string.")
+        if not os.path.isfile(self.resolution):
+            raise RuntimeError("Resolution must be a file that exists.")
+        if type(self.func) != str:
+            raise RuntimeError("Function should be a string.")
+        if type(self.bg) != str:
+            raise RuntimeError("Background type should be a string.")
+        if type(self.ftype) != str:
+            raise RuntimeError("Function type should be a string.")
+        if type(self.startx) != float:
+            raise RuntimeError("startx should be a float")
+        if type(self.endx) != float:
+            raise RuntimeError("endx should be a float")
+        if type(self.spectra_min) != int:
+            raise RuntimeError("Min spectrum should be a int")
+        if type(self.spectra_max) != int:
+            raise RuntimeError("Max spectrum should be a int")
+        if type(self.ties) != bool:
+            raise RuntimeError("ties should be a boolean.")
 
 #------------------------- OSIRIS tests ---------------------------------------
 class OSIRISConvFit(ISISConvFit):
