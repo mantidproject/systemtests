@@ -1,12 +1,11 @@
 import stresstesting
 import os
-import sys
 from abc import ABCMeta, abstractmethod
 
 from mantid.simpleapi import *
 
 # For debugging only.
-from mantid.api import AnalysisDataService, FileFinder
+from mantid.api import FileFinder
 
 # Import our workflows.
 from inelastic_indirect_reducer import IndirectReducer
@@ -48,15 +47,43 @@ stresstesting.MantidStressTest
      |   +--OSIRISResolution
      |
      +--ISISIndirectInelasticDiagnostics
-         |
-         +--IRISDiagnostics
-         +--OSIRISDiagnostics
+     |   |
+     |   +--IRISDiagnostics
+     |   +--OSIRISDiagnostics
+     |
+     +--ISISIndirectInelasticMoments
+     |   |
+     |   +--IRISMoments
+     |   +--OSIRISMoments
+     |
+     +--ISISIndirectInelasticElwinAndMSDFit
+     |   |
+     |   +--IRISElwinAndMSDFit
+     |   +--OSIRISElwinAndMSDFit
+     |
+     +--ISISIndirectInelasticFuryAndFuryFit
+     |   |
+     |   +--IRISFuryAndFuryFit
+     |   +--OSIRISFuryAndFuryFit
+     |
+     +--ISISIndirectInelasticFuryAndFuryFitMulti
+     |   |
+     |   +--IRISFuryAndFuryFitMulti
+     |   +--OSIRISFuryAndFuryFitMulti
+     |
+     +--ISISIndirectInelasticConvFit
+     |   |
+     |   +--IRISConvFit
+     |   +--OSIRISConvFit
+     |
 '''
+
 
 class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
     '''A common base class for the ISISIndirectInelastic* base classes.
     '''
-    __metaclass__ = ABCMeta # Mark as an abstract class
+
+    __metaclass__ = ABCMeta  # Mark as an abstract class
 
     @abstractmethod
     def get_reference_files(self):
@@ -67,7 +94,7 @@ class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
     @abstractmethod
     def _run(self):
         raise NotImplementedError("Implement _run.")
-    
+
     def validate_results_and_references(self):
         if type(self.get_reference_files()) != list:
             raise RuntimeError("The reference file(s) should be in a list")
@@ -80,12 +107,12 @@ class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
         if len(self.get_reference_files()) < 1:
             raise RuntimeError("There needs to be a least one result and "
                                "reference.")
-    
+
     @abstractmethod
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
         raise NotImplementedError("Implmenent _validate_properties.")
-    
+
     def runTest(self):
         self._validate_properties()
         self._run()
@@ -104,15 +131,15 @@ class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
                                           self.result_names):
             wsName = "RefFile"
             if reference_file.endswith('.nxs'):
-                LoadNexus(Filename=reference_file,OutputWorkspace=wsName)
+                LoadNexus(Filename=reference_file, OutputWorkspace=wsName)
             else:
-                raise RuntimeError("Should supply a NeXus file: %s" % 
+                raise RuntimeError("Should supply a NeXus file: %s" %
                                    reference_file)
-            
+
             if not self.validateWorkspaces([result, wsName]):
                 print str([reference_file, result]) + " do not match."
                 return False
-        
+
         return True
 
     def get_temp_dir_path(self, filename):
@@ -124,31 +151,32 @@ class ISISIndirectInelasticBase(stresstesting.MantidStressTest):
 #==============================================================================
 class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
     '''A base class for the ISIS indirect inelastic reduction tests
-    
+
     The workflow is defined in the _run() method, simply
     define an __init__ method and set the following properties
     on the object
         - instr_name: A string giving the instrument name for the test
-        - detector_range: A list containing the lower and upper bounds of the 
+        - detector_range: A list containing the lower and upper bounds of the
                           range of detectors to use
         - data_file: A string giving the data file to use
         - rebin_string: A comma separated string giving the rebin params
         - save_formats: A list containing the file extensions of the formats
                         to save to.
     '''
-    __metaclass__ = ABCMeta # Mark as an abstract class
-    
+
+    __metaclass__ = ABCMeta  # Mark as an abstract class
+
     def _run(self):
         self.tolerance = 1e-7
         '''Defines the workflow for the test'''
         reducer = IndirectReducer()
         reducer.set_instrument_name(self.instr_name)
-        reducer.set_detector_range(self.detector_range[0], 
+        reducer.set_detector_range(self.detector_range[0],
                                    self.detector_range[1])
         reducer.append_data_file(self.data_file)
         if self.rebin_string is not None:
             reducer.set_rebin_string(self.rebin_string)
-        
+
         # Do the reduction and rename the result.
         reducer.reduce()
         self.result_names = reducer.get_result_workspaces()
@@ -167,6 +195,7 @@ class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
 
 #------------------------- TOSCA tests ----------------------------------------
 
+
 class TOSCAReduction(ISISIndirectInelasticReduction):
 
     def __init__(self):
@@ -175,11 +204,12 @@ class TOSCAReduction(ISISIndirectInelasticReduction):
         self.detector_range = [1, 139]
         self.data_file = 'TSC11453.raw'
         self.rebin_string = '-2.5,0.015,3,-0.005,1000'
-    
+
     def get_reference_files(self):
         return ["II.TOSCAReductionFromFile.nxs"]
 
 #------------------------- OSIRIS tests ---------------------------------------
+
 
 class OSIRISReduction(ISISIndirectInelasticReduction):
 
@@ -189,11 +219,12 @@ class OSIRISReduction(ISISIndirectInelasticReduction):
         self.detector_range = [963, 1004]
         self.data_file = 'OSI97919.raw'
         self.rebin_string = None
-    
+
     def get_reference_files(self):
         return ["II.OSIRISReductionFromFile.nxs"]
 
 #------------------------- IRIS tests -----------------------------------------
+
 
 class IRISReduction(ISISIndirectInelasticReduction):
 
@@ -203,7 +234,7 @@ class IRISReduction(ISISIndirectInelasticReduction):
         self.detector_range = [3, 53]
         self.data_file = 'IRS21360.raw'
         self.rebin_string = None
-    
+
     def get_reference_files(self):
         return ["II.IRISReductionFromFile.nxs"]
 
@@ -211,7 +242,7 @@ class IRISReduction(ISISIndirectInelasticReduction):
 #==============================================================================
 class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
     '''A base class for the ISIS indirect inelastic calibration tests
-    
+
     The workflow is defined in the _run() method, simply
     define an __init__ method and set the following properties
     on the object
@@ -222,14 +253,15 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
         - self.analyser: a string giving the name of the analyser to use
         - self.reflection: a string giving the reflection to use
     '''
-    __metaclass__ = ABCMeta # Mark as an abstract class
-    
+
+    __metaclass__ = ABCMeta  # Mark as an abstract class
+
     def _run(self):
         self.tolerance = 1e-7
         '''Defines the workflow for the test'''
         calib = CreateCalibrationWorkspace()
         calib.set_files([self.data_file])
-        calib.set_detector_range(self.detector_range[0], 
+        calib.set_detector_range(self.detector_range[0],
                                  self.detector_range[1])
         calib.set_parameters(self.parameters[0],
                              self.parameters[1],
@@ -237,12 +269,12 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
                              self.parameters[3])
         calib.set_analyser(self.analyser)
         calib.set_reflection(self.reflection)
-        calib.execute(None, None) # Does not appear to be used.
+        calib.execute(None, None)  # Does not appear to be used.
         self.result_names = [calib.result_workspace()]
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
-        
+
         if type(self.data_file) != str:
             raise RuntimeError("data_file property should be a string")
         if type(self.detector_range) != list and len(self.detector_range) != 2:
@@ -258,31 +290,33 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
 
 #------------------------- OSIRIS tests ---------------------------------------
 
+
 class OSIRISCalibration(ISISIndirectInelasticCalibration):
 
     def __init__(self):
         ISISIndirectInelasticCalibration.__init__(self)
         self.data_file = 'OSI97935.raw'
-        self.detector_range = [963-1, 1004-1]
-        self.parameters = [68000.00,70000.00,59000.00,61000.00]
+        self.detector_range = [963 - 1, 1004 - 1]
+        self.parameters = [68000.00, 70000.00, 59000.00, 61000.00]
         self.analyser = 'graphite'
         self.reflection = '002'
-    
+
     def get_reference_files(self):
         return ["II.OSIRISCalibration.nxs"]
 
 #------------------------- IRIS tests ---------------------------------------
+
 
 class IRISCalibration(ISISIndirectInelasticCalibration):
 
     def __init__(self):
         ISISIndirectInelasticCalibration.__init__(self)
         self.data_file = 'IRS53664.raw'
-        self.detector_range = [3-1, 53-1]
-        self.parameters = [59000.00,61500.00,62500.00,65000.00]
+        self.detector_range = [3 - 1, 53 - 1]
+        self.parameters = [59000.00, 61500.00, 62500.00, 65000.00]
         self.analyser = 'graphite'
         self.reflection = '002'
-    
+
     def get_reference_files(self):
         return ["II.IRISCalibration.nxs"]
 
@@ -290,7 +324,7 @@ class IRISCalibration(ISISIndirectInelasticCalibration):
 #==============================================================================
 class ISISIndirectInelasticResolution(ISISIndirectInelasticBase):
     '''A base class for the ISIS indirect inelastic resolution tests
-    
+
     The workflow is defined in the _run() method, simply
     define an __init__ method and set the following properties
     on the object
@@ -302,8 +336,9 @@ class ISISIndirectInelasticResolution(ISISIndirectInelasticBase):
         - rebin_params: a comma separated string containing the rebin params
         - self.files: a list of strings containing filenames
     '''
-    __metaclass__ = ABCMeta # Mark as an abstract class
-    
+
+    __metaclass__ = ABCMeta  # Mark as an abstract class
+
     def _run(self):
         self.tolerance = 1e-7
         '''Defines the workflow for the test'''
@@ -319,7 +354,7 @@ class ISISIndirectInelasticResolution(ISISIndirectInelasticBase):
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
-        
+
         if type(self.icon_opt) != dict:
             raise RuntimeError("icon_opt should be a dictionary of exactly")
         if type(self.instrument) != str:
@@ -340,35 +375,37 @@ class ISISIndirectInelasticResolution(ISISIndirectInelasticBase):
 
 #------------------------- OSIRIS tests ---------------------------------------
 
+
 class OSIRISResolution(ISISIndirectInelasticResolution):
 
     def __init__(self):
         ISISIndirectInelasticResolution.__init__(self)
-        self.icon_opt = { 'first': 963, 'last': 1004 }
+        self.icon_opt = {'first': 963, 'last': 1004}
         self.instrument = 'OSIRIS'
         self.analyser = 'graphite'
         self.reflection = '002'
-        self.background = [ -0.563032, 0.605636 ]
+        self.background = [-0.563032, 0.605636]
         self.rebin_params = '-0.2,0.002,0.2'
         self.files = ['OSI97935.raw']
-    
+
     def get_reference_files(self):
         return ["II.OSIRISResolution.nxs"]
 
 #------------------------- IRIS tests -----------------------------------------
 
+
 class IRISResolution(ISISIndirectInelasticResolution):
 
     def __init__(self):
         ISISIndirectInelasticResolution.__init__(self)
-        self.icon_opt = { 'first': 3, 'last': 53 }
+        self.icon_opt = {'first': 3, 'last': 53}
         self.instrument = 'IRIS'
         self.analyser = 'graphite'
         self.reflection = '002'
-        self.background = [ -0.54, 0.65 ]
+        self.background = [-0.54, 0.65]
         self.rebin_params = '-0.2,0.002,0.2'
         self.files = ['IRS53664.raw']
-    
+
     def get_reference_files(self):
         return ["II.IRISResolution.nxs"]
 
@@ -376,33 +413,35 @@ class IRISResolution(ISISIndirectInelasticResolution):
 #==============================================================================
 class ISISIndirectInelasticDiagnostics(ISISIndirectInelasticBase):
     '''A base class for the ISIS indirect inelastic diagnostic tests
-    
+
     The workflow is defined in the _run() method, simply
     define an __init__ method and set the following properties
     on the object
     '''
-    __metaclass__ = ABCMeta # Mark as an abstract class
-    
+
+    __metaclass__ = ABCMeta  # Mark as an abstract class
+
     def _run(self):
-        self.tolerance = 1e-7
         '''Defines the workflow for the test'''
+
+        self.tolerance = 1e-7
         slice(self.rawfiles,
-              '',# No calib file.
+              '',  # No calib file.
               self.tofRange,
               self.spectra,
               self.suffix,
-              Save=False, 
-              Verbose=False, 
+              Save=False,
+              Verbose=False,
               Plot=False)
-        
+
         # Construct the result ws name.
         file = self.rawfiles[0]
-        self.result_names = [os.path.splitext(file)[0] + "_" + 
-                            self.suffix + "_slice"]
+        self.result_names = [os.path.splitext(file)[0] + "_" +
+                             self.suffix + "_slice"]
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
-        
+
         if type(self.rawfiles) != list and len(self.rawfiles) != 2:
             raise RuntimeError("rawfiles should be a list of exactly 2 "
                                "values")
@@ -417,29 +456,31 @@ class ISISIndirectInelasticDiagnostics(ISISIndirectInelasticBase):
 
 #------------------------- OSIRIS tests ---------------------------------------
 
+
 class IRISDiagnostics(ISISIndirectInelasticDiagnostics):
 
     def __init__(self):
         ISISIndirectInelasticDiagnostics.__init__(self)
-        self.tofRange = [62500,65000]
+        self.tofRange = [62500, 65000]
         self.rawfiles = ['IRS53664.raw']
-        self.spectra = [3,53]
+        self.spectra = [3, 53]
         self.suffix = 'graphite002'
-    
+
     def get_reference_files(self):
         return ["II.IRISDiagnostics.nxs"]
 
 #------------------------- IRIS tests -----------------------------------------
 
+
 class OSIRISDiagnostics(ISISIndirectInelasticDiagnostics):
 
     def __init__(self):
         ISISIndirectInelasticDiagnostics.__init__(self)
-        self.tofRange = [59000,61000]
+        self.tofRange = [59000, 61000]
         self.rawfiles = ['OSI97935.raw']
-        self.spectra = [963,1004]
+        self.spectra = [963, 1004]
         self.suffix = 'graphite002'
-    
+
     def get_reference_files(self):
         return ["II.OSIRISDiagnostics.nxs"]
 
@@ -510,12 +551,13 @@ class IRISMoments(ISISIndirectInelasticMoments):
 #==============================================================================
 class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
     '''A base class for the ISIS indirect inelastic Elwin/MSD Fit tests
-    
+
     The output of Elwin is usually used with MSDFit and so we plug one into
     the other in this test.
     '''
-    __metaclass__ = ABCMeta # Mark as an abstract class
-    
+
+    __metaclass__ = ABCMeta  # Mark as an abstract class
+
     def _run(self):
         '''Defines the workflow for the test'''
         self.tolerance = 1e-7
@@ -526,21 +568,21 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
                               Plot=False)
 
         #Manually set the Elf file label
-        elf_ws = elwin_results[0][:-3]+"elf"
+        elf_ws = elwin_results[0][:-3] + "elf"
         units = mtd[elf_ws].getAxis(0).setUnit("Label")
         units.setLabel("Temperature", "K")
 
         #Append Elf file for saving
         elwin_results = elwin_results + (elf_ws,)
 
-        int_files = [self.get_temp_dir_path(filename) + ".nxs" 
+        int_files = [self.get_temp_dir_path(filename) + ".nxs"
                      for filename in elwin_results]
 
         # Save the EQ1 & EQ2 results from Elwin to put into MSDFit.
-        for ws, filename in zip(elwin_results, int_files):            
+        for ws, filename in zip(elwin_results, int_files):
             SaveNexusProcessed(Filename=filename,
                                InputWorkspace=ws)
-            
+
         eq2_file = elwin_results[1]
         msdfit_result = msdfit(eq2_file,
                                startX=self.startX,
@@ -564,21 +606,19 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
                 self.assertTrue(units.caption() == "Temperature")
                 self.assertTrue(units.label() == "K")
 
-
-
         # Clean up the intermediate files.
         for filename in int_files:
             os.remove(filename)
-        
+
         # We're interested in the intermediate Elwin results as well as the
         # final MSDFit result.
-        self.result_names = [elwin_results[0], #EQ1
-                             elwin_results[1], #EQ2
+        self.result_names = [elwin_results[0],  # EQ1
+                             elwin_results[1],  # EQ2
                              msdfit_result]
 
     def _validate_properties(self):
         """Check the object properties are in an expected state to continue"""
-        
+
         if type(self.files) != list or len(self.files) != 2:
             raise RuntimeError("files should be a list of exactly 2 "
                                "strings")
@@ -592,17 +632,17 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
 
 #------------------------- OSIRIS tests ---------------------------------------
 
+
 class OSIRISElwinAndMSDFit(ISISIndirectInelasticElwinAndMSDFit):
 
     def __init__(self):
         ISISIndirectInelasticElwinAndMSDFit.__init__(self)
         self.files = ['osi97935_graphite002_red.nxs',
                       'osi97936_graphite002_red.nxs']
-        self.eRange = [-0.02,0.02]
+        self.eRange = [-0.02, 0.02]
         self.startX = 0.195082
         self.endX = 3.202128
 
-	
     def get_reference_files(self):
         return ['II.OSIRISElwinEQ1.nxs',
                 'II.OSIRISElwinEQ2.nxs',
@@ -610,33 +650,34 @@ class OSIRISElwinAndMSDFit(ISISIndirectInelasticElwinAndMSDFit):
 
 #------------------------- IRIS tests -----------------------------------------
 
+
 class IRISElwinAndMSDFit(ISISIndirectInelasticElwinAndMSDFit):
 
     def __init__(self):
         ISISIndirectInelasticElwinAndMSDFit.__init__(self)
         self.files = ['irs53664_graphite002_red.nxs',
                       'irs53665_graphite002_red.nxs']
-        self.eRange = [-0.02,0.02]
+        self.eRange = [-0.02, 0.02]
         self.startX = 0.313679
         self.endX = 3.285377
 
-		
     def get_reference_files(self):
         return ['II.IRISElwinEQ1.nxs',
                 'II.IRISElwinEQ2.nxs',
                 'II.IRISMSDFit.nxs']
-        
+
 
 #==============================================================================
 class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
     '''
     A base class for the ISIS indirect inelastic Fury/FuryFit tests
-    
+
     The output of Fury is usually used with FuryFit and so we plug one into
     the other in this test.
     '''
-    __metaclass__ = ABCMeta # Mark as an abstract class
-    
+
+    __metaclass__ = ABCMeta  # Mark as an abstract class
+
     def _run(self):
         '''Defines the workflow for the test'''
         self.tolerance = 1e-7
@@ -647,24 +688,24 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
             LoadNexus(sample, OutputWorkspace=sample)
         LoadNexus(self.resolution, OutputWorkspace=self.resolution)
 
-        fury_ws = fury(self.samples, 
-                       self.resolution, 
-                       self.rebin, 
-                       Save=False, 
-                       Verbose=False, 
+        fury_ws = fury(self.samples,
+                       self.resolution,
+                       self.rebin,
+                       Save=False,
+                       Verbose=False,
                        Plot=False)
 
         """TODO: Move Fury code to Python so that we can call it here."""
 
         # Test FuryFit Sequential
         furyfitSeq_ws = furyfitSeq(fury_ws[0],
-                        self.func,
-                        self.ftype, 
-                        self.startx, 
-                        self.endx,
-                        Save=False,
-                        Plot='None',
-                        Verbose=False)
+                                   self.func,
+                                   self.ftype,
+                                   self.startx,
+                                   self.endx,
+                                   Save=False,
+                                   Plot='None',
+                                   Verbose=False)
 
         self.result_names = [fury_ws[0],
                              furyfitSeq_ws]
@@ -694,6 +735,7 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
             raise RuntimeError("endx should be a float")
 
 #------------------------- OSIRIS tests ---------------------------------------
+
 
 class OSIRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
 
@@ -715,6 +757,7 @@ class OSIRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
 
 #------------------------- IRIS tests -----------------------------------------
 
+
 class IRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
 
     def __init__(self):
@@ -734,14 +777,17 @@ class IRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
                 'II.IRISFuryFitSeq.nxs']
 
 #==============================================================================
+
+
 class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
     '''A base class for the ISIS indirect inelastic Fury/FuryFit tests
-    
+
     The output of Elwin is usually used with MSDFit and so we plug one into
     the other in this test.
     '''
-    __metaclass__ = ABCMeta # Mark as an abstract class
-    
+
+    __metaclass__ = ABCMeta  # Mark as an abstract class
+
     def _run(self):
         '''Defines the workflow for the test'''
         self.tolerance = 1e-6
@@ -752,24 +798,24 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
             LoadNexus(sample, OutputWorkspace=sample)
         LoadNexus(self.resolution, OutputWorkspace=self.resolution)
 
-        fury_ws = fury(self.samples, 
-                       self.resolution, 
-                       self.rebin, 
-                       Save=False, 
-                       Verbose=False, 
+        fury_ws = fury(self.samples,
+                       self.resolution,
+                       self.rebin,
+                       Save=False,
+                       Verbose=False,
                        Plot=False)
 
         """TODO: Move Fury code to Python so that we can call it here."""
 
         # Test FuryFit Sequential
         furyfitSeq_ws = furyfitMult(fury_ws[0],
-                        self.func,
-                        self.ftype, 
-                        self.startx, 
-                        self.endx,
-                        Save=False,
-                        Plot='None',
-                        Verbose=False)
+                                    self.func,
+                                    self.ftype,
+                                    self.startx,
+                                    self.endx,
+                                    Save=False,
+                                    Plot='None',
+                                    Verbose=False)
 
         self.result_names = [fury_ws[0],
                              furyfitSeq_ws]
@@ -799,12 +845,13 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
 
 #------------------------- OSIRIS tests ---------------------------------------
 
+
 class OSIRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
 
     def __init__(self):
         ISISIndirectInelasticFuryAndFuryFitMulti.__init__(self)
         # Fury
-        self.samples = ['osi97935_graphite002_red.nxs'] 
+        self.samples = ['osi97935_graphite002_red.nxs']
         self.resolution = 'osi97935_graphite002_res.nxs'
         self.rebin = '-0.400000,0.002000,0.400000'
         # Fury Seq Fit
@@ -818,6 +865,7 @@ class OSIRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
                 'II.OSIRISFuryFitMulti.nxs']
 
 #------------------------- IRIS tests -----------------------------------------
+
 
 class IRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
 
@@ -838,7 +886,9 @@ class IRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
                 'II.IRISFuryFitMulti.nxs']
 
 #==============================================================================
-class ISISConvFit(ISISIndirectInelasticBase):
+
+
+class ISISIndirectInelasticConvFit(ISISIndirectInelasticBase):
     '''A base class for the ISIS indirect inelastic ConvFit tests
 
     The workflow is defined in the _run() method, simply
@@ -893,10 +943,12 @@ class ISISConvFit(ISISIndirectInelasticBase):
             raise RuntimeError("ties should be a boolean.")
 
 #------------------------- OSIRIS tests ---------------------------------------
-class OSIRISConvFit(ISISConvFit):
+
+
+class OSIRISConvFit(ISISIndirectInelasticConvFit):
 
     def __init__(self):
-        ISISConvFit.__init__(self)
+        ISISIndirectInelasticConvFit.__init__(self)
         self.sample = 'osi97935_graphite002_red.nxs'
         self.resolution = FileFinder.getFullPath('osi97935_graphite002_res.nxs')
         #ConvFit fit function
@@ -916,10 +968,10 @@ class OSIRISConvFit(ISISConvFit):
 
 
 #------------------------- IRIS tests -----------------------------------------
-class IRISConvFit(ISISConvFit):
+class IRISConvFit(ISISIndirectInelasticConvFit):
 
     def __init__(self):
-        ISISConvFit.__init__(self)
+        ISISIndirectInelasticConvFit.__init__(self)
         self.sample = 'irs53664_graphite002_red.nxs'
         self.resolution = FileFinder.getFullPath('irs53664_graphite002_res.nxs')
         #ConvFit fit function
