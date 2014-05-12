@@ -33,6 +33,13 @@ class POLDIPeakSearchTest(stresstesting.MantidStressTest):
       positions = calculatedPeaks.column(2)
       referencePositions = referencePeaks.column(0)
 
+      # In this test we only compare positions, because the height
+      # and error estimates are derived differently than in the
+      # original software, so the results are not exactly the same.
+      #
+      # Most important in this case are peak positions. Since the order
+      # depends on height, it may be different, so the comparison can not
+      # be done 1:1.
       for position in positions[:10]:
           deltas = [np.abs(float(position) - x) for x in referencePositions]
 
