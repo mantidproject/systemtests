@@ -33,3 +33,29 @@ class SANS2DBatch(stresstesting.MantidStressTest):
     self.disableChecking.append('Instrument')
     
     return '5512p7_SANS2DBatch','SANS2DBatch.nxs'
+
+class SANS2DNewSettingsCarriedAcrossInBatchMode(stresstesting.MantidStressTest):
+    """
+    We want to make sure that any settings saved in the PropertyManager objects
+    are used across all iterations of the reduction in Batch mode.  The MASKFILE
+    command uses this new way of storing settings in ISIS SANS, and so we'll
+    see if the same masks get applied in the second iteration as they do in the
+    first.
+    """
+    def runTest(self):
+        config['default.instrument'] = 'SANS2D'
+        SANS2D()
+        Set1D()
+        Detector("rear-detector")
+        # This contains two MASKFILE commands, each resulting in a seperate call to MaskDetectors.
+        MaskFile('MaskSANS2DReductionGUI_MaskFiles.txt')
+        Gravity(True)
+
+        # This does 2 seperate reductions of the same data, but saving the result of each to a different workspace.
+        csv_file = FileFinder.getFullPath("SANS2D_mask_batch.csv")
+        BatchReduce(csv_file, 'nxs', plotresults=False)
+
+    def validate(self):
+        self.tolerance_is_reller = True
+        self.tolerance = 1.0e-2
+        return "iteration_2", "SANS2DNewSettingsCarriedAcross.nxs"
