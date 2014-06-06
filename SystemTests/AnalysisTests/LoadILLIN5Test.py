@@ -24,14 +24,14 @@ class ILLIN5Tests(unittest.TestCase):
         
         # Check some data
         wsOut = mtd[self.ws_name]
-        self.assertEqual(wsOut.getNumberHistograms(), 98304)
+        self.assertEqual(wsOut.getNumberHistograms(), 98305)
     
     def test_load_dispersion_file_and_vanadium(self):
         self._run_load(self.dataDispersionFile,self.vanadiumFile)
         
         # Check some data
         wsOut = mtd[self.ws_name]
-        self.assertEqual(wsOut.getNumberHistograms(), 98304)
+        self.assertEqual(wsOut.getNumberHistograms(), 98305)
             
     #================== Failure cases ================================
 
