@@ -165,7 +165,6 @@ class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
     '''
 
     __metaclass__ = ABCMeta  # Mark as an abstract class
-    sum_files = False
 
     def _run(self):
         self.tolerance = 1e-7
@@ -174,19 +173,13 @@ class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
         reducer.set_instrument_name(self.instr_name)
         reducer.set_detector_range(self.detector_range[0],
                                    self.detector_range[1])
-        reducer.set_sum_files(self.sum_files)
-        self.parameter_file = self.instr_name + '_graphite_002_Parameters.xml'
-        reducer.set_parameter_file(self.parameter_file)
-
-        for name in self.data_files:
-            reducer.append_data_file(name)
-
+        reducer.append_data_file(self.data_file)
         if self.rebin_string is not None:
             reducer.set_rebin_string(self.rebin_string)
 
         # Do the reduction and rename the result.
         reducer.reduce()
-        self.result_names = sorted(reducer.get_result_workspaces())
+        self.result_names = reducer.get_result_workspaces()
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
@@ -195,12 +188,10 @@ class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
         if type(self.detector_range) != list and len(self.detector_range) != 2:
             raise RuntimeError("detector_range should be a list of exactly 2 "
                                "values")
-        if type(self.data_files) != list:
+        if type(self.data_file) != str:
             raise RuntimeError("data_file property should be a string")
         if self.rebin_string is not None and type(self.rebin_string) != str:
             raise RuntimeError("rebin_string property should be a string")
-        if self.sum_files is not None and type(self.sum_files) != bool:
-            raise RuntimeError("sum_files property should be a bool")
 
 #------------------------- TOSCA tests ----------------------------------------
 
@@ -210,40 +201,12 @@ class TOSCAReduction(ISISIndirectInelasticReduction):
     def __init__(self):
         ISISIndirectInelasticReduction.__init__(self)
         self.instr_name = 'TOSCA'
-        self.detector_range = [0, 139]
-        self.data_files = ['TSC15352.raw']
+        self.detector_range = [1, 139]
+        self.data_file = 'TSC11453.raw'
         self.rebin_string = '-2.5,0.015,3,-0.005,1000'
 
     def get_reference_files(self):
         return ["II.TOSCAReductionFromFile.nxs"]
-
-class TOSCAMultiFileReduction(ISISIndirectInelasticReduction):
-
-    def __init__(self):
-        ISISIndirectInelasticReduction.__init__(self)
-        self.instr_name = 'TOSCA'
-        self.detector_range = [0, 139]
-        self.data_files = ['TSC15352.raw', 'TSC15353.raw','TSC15354.raw']
-        self.rebin_string = '-2.5,0.015,3,-0.005,1000'
-
-    def get_reference_files(self):
-        #note that the same run for single reduction is used.
-        #as they should be the same
-        return ['II.TOSCAReductionFromFile.nxs', 'II.TOSCAMultiFileReduction1.nxs', 'II.TOSCAMultiFileReduction2.nxs']
-
-class TOSCAMultiFileSummedReduction(ISISIndirectInelasticReduction):
-
-    def __init__(self):
-        ISISIndirectInelasticReduction.__init__(self)
-        self.instr_name = 'TOSCA'
-        self.detector_range = [0, 139]
-        self.data_files = ['TSC15352.raw', 'TSC15353.raw','TSC15354.raw']
-        self.rebin_string = '-2.5,0.015,3,-0.005,1000'
-        self.sum_files = True
-
-    def get_reference_files(self):
-        return ['II.TOSCAMultiFileSummedReduction.nxs']
-
 
 #------------------------- OSIRIS tests ---------------------------------------
 
@@ -253,82 +216,27 @@ class OSIRISReduction(ISISIndirectInelasticReduction):
     def __init__(self):
         ISISIndirectInelasticReduction.__init__(self)
         self.instr_name = 'OSIRIS'
-        self.detector_range = [962, 1003]
-        self.data_files = ['OSIRIS00106550.raw']
+        self.detector_range = [963, 1004]
+        self.data_file = 'OSI97919.raw'
         self.rebin_string = None
 
     def get_reference_files(self):
         return ["II.OSIRISReductionFromFile.nxs"]
 
-class OSIRISMultiFileReduction(ISISIndirectInelasticReduction):
-
-    def __init__(self):
-        ISISIndirectInelasticReduction.__init__(self)
-        self.instr_name = 'OSIRIS'
-        self.detector_range = [962, 1003]
-        self.data_files = ['OSIRIS00106550.raw',' OSIRIS00106551.raw']
-        self.rebin_string = None
-
-    def get_reference_files(self):
-        #note that the same run for single reduction is used.
-        #as they should be the same
-        return ['II.OSIRISReductionFromFile.nxs','II.OSIRISMultiFileReduction1.nxs']
-
-class OSIRISMultiFileSummedReduction(ISISIndirectInelasticReduction):
-
-    def __init__(self):
-        ISISIndirectInelasticReduction.__init__(self)
-        self.instr_name = 'OSIRIS'
-        self.detector_range = [962, 1003]
-        self.data_files = ['OSIRIS00106550.raw', 'OSIRIS00106551.raw']
-        self.rebin_string = None
-        self.sum_files = True
-
-    def get_reference_files(self):
-        return ['II.OSIRISMultiFileSummedReduction.nxs']
-
 #------------------------- IRIS tests -----------------------------------------
+
 
 class IRISReduction(ISISIndirectInelasticReduction):
 
     def __init__(self):
         ISISIndirectInelasticReduction.__init__(self)
         self.instr_name = 'IRIS'
-        self.detector_range = [2, 52]
-        self.data_files = ['IRS21360.raw']
+        self.detector_range = [3, 53]
+        self.data_file = 'IRS21360.raw'
         self.rebin_string = None
 
     def get_reference_files(self):
         return ["II.IRISReductionFromFile.nxs"]
-
-
-class IRISMultiFileReduction(ISISIndirectInelasticReduction):
-
-    def __init__(self):
-        ISISIndirectInelasticReduction.__init__(self)
-        self.instr_name = 'IRIS'
-        self.detector_range = [2, 52]
-        self.data_files = ['IRS21360.raw', 'IRS53664.raw']
-        self.rebin_string = None
-
-    def get_reference_files(self):
-        return ['II.IRISReductionFromFile.nxs', 'II.IRISMultiFileReduction1.nxs']
-
-
-class IRISMultiFileSummedReduction(ISISIndirectInelasticReduction):
-
-    def __init__(self):
-        ISISIndirectInelasticReduction.__init__(self)
-        self.instr_name = 'IRIS'
-        self.detector_range = [2, 52]
-        self.data_files = ['IRS21360.raw', 'IRS53664.raw']
-        self.sum_files = True
-        self.rebin_string = None
-
-    def get_reference_files(self):
-        #note that the same run for single reduction is used.
-        #as they should be the same
-        return ['II.IRISMultiFileSummedReduction.nxs']
 
 
 #==============================================================================
