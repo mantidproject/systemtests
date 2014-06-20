@@ -26,5 +26,6 @@ class POLDIMergeTest(stresstesting.MantidStressTest):
 
   def analyseResults(self):
     for i in range(mtd['poldi_sum_6903_6904_reference'].getNumberHistograms()):
-        self.assertTrue(np.array_equal(mtd['poldi_sum_6903_6904'].dataY(i), mtd['poldi_sum_6903_6904_reference'].dataY(i)))
-      
+        # reference spectrum is still in the "original order", so for one of the workspaces, the index has to be reversed.
+        self.assertTrue(np.array_equal(mtd['poldi_sum_6903_6904'].dataY(i), mtd['poldi_sum_6903_6904_reference'].dataY(399 - i)))
+
