@@ -33,6 +33,7 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'MASKSANS2Doptions.091A',
                 'MaskSANS2DReductionGUI.txt',
                 'MaskSANS2DReductionGUI_MaskFiles.txt',
+                'MaskSANS2DReductionGUI_LimitEventsTime.txt'
                 'MAP17269.raw', # Don't need to check multiple MAPS files 
                 'MAP17589.raw',
                 'MER06399.raw', # Don't need to check multiple MERLIN files
