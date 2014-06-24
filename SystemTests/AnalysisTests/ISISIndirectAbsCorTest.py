@@ -1,16 +1,14 @@
 import stresstesting
-import os
 from mantid.simpleapi import *
 from IndirectImport import is_supported_f2py_platform
 
 #====================================================================================================
+
+
 class CylAbsTest(stresstesting.MantidStressTest):
 
     def skipTests(self):
-        if is_supported_f2py_platform():
-            return False
-        else:
-            return True
+        return not is_supported_f2py_platform()
 
     def runTest(self):
         import IndirectAbsCor as Main
@@ -27,27 +25,26 @@ class CylAbsTest(stresstesting.MantidStressTest):
         verbOp = True
         saveOp = False
         Main.AbsRun(sname, 'cyl', beam, 2, size, density,
-            sigs, siga, avar, verbOp, saveOp)
-    
+                    sigs, siga, avar, verbOp, saveOp)
+
     def validate(self):
         self.tolerance = 1e-3
         return 'irs26176_graphite002_cyl_Abs', 'ISISIndirectAbsCor_CylAbsTest.nxs'
 
 #====================================================================================================
+
+
 class FltAbsTest(stresstesting.MantidStressTest):
 
     def skipTests(self):
-        if is_supported_f2py_platform():
-            return False
-        else:
-            return True
-            
+        return not is_supported_f2py_platform()
+
     def runTest(self):
         import IndirectAbsCor as Main
 
         sname = 'irs26176_graphite002_red'
         LoadNexusProcessed(Filename=sname, OutputWorkspace=sname)
-        
+
         beam = ''
         size = [0.1, 0.01, 0.01]
         density = [0.1, 0.1, 0.1]
@@ -57,21 +54,20 @@ class FltAbsTest(stresstesting.MantidStressTest):
         verbOp = True
         saveOp = False
         Main.AbsRun(sname, 'flt', beam, 2, size, density,
-            sigs, siga, avar, verbOp, saveOp)
-    
+                    sigs, siga, avar, verbOp, saveOp)
+
     def validate(self):
         self.tolerance = 1e-3
         return 'irs26176_graphite002_flt_Abs', 'ISISIndirectAbsCor_FltAbsTest.nxs'
 
 
 #====================================================================================================
+
+
 class FltAbsTSecCloseTo90Test(stresstesting.MantidStressTest):
 
     def skipTests(self):
-        if is_supported_f2py_platform():
-            return False
-        else:
-            return True
+        return not is_supported_f2py_platform()
 
     def runTest(self):
         import IndirectAbsCor as Main
@@ -88,8 +84,109 @@ class FltAbsTSecCloseTo90Test(stresstesting.MantidStressTest):
         verbOp = True
         saveOp = False
         Main.AbsRun(sname, 'flt', beam, 2, size, density,
-            sigs, siga, avar, verbOp, saveOp)
-    
+                    sigs, siga, avar, verbOp, saveOp)
+
     def validate(self):
         self.tolerance = 1e-3
         return 'iris59330_graphite002_flt_Abs', 'ISISIndirectAbsCor_FltAbsTSecCloseTo90Test.nxs'
+
+#====================================================================================================
+
+
+class AbsRunFeederTest(stresstesting.MantidStressTest):
+    """
+    Test AbsRunFeeder with given values for scattering and absorption cross sections
+    for both sample and can.
+    """
+
+    def skipTests(self):
+        return not is_supported_f2py_platform()
+
+    def runTest(self):
+        from IndirectAbsCor import AbsRunFeeder
+
+        # H20 sample
+        inputWS = 'irs26176_graphite002_red'
+        # cylindrical Vanadium can
+        canWS = 'irs26173_graphite002_red'
+
+        geom = 'cyl'
+        ncan = 2
+        size = [0.2, 0.25, 0.26, 0.0]
+        sigs = [5.0, 0.1, 0.1]
+        siga = [0.0, 5.0, 5.0]
+        avar = 45.0
+        density = [0.1, 0.1, 0.1]
+        beam_width = 4.0
+        AbsRunFeeder(inputWS, canWS, geom, ncan, size, avar, density, beam_width=beam_width, sigs=sigs, siga=siga)
+
+    def validate(self):
+        self.tolerance = 1e-3
+        return 'irs26176_graphite002_flt_Abs', 'ISISIndirectAbsCor_FltAbsTest.nxs'
+
+#====================================================================================================
+
+
+class AbsRunFeederChemicalFormulaTest(stresstesting.MantidStressTest):
+    """
+    Test AbsRunFeeder with chemical formula input for scattering and absorption cross sections
+    for both sample and can.
+    """
+
+    def skipTests(self):
+        return not is_supported_f2py_platform()
+
+    def runTest(self):
+        from IndirectAbsCor import AbsRunFeeder
+
+        # H20 sample
+        inputWS = 'irs26176_graphite002_red'
+        # cylindrical Vanadium can
+        canWS = 'irs26173_graphite002_red'
+
+        geom = 'cyl'
+        ncan = 2
+        size = [0.2, 0.25, 0.26, 0.0]
+        avar = 45.0
+        density = [0.1, 0.1, 0.1]
+        beam_width = 4.0
+        sampleFormula = 'H20'
+        canFormula = 'V'
+        AbsRunFeeder(inputWS, canWS, geom, ncan, size, avar, density, beam_width=beam_width, sampleFormula=sampleFormula, canFormula=canFormula)
+
+    def validate(self):
+        self.tolerance = 1e-3
+        return 'irs26176_graphite002_flt_Abs', 'ISISIndirectAbsCor_FltAbsTest.nxs'
+
+#====================================================================================================
+
+
+class AbsRunFeederDefaultBeamWidthTest(stresstesting.MantidStressTest):
+    """
+    Test AbsRunFeeder with given values for scattering and absorption cross sections
+    for both sample and can and the beam width taken from the IPF.
+    """
+
+    def skipTests(self):
+        return not is_supported_f2py_platform()
+
+    def runTest(self):
+        from IndirectAbsCor import AbsRunFeeder
+
+        # H20 sample
+        inputWS = 'irs26176_graphite002_red'
+        # cylindrical Vanadium can
+        canWS = 'irs26173_graphite002_red'
+
+        geom = 'cyl'
+        ncan = 2
+        size = [0.2, 0.25, 0.26, 0.0]
+        sigs = [5.0, 0.1, 0.1]
+        siga = [0.0, 5.0, 5.0]
+        avar = 45.0
+        density = [0.1, 0.1, 0.1]
+        AbsRunFeeder(inputWS, canWS, geom, ncan, size, avar, density, sigs=sigs, siga=siga)
+
+    def validate(self):
+        self.tolerance = 1e-3
+        return 'irs26176_graphite002_flt_Abs', 'ISISIndirectAbsCor_FltAbsTest.nxs'
