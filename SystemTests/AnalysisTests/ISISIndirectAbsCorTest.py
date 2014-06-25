@@ -1,6 +1,7 @@
 import stresstesting
 from mantid.simpleapi import *
 from IndirectImport import is_supported_f2py_platform
+import os
 
 #====================================================================================================
 
@@ -118,14 +119,14 @@ class AbsRunFeederTest(stresstesting.MantidStressTest):
         size = [0.2, 0.25, 0.26, 0.0]
         sigs = [5.0, 0.1, 0.1]
         siga = [0.0, 5.0, 5.0]
-        avar = 45.0
+        avar = 0.002
         density = [0.1, 0.1, 0.1]
         beam_width = 4.0
         AbsRunFeeder(inputWS, canWS, geom, ncan, size, avar, density, beam_width=beam_width, sigs=sigs, siga=siga)
 
     def validate(self):
         self.tolerance = 1e-3
-        return 'irs26176_graphite002_flt_Abs', 'ISISIndirectAbsCor_FltAbsTest.nxs'
+        return 'irs26176_graphite002_cyl_Abs', 'ISISIndirectAbsCor_AbsRunFeederTest.nxs'
 
 #====================================================================================================
 
@@ -153,16 +154,16 @@ class AbsRunFeederChemicalFormulaTest(stresstesting.MantidStressTest):
         geom = 'cyl'
         ncan = 2
         size = [0.2, 0.25, 0.26, 0.0]
-        avar = 45.0
+        avar = 0.002
         density = [0.1, 0.1, 0.1]
         beam_width = 4.0
-        sampleFormula = 'H2-0'
+        sampleFormula = 'H2-O'
         canFormula = 'V'
-        AbsRunFeeder(inputWS, canWS, geom, ncan, size, avar, density, beam_width=beam_width, sampleFormula=sampleFormula, canFormula=canFormula)
+        AbsRunFeeder(inputWS, canWS, geom, ncan, size, avar, density, beam_width=beam_width, sampleFormula=sampleFormula, canFormula=canFormula,  sigs=[0,0,0], siga=[0,0,0])
 
     def validate(self):
         self.tolerance = 1e-3
-        return 'irs26176_graphite002_flt_Abs', 'ISISIndirectAbsCor_FltAbsTest.nxs'
+        return 'irs26176_graphite002_cyl_Abs', 'ISISIndirectAbsCor_ChemicalFormulaTest.nxs'
 
 #====================================================================================================
 
@@ -185,6 +186,8 @@ class AbsRunFeederDefaultBeamWidthTest(stresstesting.MantidStressTest):
         canWS = 'irs26173_graphite002_red'
 
         Load(inputWS + '.nxs', OutputWorkspace=inputWS)
+        path = os.path.join(config['instrumentDefinition.directory'], 'IRIS_Parameters.xml')
+        LoadParameterFile(inputWS, Filename=path)
         Load(canWS + '.nxs', OutputWorkspace=canWS)
 
         geom = 'cyl'
@@ -192,10 +195,10 @@ class AbsRunFeederDefaultBeamWidthTest(stresstesting.MantidStressTest):
         size = [0.2, 0.25, 0.26, 0.0]
         sigs = [5.0, 0.1, 0.1]
         siga = [0.0, 5.0, 5.0]
-        avar = 45.0
+        avar = 0.002
         density = [0.1, 0.1, 0.1]
         AbsRunFeeder(inputWS, canWS, geom, ncan, size, avar, density, sigs=sigs, siga=siga)
 
     def validate(self):
         self.tolerance = 1e-3
-        return 'irs26176_graphite002_flt_Abs', 'ISISIndirectAbsCor_FltAbsTest.nxs'
+        return 'irs26176_graphite002_cyl_Abs', 'ISISIndirectAbsCor_DefaultBeamWidthTest.nxs'
