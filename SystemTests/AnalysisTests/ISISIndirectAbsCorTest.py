@@ -110,6 +110,9 @@ class AbsRunFeederTest(stresstesting.MantidStressTest):
         # cylindrical Vanadium can
         canWS = 'irs26173_graphite002_red'
 
+        Load(inputWS + '.nxs', OutputWorkspace=inputWS)
+        Load(canWS + '.nxs', OutputWorkspace=canWS)
+
         geom = 'cyl'
         ncan = 2
         size = [0.2, 0.25, 0.26, 0.0]
@@ -144,13 +147,16 @@ class AbsRunFeederChemicalFormulaTest(stresstesting.MantidStressTest):
         # cylindrical Vanadium can
         canWS = 'irs26173_graphite002_red'
 
+        Load(inputWS + '.nxs', OutputWorkspace=inputWS)
+        Load(canWS + '.nxs', OutputWorkspace=canWS)
+
         geom = 'cyl'
         ncan = 2
         size = [0.2, 0.25, 0.26, 0.0]
         avar = 45.0
         density = [0.1, 0.1, 0.1]
         beam_width = 4.0
-        sampleFormula = 'H20'
+        sampleFormula = 'H2-0'
         canFormula = 'V'
         AbsRunFeeder(inputWS, canWS, geom, ncan, size, avar, density, beam_width=beam_width, sampleFormula=sampleFormula, canFormula=canFormula)
 
@@ -177,6 +183,9 @@ class AbsRunFeederDefaultBeamWidthTest(stresstesting.MantidStressTest):
         inputWS = 'irs26176_graphite002_red'
         # cylindrical Vanadium can
         canWS = 'irs26173_graphite002_red'
+
+        Load(inputWS + '.nxs', OutputWorkspace=inputWS)
+        Load(canWS + '.nxs', OutputWorkspace=canWS)
 
         geom = 'cyl'
         ncan = 2
