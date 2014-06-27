@@ -30,7 +30,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
     @abstractmethod
     def get_reference_file(self):
       """Returns the name of the reference file to compare against"""
-      raise NotImplementedError("Implmenent get_reference_file to return "
+      raise NotImplementedError("Implement get_reference_file to return "
                                 "the name of the file to compare against.")
 
     def get_result_workspace(self):
@@ -42,7 +42,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
 
       self._validate_properties()
       #reducer = setup_reducer(self.instr_name)
-      # The tests rely on MARI_Parameters.xml file valind on 31 July 2013
+      # The tests rely on MARI_Parameters.xml file valid on 31 July 2013
       dgreduce.setup(self.instr_name) 
 
       args={};
@@ -192,6 +192,73 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
       args['save_format'] = []
       args['hard_mask_file'] = self.hard_mask
       args['monovan_mapfile'] = self.map_file
+      args['det_cal_file']=self.white_beam #"11060"
+
+
+     # reduction from workspace currently needs detector_calibration file
+     # MARI calibration uses one of data files defined on instrument. Here vanadium run is used for calibration
+      args['det_cal_file']="11060"
+
+
+      monovan_run=self.mono_van
+      # Do the reduction -- when monovan run is not None, it does absolute units 
+      outWS=dgreduce.arb_units(self.white_beam,self.sample_run,self.incident_energy,self.bins,self.map_file,monovan_run,**args)
+    
+  def get_result_workspace(self):
+      """Returns the result workspace to be checked"""
+      return "outWS"
+
+  def get_reference_file(self):
+    return "MARIReduction.nxs"
+
+class MARIReductionMon2Norm(ISISDirectInelasticReduction):
+
+  def __init__(self):
+    ISISDirectInelasticReduction.__init__(self)
+
+    mono_run = Load(Filename='MAR11001.RAW',OutputWorkspace='MAR11001.RAW')
+    last_alg = mono_run.getHistory().lastAlgorithm()
+    print last_alg
+    mono_ws = mono_run
+    AddSampleLog(Workspace=mono_ws, LogName='Filename', 
+                 LogText=last_alg.getPropertyValue('Filename'))
+
+    white_ws = Load(Filename='MAR11060.RAW',OutputWorkspace='MAR11060.RAW')
+
+    van_run = Load(Filename='MAR11015.RAW',OutputWorkspace='MAR11015.RAW')
+    last_alg = van_run.getHistory().lastAlgorithm()
+    van_ws = van_run
+    AddSampleLog(Workspace=van_ws, LogName='Filename', 
+                 LogText=last_alg.getPropertyValue('Filename'))
+
+    self.instr_name = 'MARI'
+    self.sample_run = mono_ws
+    self.incident_energy = 12
+    self.bins = [-11,0.05,11]
+    self.white_beam = white_ws
+    #self.white_beam = 
+    self.map_file = "mari_res.map"
+    self.mono_van = van_ws
+    self.sample_mass = 10
+    self.sample_rmm = 435.96
+    self.hard_mask = "mar11015.msk"
+
+  def runTest(self):
+      """Defines the workflow for the test"""
+
+      self._validate_properties()
+      #reducer = setup_reducer(self.instr_name)
+      # The tests rely on MARI_Parameters.xml file valind on 31 July 2013
+      dgreduce.setup(self.instr_name) 
+
+      args={};
+      args['sample_mass'] = self.sample_mass;
+      args['sample_rmm']  = self.sample_rmm;
+      # Disable auto save
+      args['save_format'] = []
+      args['hard_mask_file'] = self.hard_mask
+      args['monovan_mapfile'] = self.map_file
+      args['normalise_method']='monitor-2'
       args['det_cal_file']=self.white_beam #"11060"
 
 
