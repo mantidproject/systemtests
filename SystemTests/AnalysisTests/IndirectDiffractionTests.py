@@ -31,7 +31,7 @@ class ToscaDiffractionTest(stresstesting.MantidStressTest):
     Runs the reduction
     """
     inst_name = "TOSCA"
-    param_file = "%s_diffraction__Parameters.xml" % (inst_name)
+    param_file = "%s_diffraction_diffspec_Parameters.xml" % (inst_name)
     from IndirectDiffractionReduction import MSGDiffractionReducer
     reducer = MSGDiffractionReducer()
     reducer.set_instrument_name(inst_name)
