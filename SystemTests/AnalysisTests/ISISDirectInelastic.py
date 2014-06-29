@@ -248,7 +248,7 @@ class MARIReductionMon2Norm(ISISDirectInelasticReduction):
 
       self._validate_properties()
       #reducer = setup_reducer(self.instr_name)
-      # The tests rely on MARI_Parameters.xml file valind on 31 July 2013
+      # The tests rely on MARI_Parameters.xml file valid on 31 July 2013
       dgreduce.setup(self.instr_name) 
 
       args={};
@@ -276,7 +276,7 @@ class MARIReductionMon2Norm(ISISDirectInelasticReduction):
       return "outWS"
 
   def get_reference_file(self):
-    return "MARIReduction.nxs"
+    return "MARIReductionMon2Norm.nxs"
 
 class MARIReductionSum(ISISDirectInelasticReduction):
 
