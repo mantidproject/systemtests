@@ -18,9 +18,11 @@ class IRISDiffspecDiffractionTest(stresstesting.MantidStressTest):
     reducer.set_rebin_string("3.0,0.001,4.0")
     reducer.reduce()
 
+    self._output_workspace = reducer.get_result_workspaces()[0]
+
   def validate(self):
     self.disableChecking.append('Instrument')
-    return 'IRS21360', 'IRISDiffspecDiffractionTest.nxs'
+    return self._output_workspace, 'IRISDiffspecDiffractionTest.nxs'
 
 #-------------------------------------------------------------------------------
 
@@ -41,9 +43,11 @@ class ToscaDiffractionTest(stresstesting.MantidStressTest):
     reducer.set_rebin_string("0.5,0.001,2.1")
     reducer.reduce()
 
+    self._output_workspace = reducer.get_result_workspaces()[0]
+
   def validate(self):
     self.disableChecking.append('Instrument')
-    return 'TSC11453', 'TOSCADiffractionTest.nxs'
+    return self._output_workspace, 'TOSCADiffractionTest.nxs'
 
 #-------------------------------------------------------------------------------
 
@@ -79,6 +83,8 @@ class OSIRISDiffspecDiffractionTest(stresstesting.MantidStressTest):
     reducer.set_rebin_string("2.0,0.001,3.0")
     reducer.reduce()
 
+    self._output_workspace = reducer.get_result_workspaces()[0]
+
   def validate(self):
     self.disableChecking.append('Instrument')
-    return 'OSIRIS00101300', 'OsirisDiffspecDiffractionTest.nxs'
+    return self._output_workspace, 'OsirisDiffspecDiffractionTest.nxs'
