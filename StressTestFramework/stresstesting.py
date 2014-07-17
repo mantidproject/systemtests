@@ -391,10 +391,26 @@ class MantidStressTest(unittest.TestCase):
             raise Exception(msg)
     
     def assertLessThan(self, value, expected, msg=""):
-        super(MantidStressTest, self).assertLess(a, b, msg)
+        """
+        Check that a value is < expected.
+        """
+        # Build the error message
+        if msg != "": msg += " "
+        msg += "Expected %g < %g " % (value, expected)
+        
+        if (value >= expected):
+            raise Exception(msg)
     
     def assertGreaterThan(self, value, expected, msg=""):
-        super(MantidStressTest, self).assertGreater(a, b, msg)
+        """
+        Check that a value is > expected.
+        """
+        # Build the error message
+        if msg != "": msg += " "
+        msg += "Expected %g > %g " % (value, expected)
+        
+        if (value <= expected):
+            raise Exception(msg)
             
     
 #########################################################################
