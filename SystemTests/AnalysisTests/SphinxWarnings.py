@@ -21,6 +21,7 @@ class SphinxWarnings(stresstesting.MantidStressTest):
                         'ISIS',
                         'Inelastic',
                         'MDAlgorithms',
+                        'MPI',
                         'Muon',
                         'Optimization',
                         'PythonAlgorithms',
