@@ -10,8 +10,8 @@ DIFF_PLACES = 12
 class ILLIN5Tests(unittest.TestCase):
     
     ws_name = "in5_ws"
-    dataDispersionFile = "ILLIN5_Sample_096003.nxs"
-    vanadiumFile = "ILLIN5_Vana_095893.nxs"
+    dataDispersionFile = "ILL/ILLIN5_Sample_096003.nxs"
+    vanadiumFile = "ILL/ILLIN5_Vana_095893.nxs"
 
 
     def tearDown(self):
