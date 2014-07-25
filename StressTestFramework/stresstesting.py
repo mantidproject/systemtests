@@ -36,11 +36,12 @@ import imp
 import inspect
 import abc
 import numpy
+import unittest
 
 #########################################################################
 # The base test class.
 #########################################################################
-class MantidStressTest(object):
+class MantidStressTest(unittest.TestCase):
     '''Defines a base class for stress tests, providing functions
     that should be overridden by inheriting classes to perform tests.
     '''
@@ -52,6 +53,7 @@ class MantidStressTest(object):
     PREFIX = 'RESULT'
 
     def __init__(self):
+        super(MantidStressTest, self).__init__()
         # A list of things not to check when validating
         self.disableChecking = []
         # Whether or not to strip off whitespace when doing simple ascii diff
@@ -376,26 +378,7 @@ class MantidStressTest(object):
         '''
         pass
     
-    def assertTrue(self, value, msg=""):
-        """
-        Check that "value" is true.
-        """
-        # Build the error message
-        if msg == "": msg = "Expected True."
-        
-        if not value:
-            raise Exception(msg)
-            
-    def assertEqual(self, value, expected, msg=""):
-        """
-        Check that a value is equal to the expected result
-        """
-        if msg != "": msg += " "
-        msg += "Expected %g == %g" % (value, expected)
-        
-        if value != expected:
-            raise Exception(msg)
-        
+   
     def assertDelta(self, value, expected, delta, msg=""):
         """
         Check that a value is within +- delta of the expected value
@@ -428,7 +411,7 @@ class MantidStressTest(object):
         
         if (value <= expected):
             raise Exception(msg)
-
+            
     
 #########################################################################
 # A class to store the results of a test 
