@@ -358,28 +358,29 @@ class ISISIndirectInelasticReductionOutput(stresstesting.MantidStressTest):
 
     def assert_ascii_file_matches(self):
         expected_result = [
-            'X , Y0 , E0 , Y1 , E1 , Y2 , E2\n',
-            '-2.4925,0,0,0.617579,0.362534,0.270868,0.159006\n', 
-            '-2.4775,0.375037,0.273017,0,0,0.210547,0.153272\n'
+            'X , Y0 , E0 , Y1 , E1 , Y2 , E2',
+            '-2.4925,0,0,0.617579,0.362534,0.270868,0.159006', 
+            '-2.4775,0.375037,0.273017,0,0,0.210547,0.153272'
         ]
         self.assert_file_format_matches_expected(expected_result, self.output_file_names['ascii'],
                                                  "Output of ASCII format did not match expected result.")
 
     def assert_aclimax_file_matches(self):
         expected_result = [
-            '# X \t Y \t E\n',
-            '0\n',
-            '3.0075\t0.175435\t0.115017\n'
+            '# X \t Y \t E',
+            '0',
+            '3.0075\t0.175435\t0.115017'
         ]
         self.assert_file_format_matches_expected(expected_result, self.output_file_names['aclimax'],
                                                  "Output of aclimax format did not match expected result.")
 
     def assert_spe_file_matches(self):
         expected_result = [
-            '       3    1532\n', '### Phi Grid\n',
-            ' 5.000E-01 1.500E+00 2.500E+00 3.500E+00\n',
-            '### Energy Grid\n',
-            '-2.500E+00-2.485E+00-2.470E+00-2.455E+00-2.440E+00-2.425E+00-2.410E+00-2.395E+00\n'
+            '       3    1532', 
+            '### Phi Grid',
+            ' 5.000E-01 1.500E+00 2.500E+00 3.500E+00',
+            '### Energy Grid',
+            '-2.500E+00-2.485E+00-2.470E+00-2.455E+00-2.440E+00-2.425E+00-2.410E+00-2.395E+00'
         ]
         self.assert_file_format_matches_expected(expected_result, self.output_file_names['spe'],
                                                  "Output of SPE format did not match expected result.")
@@ -421,7 +422,7 @@ class ISISIndirectInelasticReductionOutput(stresstesting.MantidStressTest):
 
     def _read_ascii_file(self, path, num_lines):
         with open(path,'rb') as file_handle:
-            lines = [file_handle.readline() for _ in xrange(num_lines)]
+            lines = [file_handle.readline().rstrip() for _ in xrange(num_lines)]
             return lines
 
     def _get_file_names(self):
