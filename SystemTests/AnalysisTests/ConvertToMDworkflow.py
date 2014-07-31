@@ -74,9 +74,9 @@ class ConvertToMDworkflow(stresstesting.MantidStressTest):
 
       checker.execute()
       if checker.getPropertyValue("Equals") != "1":
-           print " Workspaced do not match, result: ",checker.getPropertyValue("Result")
+           print " Workspaces do not match, result: ",checker.getPropertyValue("Result")
            print self.__class__.__name__
-           SaveNexus(InputWorkspace=valNames[0],Filename=self.__class__.__name__+'-mismatch.nxs')
+           SaveMD(InputWorkspace=valNames[0],Filename=self.__class__.__name__+'-mismatch.nxs')
            return False
 
       
