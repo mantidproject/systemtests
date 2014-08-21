@@ -1,0 +1,1 @@
+isinstance(ws, mantid.api.WorkspaceGroup)

@@ -13,7 +13,6 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'BioSANS_exp61_scan0004_0001.xml',
                 'BioSANS_flood_data.xml',
                 'BioSANS_sample_trans.xml',
-                'BioSANS_test_data.xml',
                 'CNCS_TS_2008_08_18.dat',
                 'DISF_NaF.cdl',
                 'det_corrected7.dat',
@@ -34,7 +33,7 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'MaskSANS2DReductionGUI.txt',
                 'MaskSANS2DReductionGUI_MaskFiles.txt',
                 'MaskSANS2DReductionGUI_LimitEventsTime.txt',
-                'MAP17269.raw', # Don't need to check multiple MAPS files 
+                'MAP17269.raw', # Don't need to check multiple MAPS files
                 'MAP17589.raw',
                 'MER06399.raw', # Don't need to check multiple MERLIN files
                 'PG3_11485-1.dat', # Generic load doesn't do very well with ASCII files
@@ -83,7 +82,7 @@ BANNED_REGEXP = [r'SANS2D\d+.log$',
                  r'.*_pulseid\.dat']
 
 # This list stores files that will be loaded first.
-# Implemented as simple solution to avoid failures on 
+# Implemented as simple solution to avoid failures on
 # WinXP where small files have trouble allocating larger
 # amounts of contiguous memory.
 # Usage of XP is getting lower so we don't want to compromise the
@@ -93,7 +92,7 @@ PRIORITY_FILES = ['HYS_13658_event.nxs',
                   'ILLIN5_Vana_095893.nxs']
 
 def useDir(direc):
-    """Only allow directories that aren't test output or 
+    """Only allow directories that aren't test output or
     reference results."""
     if "ReferenceResults" in direc:
         return False
@@ -144,7 +143,7 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
                         priority_abspaths[cur_index] = fullpath
                     except ValueError:
                         pass
-                    
+
         datafiles = sorted(files, key=lambda key: files[key], reverse=True)
 
         # Put the priority ones first
@@ -191,7 +190,7 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
         from mantid.api import IMDEventWorkspace
         # Output can be a tuple if the Load algorithm has extra output properties
         # but the output workspace should always be the first argument
-        outputs = Load(filename) 
+        outputs = Load(filename)
         if type(outputs) == tuple:
             wksp = outputs[0]
         else:

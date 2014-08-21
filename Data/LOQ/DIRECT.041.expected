@@ -1,0 +1,3 @@
+ws.getNumberHistograms() == 1
+ws.getNumberBins() == 102
+ws.readX(0).shape[0] == ws.readY(0).shape[0]
