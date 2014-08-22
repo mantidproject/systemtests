@@ -10,7 +10,7 @@ from mantid.simpleapi import Load
 
 import unittest
 
-DIFF_PLACES = 12
+DIFF_PLACES = 8
 
 class LoadTest(stresstesting.MantidStressTest):
 
@@ -101,5 +101,122 @@ class LoadTests(unittest.TestCase):
         self.assertEquals(740, data[0].getNumberEvents())
         self.assertEquals(105666, data[1].getNumberEvents())
 
+    def test_range_operator_loads_correct_number_of_files(self):
+        data = Load("TSC15352:15354.raw", OutputWorkspace = self.wsname)
+
+        self.assertTrue(isinstance(data, WorkspaceGroup))
+        self.assertEquals(3, data.getNumberOfEntries())
+
+        self.assertTrue(isinstance(data[0], MatrixWorkspace))
+        self.assertTrue(isinstance(data[1], MatrixWorkspace))
+        self.assertTrue(isinstance(data[2], MatrixWorkspace))
+
+        # Cursory check that the correct ones were loaded
+        self.assertTrue("TO96_2" in data[0].getTitle())
+        self.assertTrue("TO96_3" in data[1].getTitle())
+        self.assertTrue("TO96_4" in data[2].getTitle())
+
+    def test_stepped_range_operator_loads_correct_number_of_files(self):
+        data = Load("TSC15352:15354:2.raw", OutputWorkspace = self.wsname)
+
+        self.assertTrue(isinstance(data, WorkspaceGroup))
+        self.assertEquals(2, data.getNumberOfEntries())
+
+        self.assertTrue(isinstance(data[0], MatrixWorkspace))
+        self.assertTrue(isinstance(data[1], MatrixWorkspace))
+
+        # Cursory check that the correct ones were loaded
+        self.assertTrue("TO96_2" in data[0].getTitle())
+        self.assertTrue("TO96_4" in data[1].getTitle())
+
+    def test_plus_operator_sums_single_set_files(self):
+        data = Load("TSC15352+15353.raw", OutputWorkspace = self.wsname)
+
+        self.assertTrue(isinstance(data, MatrixWorkspace))
+        self.assertEquals(149, data.getNumberHistograms())
+        self.assertEquals(24974, data.blocksize())
+
+        self.assertAlmostEqual(9.0, data.readX(2)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(46352.0, data.readY(2)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(215.29514625276622, data.readE(2)[1], places = DIFF_PLACES)
+
+        deleted_names = ["TSC15352", "TSC15353"]
+        for name in deleted_names:
+            self.assertTrue(name not in AnalysisDataService)
+
+    def test_plus_operator_sums_multiple_set_files_to_give_group(self):
+        summed_data = Load("TSC15352+15353.raw,TSC15352+15354.raw", OutputWorkspace = self.wsname)
+
+        self.assertTrue(isinstance(summed_data, WorkspaceGroup))
+        self.assertEquals(2, summed_data.getNumberOfEntries())
+
+        # First group
+        data = summed_data[0]
+        self.assertEquals(149, data.getNumberHistograms())
+        self.assertEquals(24974, data.blocksize())
+
+        self.assertAlmostEqual(9.0, data.readX(2)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(46352.0, data.readY(2)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(215.29514625276622, data.readE(2)[1], places = DIFF_PLACES)
+
+        # Second group
+        data = summed_data[1]
+        self.assertEquals(149, data.getNumberHistograms())
+        self.assertEquals(24974, data.blocksize())
+
+        self.assertAlmostEqual(9.0, data.readX(2)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(35640.0, data.readY(2)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(188.78559267062727, data.readE(2)[1], places = DIFF_PLACES)
+
+        deleted_names = ["TSC15352", "TSC15353", "TSC15354"]
+        for name in deleted_names:
+            self.assertTrue(name not in AnalysisDataService,)
+
+    def test_sum_range_operator_sums_to_single_workspace(self):
+        data = Load("TSC15352-15353.raw", OutputWorkspace = self.wsname)
+
+        self.assertTrue(isinstance(data, MatrixWorkspace))
+        self.assertEquals(149, data.getNumberHistograms())
+        self.assertEquals(24974, data.blocksize())
+
+        self.assertAlmostEqual(9.0, data.readX(2)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(46352.0, data.readY(2)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(215.29514625276622, data.readE(2)[1], places = DIFF_PLACES)
+
+    def test_sum_range_operator_with_step_sums_to_single_workspace(self):
+        data = Load("TSC15352-15354:2.raw", OutputWorkspace = self.wsname)
+
+        self.assertTrue(isinstance(data, MatrixWorkspace))
+        self.assertEquals(149, data.getNumberHistograms())
+        self.assertEquals(24974, data.blocksize())
+
+        self.assertAlmostEqual(9.0, data.readX(2)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(35640.0, data.readY(2)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(188.78559267062727, data.readE(2)[1], places = DIFF_PLACES)
+
+
+    def test_plus_operator_for_input_groups(self):
+        summed_data = Load("OFFSPEC10791+10792.raw", OutputWorkspace = self.wsname)
+
+        self.assertTrue(isinstance(summed_data, WorkspaceGroup))
+        self.assertEquals(2, summed_data.getNumberOfEntries())
+
+        # First group
+        data = summed_data[0]
+        self.assertEquals(245, data.getNumberHistograms())
+        self.assertEquals(5000, data.blocksize())
+
+        self.assertAlmostEqual(25.0, data.readX(1)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(4.0, data.readY(1)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(2.0, data.readE(1)[1], places = DIFF_PLACES)
+
+        # Second group
+        data = summed_data[1]
+        self.assertEquals(245, data.getNumberHistograms())
+        self.assertEquals(5000, data.blocksize())
+
+        self.assertAlmostEqual(25.0, data.readX(1)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(1.0, data.readY(1)[1], places = DIFF_PLACES)
+        self.assertAlmostEqual(1.0, data.readE(1)[1], places = DIFF_PLACES)
 
 #====================================================================================
