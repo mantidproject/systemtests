@@ -1,0 +1,2 @@
+ws.getNumberHistograms() == 4
+ws.blocksize() == 39
