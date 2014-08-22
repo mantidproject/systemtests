@@ -1,1 +1,1 @@
-isinstance(ws[0], mantid.api.WorkspaceGroup)
+isinstance(wksp.0], mantid.api.WorkspaceGroup)

@@ -1,2 +1,2 @@
-ws.getNumberHistograms() == 1
-ws.blocksize() == 6
+wksp.getNumberHistograms() == 1
+wksp.blocksize() == 6

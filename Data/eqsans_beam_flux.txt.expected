@@ -1,1 +1,1 @@
-ws.getNumberHistograms() == 1
+wksp.getNumberHistograms() == 1

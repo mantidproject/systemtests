@@ -1,2 +1,2 @@
-ws.getNumberHistograms() == 8
+wksp.getNumberHistograms() == 8
 
