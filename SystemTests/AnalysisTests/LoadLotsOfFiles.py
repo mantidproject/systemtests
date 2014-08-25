@@ -166,6 +166,10 @@ class LoadLotsOfFiles(stresstesting.MantidStressTest):
         if os.path.getsize(expected) <= 0: #non-zero length
             return True
 
+        # Eval statement will use current scope. Allow access to
+        # mantid module
+        import mantid
+
         print "Found an expected file '%s' file" % expected
         expectedfile = open(expected)
         tests = expectedfile.readlines()
