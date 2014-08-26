@@ -28,4 +28,42 @@ class ISISRawHistNexus(stresstesting.MantidStressTest):
     if str(A1window.getPos()) != '[0,3,0]' :
     	    return False
     
+    # check also instrument parameters added to MAPS component
+    paramNames = inst.getParameterNames()
+    paramString = ''
+    for param in paramNames:
+	paramString = paramString + param
+	   
+    if str(len(paramString)) != '483' :
+    	    return False    
+    
+    return True
+
+
+# here test against a raw event nexus LET dataset with embedded informatino. 
+class ISISRawEventNexus(stresstesting.MantidStressTest):
+    
+  def runTest(self):
+
+    LET00017675_raw_ISIS_event = Load('LET00017675.nxs')
+
+  def validate(self):
+
+    LET00017675_raw_ISIS_event = mtd['LET00017675_raw_ISIS_event']
+    inst = LET00017675_raw_ISIS_event.getInstrument()
+    normMon1Spec = int(inst.getNumberParameter('norm-mon1-spec')[0])
+    
+    if str(normMon1Spec) != '73729' :
+        print str(normMon1Spec)
+        return False
+    
+    paramNames = inst.getParameterNames()
+    paramString = ''
+    for param in paramNames:
+        paramString = paramString + param
+    
+    if str(len(paramString)) != '979' :
+        print len(paramString)
+        return False
+    
     return True
