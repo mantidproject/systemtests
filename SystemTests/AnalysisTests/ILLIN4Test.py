@@ -18,25 +18,26 @@ class ILLIN4Tests(unittest.TestCase):
             mtd.remove(self.ws_name)
 
     #================== Success cases ================================
-    def test_load_single_file(self):
+    def test_load_file(self):
         self._run_load(self.dataFile)
         
         # Check some data
         wsOut = mtd[self.ws_name]
         self.assertEqual(wsOut.getNumberHistograms(), 397)
-        
-        # Assigns origin to the sample position
+
+        # Check is the two detectors have the same theta
         samplePos = wsOut.getInstrument().getSample().getPos()
-        # Beam direction towards Z+
         beamDirection = V3D(0,0,1)
-        # Assigns det to the detector with index 9 and 209
         det9 = wsOut.getDetector(9)
         det209 = wsOut.getDetector(209)
-        # This 2 detectors must have the same 2 theta!
         self.assertEqual(det9.getTwoTheta(samplePos, beamDirection),
                          det209.getTwoTheta(samplePos, beamDirection))
-
-                
+        
+        # Same mirror position
+        self.assertEqual(det9.getPos().getX(),det209.getPos().getX())
+        self.assertEqual(det9.getPos().getZ(),det209.getPos().getZ())
+        self.assertEqual(det9.getPos().getY(),-det209.getPos().getY())
+        
     #================== Failure cases ================================
 
     # TODO
