@@ -1,0 +1,3 @@
+wksp.getNumberHistograms() == 1
+wksp.blocksize() == 102
+wksp.readX(0).shape[0] == wksp.readY(0).shape[0]

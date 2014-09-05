@@ -1,0 +1,2 @@
+wksp.getNumberHistograms() == 28
+wksp.blocksize() == 60
