@@ -1119,8 +1119,9 @@ class ISISIndirectInelasticApplyCorrections(ISISIndirectInelasticBase):
         <instrument><sample number>_<analyser><reflection>_<mode>_<can number>
         """
 
-        can_run = mtd[self._can_workspace].getRun()
-        can_run_number = can_run.getProperty('run_number').value
+        if self._can_workspace != '':
+            can_run = mtd[self._can_workspace].getRun()
+            can_run_number = can_run.getProperty('run_number').value
 
         mode = ''
         if self._corrections_workspace != '' and self._can_workspace != '':
@@ -1159,12 +1160,30 @@ class IRISApplyCorrectionsWithCan(ISISIndirectInelasticApplyCorrections):
         self._can_geometry = 'cyl'
         self._using_corrections = False
 
-        self._kwargs = {'Verbose':True, 'RebinCan':False, 'ScaleOrNotToScale':False, 
+        self._kwargs = {'Verbose':True, 'RebinCan':False, 'ScaleOrNotToScale':False,
                   'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
 
     def get_reference_files(self):
         return ['II.IRISApplyCorrectionsWithCan.nxs']
 
+
+class IRISApplyCorrectionsWithCorrectionsWS(ISISIndirectInelasticApplyCorrections):
+    """ Test applying corrections with a corrections workspace """
+
+    def __init__(self):
+        ISISIndirectInelasticApplyCorrections.__init__(self)
+
+        self._sample_workspace = 'irs26176_graphite002_red'
+        self._can_workspace = ''
+        self._corrections_workspace = 'irs26176_graphite002_cyl_Abs'
+        self._can_geometry = 'cyl'
+        self._using_corrections = True
+
+        self._kwargs = {'Verbose':True, 'RebinCan':False, 'ScaleOrNotToScale':False,
+                  'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
+
+    def get_reference_files(self):
+        return ['II.IRISApplyCorrectionsWithCorrectionsWS.nxs']
 
 class IRISApplyCorrectionsWithBoth(ISISIndirectInelasticApplyCorrections):
     """ Test applying corrections with both a can and a corrections workspace """
@@ -1178,7 +1197,7 @@ class IRISApplyCorrectionsWithBoth(ISISIndirectInelasticApplyCorrections):
         self._can_geometry = 'cyl'
         self._using_corrections = True
 
-        self._kwargs = {'Verbose':True, 'RebinCan':False, 'ScaleOrNotToScale':False, 
+        self._kwargs = {'Verbose':True, 'RebinCan':False, 'ScaleOrNotToScale':False,
                   'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
 
     def get_reference_files(self):
