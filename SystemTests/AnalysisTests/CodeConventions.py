@@ -33,7 +33,8 @@ ALG_BAD_PARAMS = {
                           "usePanelOrientation", "tolerance",
                           "MaxPositionChange_meters"),
     "SetUB(v1)":("a", "b", "c", "alpha", "beta", "gamma", "u", "v"),
-    "ViewBOA(v1)":("CD-Distance")
+    "ViewBOA(v1)":("CD-Distance"),
+    "PoldiCreatePeaksFromCell":("a", "b", "c", "alpha", "beta", "gamma")
     }
 
 # TODO this list should be empty
