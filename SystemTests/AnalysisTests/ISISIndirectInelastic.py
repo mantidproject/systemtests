@@ -454,20 +454,16 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
     __metaclass__ = ABCMeta  # Mark as an abstract class
 
     def _run(self):
-        self.tolerance = 1e-7
         '''Defines the workflow for the test'''
-        calib = CreateCalibrationWorkspace()
-        calib.set_files([self.data_file])
-        calib.set_detector_range(self.detector_range[0],
-                                 self.detector_range[1])
-        calib.set_parameters(self.parameters[0],
-                             self.parameters[1],
-                             self.parameters[2],
-                             self.parameters[3])
-        calib.set_analyser(self.analyser)
-        calib.set_reflection(self.reflection)
-        calib.execute(None, None)  # Does not appear to be used.
-        self.result_names = [calib.result_workspace()]
+        self.tolerance = 1e-7
+
+        self.result_names = ['IndirectCalibration_Output']
+
+        CreateCalibrationWorkspace(InputFiles=self.data_file,
+                                   OutputWorkspace='IndirectCalibration_Output',
+                                   DetectorRange=self.detector_range,
+                                   PeakRange=self.peak,
+                                   BackgroundRange=self.back)
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
@@ -475,15 +471,11 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
         if type(self.data_file) != str:
             raise RuntimeError("data_file property should be a string")
         if type(self.detector_range) != list and len(self.detector_range) != 2:
-            raise RuntimeError("detector_range should be a list of exactly 2 "
-                               "values")
-        if type(self.parameters) != list and len(self.parameters) != 4:
-            raise RuntimeError("parameters should be a list of exactly 4 "
-                               "values")
-        if type(self.analyser) != str:
-            raise RuntimeError("analyser property should be a string")
-        if type(self.reflection) != str:
-            raise RuntimeError("reflection property should be a string")
+            raise RuntimeError("detector_range should be a list of exactly 2 values")
+        if type(self.peak) != list and len(self.peak) != 2:
+            raise RuntimeError("peak should be a list of exactly 2 values")
+        if type(self.back) != list and len(self.back) != 2:
+            raise RuntimeError("back should be a list of exactly 2 values")
 
 #------------------------- OSIRIS tests ---------------------------------------
 
@@ -493,10 +485,9 @@ class OSIRISCalibration(ISISIndirectInelasticCalibration):
     def __init__(self):
         ISISIndirectInelasticCalibration.__init__(self)
         self.data_file = 'OSI97935.raw'
-        self.detector_range = [963 - 1, 1004 - 1]
-        self.parameters = [68000.00, 70000.00, 59000.00, 61000.00]
-        self.analyser = 'graphite'
-        self.reflection = '002'
+        self.detector_range = [963, 1004]
+        self.back = [68000.00, 70000.00]
+        self.peak = [59000.00, 61000.00]
 
     def get_reference_files(self):
         return ["II.OSIRISCalibration.nxs"]
@@ -509,10 +500,9 @@ class IRISCalibration(ISISIndirectInelasticCalibration):
     def __init__(self):
         ISISIndirectInelasticCalibration.__init__(self)
         self.data_file = 'IRS53664.raw'
-        self.detector_range = [3 - 1, 53 - 1]
-        self.parameters = [59000.00, 61500.00, 62500.00, 65000.00]
-        self.analyser = 'graphite'
-        self.reflection = '002'
+        self.detector_range = [3, 53]
+        self.back = [59000.00, 61500.00]
+        self.peak = [62500.00, 65000.00]
 
     def get_reference_files(self):
         return ["II.IRISCalibration.nxs"]
