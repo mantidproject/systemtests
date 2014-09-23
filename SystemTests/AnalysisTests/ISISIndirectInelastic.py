@@ -10,7 +10,7 @@ from mantid.api import FileFinder
 # Import our workflows.
 from inelastic_indirect_reducer import IndirectReducer
 from inelastic_indirect_reduction_steps import CreateCalibrationWorkspace
-from IndirectEnergyConversion import resolution, slice
+from IndirectEnergyConversion import slice
 from IndirectDataAnalysis import elwin, msdfit, fury, furyfitSeq, furyfitMult, confitSeq
 
 '''
@@ -525,12 +525,12 @@ class ISISIndirectInelasticResolution(ISISIndirectInelasticBase):
     The workflow is defined in the _run() method, simply
     define an __init__ method and set the following properties
     on the object
-        - self.icon_opt: a dictionary of icon options
         - self.instrument: a string giving the intrument name
         - self.analyser: a string giving the name of the analyser
         - self.reflection: a string giving the name of the reflection
+        - self.detector_range: a list of two integers, giving the range of detectors
         - self.background: a list of two doubles, giving the background params
-        - rebin_params: a comma separated string containing the rebin params
+        - self.rebin_params: a comma separated string containing the rebin params
         - self.files: a list of strings containing filenames
     '''
 
@@ -539,36 +539,37 @@ class ISISIndirectInelasticResolution(ISISIndirectInelasticBase):
     def _run(self):
         self.tolerance = 1e-7
         '''Defines the workflow for the test'''
-        self.result_names = [resolution(self.files,
-                                        self.icon_opt,
-                                        self.rebin_params,
-                                        self.background,
-                                        self.instrument,
-                                        self.analyser,
-                                        self.reflection,
-                                        # Don't plot from a system test:
-                                        Plot=False)]
+
+        IndirectResolution(InputFiles=self.files,
+                           OutputWorkspace='__IndirectResolution_Test',
+                           Instrument=self.instrument,
+                           Analyser=self.analyser,
+                           Reflection=self.reflection,
+                           DetectorRange=self.detector_range,
+                           BackgroundRange=self.background,
+                           RebinString=self.rebin_params,
+                           Plot=False)
+
+        self.result_names = ['__IndirectResolution_Test']
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
 
-        if type(self.icon_opt) != dict:
-            raise RuntimeError("icon_opt should be a dictionary of exactly")
         if type(self.instrument) != str:
             raise RuntimeError("instrument property should be a string")
         if type(self.analyser) != str:
             raise RuntimeError("analyser property should be a string")
         if type(self.reflection) != str:
             raise RuntimeError("reflection property should be a string")
+        if type(self.detector_range) != list and len(self.detector_range) != 2:
+            raise RuntimeError("detector_range should be a list of exactly 2 values")
         if type(self.background) != list and len(self.background) != 2:
-            raise RuntimeError(" should be a list of exactly 2 "
-                               "values")
+            raise RuntimeError("background should be a list of exactly 2 values")
         if type(self.rebin_params) != str:
             raise RuntimeError("rebin_params property should be a string")
-        #Have this as just one file for now.
+        # Have this as just one file for now.
         if type(self.files) != list and len(self.files) != 1:
-            raise RuntimeError("files should be a list of exactly 1 "
-                               "value")
+            raise RuntimeError("files should be a list of exactly 1 value")
 
 #------------------------- OSIRIS tests ---------------------------------------
 
@@ -577,10 +578,10 @@ class OSIRISResolution(ISISIndirectInelasticResolution):
 
     def __init__(self):
         ISISIndirectInelasticResolution.__init__(self)
-        self.icon_opt = {'first': 963, 'last': 1004}
         self.instrument = 'OSIRIS'
         self.analyser = 'graphite'
         self.reflection = '002'
+        self.detector_range = [963, 1004]
         self.background = [-0.563032, 0.605636]
         self.rebin_params = '-0.2,0.002,0.2'
         self.files = ['OSI97935.raw']
@@ -595,10 +596,10 @@ class IRISResolution(ISISIndirectInelasticResolution):
 
     def __init__(self):
         ISISIndirectInelasticResolution.__init__(self)
-        self.icon_opt = {'first': 3, 'last': 53}
         self.instrument = 'IRIS'
         self.analyser = 'graphite'
         self.reflection = '002'
+        self.detector_range = [3, 53]
         self.background = [-0.54, 0.65]
         self.rebin_params = '-0.2,0.002,0.2'
         self.files = ['IRS53664.raw']
