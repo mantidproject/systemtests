@@ -547,7 +547,7 @@ class ISISIndirectInelasticResolution(ISISIndirectInelasticBase):
                            Reflection=self.reflection,
                            DetectorRange=self.detector_range,
                            BackgroundRange=self.background,
-                           RebinString=self.rebin_params,
+                           RebinParam=self.rebin_params,
                            Plot=False)
 
         self.result_names = ['__IndirectResolution_Test']
