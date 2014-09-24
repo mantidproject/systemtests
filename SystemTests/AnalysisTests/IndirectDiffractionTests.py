@@ -1,90 +1,108 @@
+from abc import ABCMeta, abstractmethod
 import stresstesting
 
-#-------------------------------------------------------------------------------
-class IRISDiffspecDiffractionTest(stresstesting.MantidStressTest):
-  
-  def runTest(self):
+
+class MSGDiffractionReductionTest(stresstesting.MantidStressTest):
     """
-    Runs the reduction
+    Base class for tests that use the MSGDiffractionReduction algorithm.
     """
-    inst_name = "IRIS"
-    param_file = "%s_diffraction_diffspec_Parameters.xml" % (inst_name)
-    from IndirectDiffractionReduction import MSGDiffractionReducer
-    reducer = MSGDiffractionReducer()
-    reducer.set_instrument_name(inst_name)
-    reducer.set_detector_range(104, 111) # Note these are one less than what you enter in the GUI
-    reducer.set_parameter_file(param_file)
-    reducer.append_data_file("IRS21360.raw")
-    reducer.set_rebin_string("3.0,0.001,4.0")
-    reducer.reduce()
 
-    self._output_workspace = reducer.get_result_workspaces()[0]
+    __metaclass__ = ABCMeta
 
-  def validate(self):
-    self.disableChecking.append('Instrument')
-    return self._output_workspace, 'IRISDiffspecDiffractionTest.nxs'
+    @abstractmethod
+    def get_reference_file(self):
+        """
+        Gets reference result file for workspace comparison.
+        """
+        raise NotImplementedError()
 
-#-------------------------------------------------------------------------------
+    def runTest(self):
+        """
+        Runs an MSGDiffractionReduction with the configured parameters.
+        """
+        from mantid.simpleapi import MSGDiffractionReduction
+        from mantid import mtd
 
-class ToscaDiffractionTest(stresstesting.MantidStressTest):
-  
-  def runTest(self):
-    """
-    Runs the reduction
-    """
-    inst_name = "TOSCA"
-    param_file = "%s_diffraction_diffspec_Parameters.xml" % (inst_name)
-    from IndirectDiffractionReduction import MSGDiffractionReducer
-    reducer = MSGDiffractionReducer()
-    reducer.set_instrument_name(inst_name)
-    reducer.set_detector_range(145, 148) # Note these are one less than what you enter in the GUI
-    reducer.set_parameter_file(param_file)
-    reducer.append_data_file("TSC11453.raw")
-    reducer.set_rebin_string("0.5,0.001,2.1")
-    reducer.reduce()
+        MSGDiffractionReduction(InputFiles=self.raw_file,
+                                OutputWorkspaceGroup=self.output_workspace_group,
+                                Instrument=self.instrument,
+                                Mode=self.mode,
+                                DetectorRange=self.detector_range,
+                                RebinParam=self.rebinning)
 
-    self._output_workspace = reducer.get_result_workspaces()[0]
+        self._output_workspace = mtd[self.output_workspace_group].getNames()[0]
 
-  def validate(self):
-    self.disableChecking.append('Instrument')
-    return self._output_workspace, 'TOSCADiffractionTest.nxs'
+    def validate(self):
+        """
+        Validates the result workspace with the reference file.
+        """
+        self.disableChecking.append('Instrument')
+        return self._output_workspace, self.get_reference_file()
+
 
 #-------------------------------------------------------------------------------
+class IRISDiffspecDiffractionTest(MSGDiffractionReductionTest):
 
+    def __init__(self):
+        MSGDiffractionReductionTest.__init__(self)
+
+        self.instrument = 'IRIS'
+        self.mode = 'diffspec'
+        self.raw_file = 'IRS21360.raw'
+        self.detector_range = [105, 112]
+        self.rebinning = '3.0,0.001,4.0'
+        self.output_workspace_group = 'IRIS_Diffraction_DiffSpec_Test'
+
+    def get_reference_file(self):
+        return 'IRISDiffspecDiffractionTest.nxs'
+
+
+#-------------------------------------------------------------------------------
+class TOSCADiffractionTest(MSGDiffractionReductionTest):
+
+    def __init__(self):
+        MSGDiffractionReductionTest.__init__(self)
+
+        self.instrument = 'TOSCA'
+        self.mode = 'diffspec'
+        self.raw_file = 'TSC11453.raw'
+        self.detector_range = [146, 149]
+        self.rebinning = '0.5,0.001,2.1'
+        self.output_workspace_group = 'TOSCA_Diffraction_DiffSpec_Test'
+
+    def get_reference_file(self):
+        return 'TOSCADiffractionTest.nxs'
+
+
+#-------------------------------------------------------------------------------
+class OSIRISDiffspecDiffractionTest(MSGDiffractionReductionTest):
+
+    def __init__(self):
+        MSGDiffractionReductionTest.__init__(self)
+
+        self.instrument = 'OSIRIS'
+        self.mode = 'diffspec'
+        self.raw_file = 'osiris00101300.raw'
+        self.detector_range = [3, 962]
+        self.rebinning = '2.0,0.001,3.0'
+        self.output_workspace_group = 'OSIRIS_Diffraction_DiffSpec_Test'
+
+
+    def get_reference_file(self):
+        return 'OsirisDiffspecDiffractionTest.nxs'
+
+
+#-------------------------------------------------------------------------------
 class OsirisDiffOnlyTest(stresstesting.MantidStressTest):
-    
-  def runTest(self):
-    from mantid.simpleapi import OSIRISDiffractionReduction
-    OSIRISDiffractionReduction(
-	OutputWorkspace="OsirisDiffractionTest",
-	Sample="OSI89813.raw, OSI89814.raw, OSI89815.raw, OSI89816.raw, OSI89817.raw",
-	CalFile="osiris_041_RES10.cal",
-	Vanadium="OSI89757, OSI89758, OSI89759, OSI89760, OSI89761")
 
-  def validate(self):
-    self.disableChecking.append('Instrument')
-    return 'OsirisDiffractionTest', 'OsirisDiffractionTest.nxs'
+    def runTest(self):
+        from mantid.simpleapi import OSIRISDiffractionReduction
+        OSIRISDiffractionReduction(
+        OutputWorkspace="OsirisDiffractionTest",
+        Sample="OSI89813.raw, OSI89814.raw, OSI89815.raw, OSI89816.raw, OSI89817.raw",
+        CalFile="osiris_041_RES10.cal",
+        Vanadium="OSI89757, OSI89758, OSI89759, OSI89760, OSI89761")
 
-#-------------------------------------------------------------------------------
-class OSIRISDiffspecDiffractionTest(stresstesting.MantidStressTest):
-  
-  def runTest(self):
-    """
-    Runs the reduction
-    """
-    inst_name = "OSIRIS"
-    param_file = "%s_diffraction_diffspec_Parameters.xml" % (inst_name)
-    from IndirectDiffractionReduction import MSGDiffractionReducer
-    reducer = MSGDiffractionReducer()
-    reducer.set_instrument_name(inst_name)
-    reducer.set_detector_range(2, 961) # Note these are one less than what you enter in the GUI
-    reducer.set_parameter_file(param_file)
-    reducer.append_data_file("osiris00101300.raw")
-    reducer.set_rebin_string("2.0,0.001,3.0")
-    reducer.reduce()
-
-    self._output_workspace = reducer.get_result_workspaces()[0]
-
-  def validate(self):
-    self.disableChecking.append('Instrument')
-    return self._output_workspace, 'OsirisDiffspecDiffractionTest.nxs'
+    def validate(self):
+        self.disableChecking.append('Instrument')
+        return 'OsirisDiffractionTest', 'OsirisDiffractionTest.nxs'
