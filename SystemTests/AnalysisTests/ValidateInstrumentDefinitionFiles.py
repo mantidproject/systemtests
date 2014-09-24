@@ -65,7 +65,7 @@ class ValidateInstrumentDefinitionFiles(stresstesting.MantidStressTest):
         
         
         direc = config['instrumentDefinition.directory']
-        self.xsdFile =  os.path.join(direc,'Schema','IDFSchema.xsd')
+        self.xsdFile =  os.path.join(direc,'Schema/IDF/1.0/','IDFSchema.xsd')
         files = self.__getDataFileList__()
 
         # run the tests

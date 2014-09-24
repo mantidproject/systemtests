@@ -24,7 +24,7 @@ class ValidateFacilitiesFile(stresstesting.MantidStressTest):
         from minixsv import pyxsval 
         direc = config['instrumentDefinition.directory']
         filename = os.path.join(direc,'Facilities.xml')
-        xsdFile =  os.path.join(direc,'Schema','FacilitiesSchema.xsd')
+        xsdFile =  os.path.join(direc,'Schema/Facilities/1.0/','FacilitiesSchema.xsd')
 
         # run the tests
         failed = []
