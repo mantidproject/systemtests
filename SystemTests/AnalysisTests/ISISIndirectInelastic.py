@@ -480,32 +480,32 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
 #------------------------- OSIRIS tests ---------------------------------------
 
 
-class OSIRISCalibration(ISISIndirectInelasticCalibration):
+# class OSIRISCalibration(ISISIndirectInelasticCalibration):
 
-    def __init__(self):
-        ISISIndirectInelasticCalibration.__init__(self)
-        self.data_file = 'OSI97935.raw'
-        self.detector_range = [963, 1004]
-        self.back = [68000.00, 70000.00]
-        self.peak = [59000.00, 61000.00]
+#     def __init__(self):
+#         ISISIndirectInelasticCalibration.__init__(self)
+#         self.data_file = 'OSI97935.raw'
+#         self.detector_range = [963, 1004]
+#         self.back = [68000.00, 70000.00]
+#         self.peak = [59000.00, 61000.00]
 
-    def get_reference_files(self):
-        return ["II.OSIRISCalibration.nxs"]
+#     def get_reference_files(self):
+#         return ["II.OSIRISCalibration.nxs"]
 
 #------------------------- IRIS tests ---------------------------------------
 
 
-class IRISCalibration(ISISIndirectInelasticCalibration):
+# class IRISCalibration(ISISIndirectInelasticCalibration):
 
-    def __init__(self):
-        ISISIndirectInelasticCalibration.__init__(self)
-        self.data_file = 'IRS53664.raw'
-        self.detector_range = [3, 53]
-        self.back = [59000.00, 61500.00]
-        self.peak = [62500.00, 65000.00]
+#     def __init__(self):
+#         ISISIndirectInelasticCalibration.__init__(self)
+#         self.data_file = 'IRS53664.raw'
+#         self.detector_range = [3, 53]
+#         self.back = [59000.00, 61500.00]
+#         self.peak = [62500.00, 65000.00]
 
-    def get_reference_files(self):
-        return ["II.IRISCalibration.nxs"]
+#     def get_reference_files(self):
+#         return ["II.IRISCalibration.nxs"]
 
 
 #==============================================================================
