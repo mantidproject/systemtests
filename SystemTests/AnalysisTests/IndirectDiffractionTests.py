@@ -41,55 +41,55 @@ class MSGDiffractionReductionTest(stresstesting.MantidStressTest):
 
 
 #-------------------------------------------------------------------------------
-class IRISDiffspecDiffractionTest(MSGDiffractionReductionTest):
+# class IRISDiffspecDiffractionTest(MSGDiffractionReductionTest):
 
-    def __init__(self):
-        MSGDiffractionReductionTest.__init__(self)
+#     def __init__(self):
+#         MSGDiffractionReductionTest.__init__(self)
 
-        self.instrument = 'IRIS'
-        self.mode = 'diffspec'
-        self.raw_file = 'IRS21360.raw'
-        self.detector_range = [105, 112]
-        self.rebinning = '3.0,0.001,4.0'
-        self.output_workspace_group = 'IRIS_Diffraction_DiffSpec_Test'
+#         self.instrument = 'IRIS'
+#         self.mode = 'diffspec'
+#         self.raw_file = 'IRS21360.raw'
+#         self.detector_range = [105, 112]
+#         self.rebinning = '3.0,0.001,4.0'
+#         self.output_workspace_group = 'IRIS_Diffraction_DiffSpec_Test'
 
-    def get_reference_file(self):
-        return 'IRISDiffspecDiffractionTest.nxs'
-
-
-#-------------------------------------------------------------------------------
-class TOSCADiffractionTest(MSGDiffractionReductionTest):
-
-    def __init__(self):
-        MSGDiffractionReductionTest.__init__(self)
-
-        self.instrument = 'TOSCA'
-        self.mode = 'diffspec'
-        self.raw_file = 'TSC11453.raw'
-        self.detector_range = [146, 149]
-        self.rebinning = '0.5,0.001,2.1'
-        self.output_workspace_group = 'TOSCA_Diffraction_DiffSpec_Test'
-
-    def get_reference_file(self):
-        return 'TOSCADiffractionTest.nxs'
+#     def get_reference_file(self):
+#         return 'IRISDiffspecDiffractionTest.nxs'
 
 
 #-------------------------------------------------------------------------------
-class OSIRISDiffspecDiffractionTest(MSGDiffractionReductionTest):
+# class TOSCADiffractionTest(MSGDiffractionReductionTest):
 
-    def __init__(self):
-        MSGDiffractionReductionTest.__init__(self)
+#     def __init__(self):
+#         MSGDiffractionReductionTest.__init__(self)
 
-        self.instrument = 'OSIRIS'
-        self.mode = 'diffspec'
-        self.raw_file = 'osiris00101300.raw'
-        self.detector_range = [3, 962]
-        self.rebinning = '2.0,0.001,3.0'
-        self.output_workspace_group = 'OSIRIS_Diffraction_DiffSpec_Test'
+#         self.instrument = 'TOSCA'
+#         self.mode = 'diffspec'
+#         self.raw_file = 'TSC11453.raw'
+#         self.detector_range = [146, 149]
+#         self.rebinning = '0.5,0.001,2.1'
+#         self.output_workspace_group = 'TOSCA_Diffraction_DiffSpec_Test'
+
+#     def get_reference_file(self):
+#         return 'TOSCADiffractionTest.nxs'
 
 
-    def get_reference_file(self):
-        return 'OsirisDiffspecDiffractionTest.nxs'
+#-------------------------------------------------------------------------------
+# class OSIRISDiffspecDiffractionTest(MSGDiffractionReductionTest):
+
+#     def __init__(self):
+#         MSGDiffractionReductionTest.__init__(self)
+
+#         self.instrument = 'OSIRIS'
+#         self.mode = 'diffspec'
+#         self.raw_file = 'osiris00101300.raw'
+#         self.detector_range = [3, 962]
+#         self.rebinning = '2.0,0.001,3.0'
+#         self.output_workspace_group = 'OSIRIS_Diffraction_DiffSpec_Test'
+
+
+#     def get_reference_file(self):
+#         return 'OsirisDiffspecDiffractionTest.nxs'
 
 
 #-------------------------------------------------------------------------------
