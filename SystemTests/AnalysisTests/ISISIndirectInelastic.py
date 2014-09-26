@@ -1158,7 +1158,7 @@ class OSIRISConvFit(ISISIndirectInelasticConvFit):
         self.spectra_max = 41
         self.ties = False
 
-        self.result_names = ['osi97935_graphite002_conv_1LFitL_0_to_41_Result']
+        self.result_names = ['osi97935_graphite002_conv_1LFitL_s0_to_41_Result']
 
     def get_reference_files(self):
         return ['II.OSIRISConvFitSeq.nxs']
@@ -1181,7 +1181,7 @@ class IRISConvFit(ISISIndirectInelasticConvFit):
         self.spectra_max = 50
         self.ties = False
 
-        self.result_names = ['irs53664_graphite002_conv_1LFitL_0_to_50_Result']
+        self.result_names = ['irs53664_graphite002_conv_1LFitL_s0_to_50_Result']
 
     def get_reference_files(self):
         return ['II.IRISConvFitSeq.nxs']
