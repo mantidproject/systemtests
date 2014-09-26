@@ -35,7 +35,7 @@ class ValidateGroupingFiles(stresstesting.MantidStressTest):
         from genxmlif import GenXmlIfError
         from minixsv import pyxsval 
         direc = config['instrumentDefinition.directory']
-        self.xsdFile =  os.path.join(direc,'Schema','GroupingSchema.xsd')
+        self.xsdFile =  os.path.join(direc,'Schema/Grouping/1.0/','GroupingSchema.xsd')
         files = self.__getDataFileList__()
 
         # run the tests
