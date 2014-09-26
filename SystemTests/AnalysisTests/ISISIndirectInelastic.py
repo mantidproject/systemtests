@@ -1185,3 +1185,46 @@ class IRISConvFit(ISISIndirectInelasticConvFit):
 
     def get_reference_files(self):
         return ['II.IRISConvFitSeq.nxs']
+
+
+#==============================================================================
+# Transmission Monitor Test
+
+class ISISIndirectInelasticTransmissionMonitor(ISISIndirectInelasticBase):
+    '''
+    '''
+
+    # Mark as an abstract class
+    __metaclass__ = ABCMeta
+
+    def _run(self):
+        '''Defines the workflow for the test'''
+
+        self.tolerance = 1e-4
+        Load(self.sample, OutputWorkspace=self.sample)
+        Load(self.can, OutputWorkspace=self.can)
+
+        IndirectTransmissionMonitor(SampleWorkspace=self.sample, CanWorkspace=self.can,
+                                    OutputWorkspace='IRISTransmissionMonitorTest')
+
+    def _validate_properties(self):
+        '''Check the object properties are in an expected state to continue'''
+
+        if type(self.sample) != str:
+            raise RuntimeError("Sample should be a string.")
+        if type(self.can) != str:
+            raise RuntimeError("Can should be a string.")
+
+
+#------------------------- IRIS tests -----------------------------------------
+class IRISTransmissionMonitor(ISISIndirectInelasticTransmissionMonitor):
+
+    def __init__(self):
+        ISISIndirectInelasticTransmissionMonitor.__init__(self)
+        self.sample = 'IRS26176.RAW'
+        self.can = 'IRS26173.RAW'
+
+        self.result_names = ['IRISTransmissionMonitorTest']
+
+    def get_reference_files(self):
+        return ['II.IRISTransmissionMonitor.nxs']
