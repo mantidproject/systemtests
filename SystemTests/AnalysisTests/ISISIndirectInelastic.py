@@ -375,12 +375,20 @@ class ISISIndirectInelasticReductionOutput(stresstesting.MantidStressTest):
                                                  "Output of aclimax format did not match expected result.")
 
     def assert_spe_file_matches(self):
+        #Old SPE format:
+        #   '       3    1532', 
+        #   '### Phi Grid',
+        #   ' 5.000E-01 1.500E+00 2.500E+00 3.500E+00',
+        #   '### Energy Grid',
+        #   '-2.500E+00-2.485E+00-2.470E+00-2.455E+00-2.440E+00-2.425E+00-2.410E+00-2.395E+00'
+        #
+        # New SPE format:
         expected_result = [
-            '       3    1532', 
+            '       3    1532',
             '### Phi Grid',
-            ' 5.000E-01 1.500E+00 2.500E+00 3.500E+00',
+            '0.5       1.5       2.5       3.5',
             '### Energy Grid',
-            '-2.500E+00-2.485E+00-2.470E+00-2.455E+00-2.440E+00-2.425E+00-2.410E+00-2.395E+00'
+            '-2.5      -2.485    -2.47     -2.455    -2.44     -2.425    -2.41     -2.395'
         ]
         self.assert_file_format_matches_expected(expected_result, self.output_file_names['spe'],
                                                  "Output of SPE format did not match expected result.")
