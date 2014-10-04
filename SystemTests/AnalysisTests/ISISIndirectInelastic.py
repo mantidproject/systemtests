@@ -10,7 +10,7 @@ from mantid.api import FileFinder
 # Import our workflows.
 from inelastic_indirect_reducer import IndirectReducer
 from inelastic_indirect_reduction_steps import CreateCalibrationWorkspace
-from IndirectEnergyConversion import resolution, slice
+from IndirectEnergyConversion import resolution
 from IndirectDataAnalysis import elwin, msdfit, fury, furyfitSeq, furyfitMult, confitSeq
 
 '''
@@ -622,61 +622,59 @@ class ISISIndirectInelasticDiagnostics(ISISIndirectInelasticBase):
         '''Defines the workflow for the test'''
 
         self.tolerance = 1e-7
-        slice(self.rawfiles,
-              '',  # No calib file.
-              self.tofRange,
-              self.spectra,
-              self.suffix,
-              Save=False,
-              Verbose=False,
-              Plot=False)
+
+        TimeSlice(InputFiles=self.rawfiles,
+                  OutputNameSuffix=self.suffix,
+                  PeakRange=self.peak,
+                  SpectraRange=self.spectra,
+                  Plot=False,
+                  Save=False)
 
         # Construct the result ws name.
-        file = self.rawfiles[0]
-        self.result_names = [os.path.splitext(file)[0] + "_" +
-                             self.suffix + "_slice"]
+        self.result_names = [os.path.splitext(self.rawfiles[0])[0] + self.suffix]
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
 
-        if type(self.rawfiles) != list and len(self.rawfiles) != 2:
-            raise RuntimeError("rawfiles should be a list of exactly 2 "
-                               "values")
-        if type(self.tofRange) != list and len(self.tofRange) != 1:
-            raise RuntimeError("tofRange should be a list of exactly 1 "
-                               "value")
+        if type(self.rawfiles) != list and len(self.rawfiles) != 1:
+            raise RuntimeError("rawfiles should be a list of exactly 1 value")
+        if type(self.peak) != list and len(self.peak) != 2:
+            raise RuntimeError("peak should be a list of exactly 2 values")
         if type(self.spectra) != list and len(self.spectra) != 2:
-            raise RuntimeError("spectra should be a list of exactly 2 "
-                               "values")
+            raise RuntimeError("spectra should be a list of exactly 2 values")
         if type(self.suffix) != str:
             raise RuntimeError("suffix property should be a string")
 
-#------------------------- OSIRIS tests ---------------------------------------
+
+#------------------------- IRIS tests -----------------------------------------
 
 
 class IRISDiagnostics(ISISIndirectInelasticDiagnostics):
 
     def __init__(self):
         ISISIndirectInelasticDiagnostics.__init__(self)
-        self.tofRange = [62500, 65000]
+
+        self.peak = [62500, 65000]
         self.rawfiles = ['IRS53664.raw']
         self.spectra = [3, 53]
-        self.suffix = 'graphite002'
+        self.suffix = '_graphite002_slice'
 
     def get_reference_files(self):
         return ["II.IRISDiagnostics.nxs"]
 
-#------------------------- IRIS tests -----------------------------------------
+
+#------------------------- OSIRIS tests ---------------------------------------
 
 
 class OSIRISDiagnostics(ISISIndirectInelasticDiagnostics):
 
     def __init__(self):
         ISISIndirectInelasticDiagnostics.__init__(self)
-        self.tofRange = [59000, 61000]
+
+        self.peak = [59000, 61000]
         self.rawfiles = ['OSI97935.raw']
         self.spectra = [963, 1004]
-        self.suffix = 'graphite002'
+        self.suffix = '_graphite002_slice'
 
     def get_reference_files(self):
         return ["II.OSIRISDiagnostics.nxs"]
