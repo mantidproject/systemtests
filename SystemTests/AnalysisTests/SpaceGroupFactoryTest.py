@@ -23,14 +23,13 @@ class SpaceGroupFactoryTest(stresstesting.MantidStressTest):
     differenceOne = groupOperations - referenceOperations
     differenceTwo = referenceOperations - groupOperations
 
-    self.assertTrue(len(differenceOne) == 0)
-    self.assertTrue(len(differenceTwo) == 0)
-    self.assertTrue(groupOperations == referenceOperations)
+    self.assertTrue(len(differenceOne) == 0, "Problem in space group " + str(group.number()) + " (" + symbol + ")")
+    self.assertTrue(len(differenceTwo) == 0, "Problem in space group " + str(group.number()) + " (" + symbol + ")")
+    self.assertTrue(groupOperations == referenceOperations, "Problem in space group " + str(group.number()) + " (" + symbol + ")")
 
   def loadReferenceData(self):
     # Reference data.
     # Dictionary has a string set for each space group number.
-    tripletMatcher = re.compile("(\s{0,1}-?(x|y|z)((\+|\-)\d\/\d)?(,|$)){3}")
     separatorMatcher = re.compile("(\d+)")
 
     fileName = os.path.join(os.path.dirname(__file__), 'ReferenceResults','SpaceGroupSymmetryOperations.txt')
@@ -47,10 +46,7 @@ class SpaceGroupFactoryTest(stresstesting.MantidStressTest):
         currentGroup = int(matchedSeparator.group(1))
         spaceGroups[currentGroup] = set()
       else:
-        triplet = tripletMatcher.match(currentLine)
-
-        if triplet is not None:
-          spaceGroups[currentGroup].add(currentLine.strip().replace(" ", ""))
+        spaceGroups[currentGroup].add(currentLine.strip().replace(" ", ""))
 
     return spaceGroups
 
