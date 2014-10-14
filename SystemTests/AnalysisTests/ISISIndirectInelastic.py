@@ -10,8 +10,7 @@ from mantid.api import FileFinder
 # Import our workflows.
 from inelastic_indirect_reducer import IndirectReducer
 from inelastic_indirect_reduction_steps import CreateCalibrationWorkspace
-from IndirectEnergyConversion import slice
-from IndirectDataAnalysis import elwin, msdfit, fury, furyfitSeq, furyfitMult, confitSeq
+from IndirectDataAnalysis import elwin, msdfit, fury, furyfitSeq, furyfitMult, confitSeq, abscorFeeder
 
 '''
 - TOSCA only supported by "Reduction" (the Energy Transfer tab of C2E).
@@ -338,7 +337,7 @@ class ISISIndirectInelasticReductionOutput(stresstesting.MantidStressTest):
         reducer = self._setup_reducer()
         reducer.reduce()
         self.result_names = sorted(reducer.get_result_workspaces())
-        
+
     def validate(self):
         self.assertEqual(len(self.result_names), 1)
         self.result_name = self.result_names[0]
@@ -359,7 +358,7 @@ class ISISIndirectInelasticReductionOutput(stresstesting.MantidStressTest):
     def assert_ascii_file_matches(self):
         expected_result = [
             'X , Y0 , E0 , Y1 , E1 , Y2 , E2',
-            '-2.4925,0,0,0.617579,0.362534,0.270868,0.159006', 
+            '-2.4925,0,0,0.617579,0.362534,0.270868,0.159006',
             '-2.4775,0.375037,0.273017,0,0,0.210547,0.153272'
         ]
         self.assert_file_format_matches_expected(expected_result, self.output_file_names['ascii'],
@@ -375,12 +374,20 @@ class ISISIndirectInelasticReductionOutput(stresstesting.MantidStressTest):
                                                  "Output of aclimax format did not match expected result.")
 
     def assert_spe_file_matches(self):
+        #Old SPE format:
+        #   '       3    1532', 
+        #   '### Phi Grid',
+        #   ' 5.000E-01 1.500E+00 2.500E+00 3.500E+00',
+        #   '### Energy Grid',
+        #   '-2.500E+00-2.485E+00-2.470E+00-2.455E+00-2.440E+00-2.425E+00-2.410E+00-2.395E+00'
+        #
+        # New SPE format:
         expected_result = [
-            '       3    1532', 
+            '       3    1532',
             '### Phi Grid',
-            ' 5.000E-01 1.500E+00 2.500E+00 3.500E+00',
+            '0.5       1.5       2.5       3.5',
             '### Energy Grid',
-            '-2.500E+00-2.485E+00-2.470E+00-2.455E+00-2.440E+00-2.425E+00-2.410E+00-2.395E+00'
+            '-2.5      -2.485    -2.47     -2.455    -2.44     -2.425    -2.41     -2.395'
         ]
         self.assert_file_format_matches_expected(expected_result, self.output_file_names['spe'],
                                                  "Output of SPE format did not match expected result.")
@@ -427,7 +434,7 @@ class ISISIndirectInelasticReductionOutput(stresstesting.MantidStressTest):
 
     def _get_file_names(self):
         working_directory = config['defaultsave.directory']
-        
+
         output_names = {}
         for format, ext in zip(self.file_formats, self.file_extensions):
             output_file_name = self.result_name + ext
@@ -454,20 +461,16 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
     __metaclass__ = ABCMeta  # Mark as an abstract class
 
     def _run(self):
-        self.tolerance = 1e-7
         '''Defines the workflow for the test'''
-        calib = CreateCalibrationWorkspace()
-        calib.set_files([self.data_file])
-        calib.set_detector_range(self.detector_range[0],
-                                 self.detector_range[1])
-        calib.set_parameters(self.parameters[0],
-                             self.parameters[1],
-                             self.parameters[2],
-                             self.parameters[3])
-        calib.set_analyser(self.analyser)
-        calib.set_reflection(self.reflection)
-        calib.execute(None, None)  # Does not appear to be used.
-        self.result_names = [calib.result_workspace()]
+        self.tolerance = 1e-7
+
+        self.result_names = ['IndirectCalibration_Output']
+
+        CreateCalibrationWorkspace(InputFiles=self.data_file,
+                                   OutputWorkspace='IndirectCalibration_Output',
+                                   DetectorRange=self.detector_range,
+                                   PeakRange=self.peak,
+                                   BackgroundRange=self.back)
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
@@ -475,15 +478,11 @@ class ISISIndirectInelasticCalibration(ISISIndirectInelasticBase):
         if type(self.data_file) != str:
             raise RuntimeError("data_file property should be a string")
         if type(self.detector_range) != list and len(self.detector_range) != 2:
-            raise RuntimeError("detector_range should be a list of exactly 2 "
-                               "values")
-        if type(self.parameters) != list and len(self.parameters) != 4:
-            raise RuntimeError("parameters should be a list of exactly 4 "
-                               "values")
-        if type(self.analyser) != str:
-            raise RuntimeError("analyser property should be a string")
-        if type(self.reflection) != str:
-            raise RuntimeError("reflection property should be a string")
+            raise RuntimeError("detector_range should be a list of exactly 2 values")
+        if type(self.peak) != list and len(self.peak) != 2:
+            raise RuntimeError("peak should be a list of exactly 2 values")
+        if type(self.back) != list and len(self.back) != 2:
+            raise RuntimeError("back should be a list of exactly 2 values")
 
 #------------------------- OSIRIS tests ---------------------------------------
 
@@ -493,10 +492,9 @@ class OSIRISCalibration(ISISIndirectInelasticCalibration):
     def __init__(self):
         ISISIndirectInelasticCalibration.__init__(self)
         self.data_file = 'OSI97935.raw'
-        self.detector_range = [963 - 1, 1004 - 1]
-        self.parameters = [68000.00, 70000.00, 59000.00, 61000.00]
-        self.analyser = 'graphite'
-        self.reflection = '002'
+        self.detector_range = [963, 1004]
+        self.back = [68000.00, 70000.00]
+        self.peak = [59000.00, 61000.00]
 
     def get_reference_files(self):
         return ["II.OSIRISCalibration.nxs"]
@@ -509,10 +507,9 @@ class IRISCalibration(ISISIndirectInelasticCalibration):
     def __init__(self):
         ISISIndirectInelasticCalibration.__init__(self)
         self.data_file = 'IRS53664.raw'
-        self.detector_range = [3 - 1, 53 - 1]
-        self.parameters = [59000.00, 61500.00, 62500.00, 65000.00]
-        self.analyser = 'graphite'
-        self.reflection = '002'
+        self.detector_range = [3, 53]
+        self.back = [59000.00, 61500.00]
+        self.peak = [62500.00, 65000.00]
 
     def get_reference_files(self):
         return ["II.IRISCalibration.nxs"]
@@ -623,61 +620,59 @@ class ISISIndirectInelasticDiagnostics(ISISIndirectInelasticBase):
         '''Defines the workflow for the test'''
 
         self.tolerance = 1e-7
-        slice(self.rawfiles,
-              '',  # No calib file.
-              self.tofRange,
-              self.spectra,
-              self.suffix,
-              Save=False,
-              Verbose=False,
-              Plot=False)
+
+        TimeSlice(InputFiles=self.rawfiles,
+                  OutputNameSuffix=self.suffix,
+                  PeakRange=self.peak,
+                  SpectraRange=self.spectra,
+                  Plot=False,
+                  Save=False)
 
         # Construct the result ws name.
-        file = self.rawfiles[0]
-        self.result_names = [os.path.splitext(file)[0] + "_" +
-                             self.suffix + "_slice"]
+        self.result_names = [os.path.splitext(self.rawfiles[0])[0] + self.suffix]
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
 
-        if type(self.rawfiles) != list and len(self.rawfiles) != 2:
-            raise RuntimeError("rawfiles should be a list of exactly 2 "
-                               "values")
-        if type(self.tofRange) != list and len(self.tofRange) != 1:
-            raise RuntimeError("tofRange should be a list of exactly 1 "
-                               "value")
+        if type(self.rawfiles) != list and len(self.rawfiles) != 1:
+            raise RuntimeError("rawfiles should be a list of exactly 1 value")
+        if type(self.peak) != list and len(self.peak) != 2:
+            raise RuntimeError("peak should be a list of exactly 2 values")
         if type(self.spectra) != list and len(self.spectra) != 2:
-            raise RuntimeError("spectra should be a list of exactly 2 "
-                               "values")
+            raise RuntimeError("spectra should be a list of exactly 2 values")
         if type(self.suffix) != str:
             raise RuntimeError("suffix property should be a string")
 
-#------------------------- OSIRIS tests ---------------------------------------
+
+#------------------------- IRIS tests -----------------------------------------
 
 
 class IRISDiagnostics(ISISIndirectInelasticDiagnostics):
 
     def __init__(self):
         ISISIndirectInelasticDiagnostics.__init__(self)
-        self.tofRange = [62500, 65000]
+
+        self.peak = [62500, 65000]
         self.rawfiles = ['IRS53664.raw']
         self.spectra = [3, 53]
-        self.suffix = 'graphite002'
+        self.suffix = '_graphite002_slice'
 
     def get_reference_files(self):
         return ["II.IRISDiagnostics.nxs"]
 
-#------------------------- IRIS tests -----------------------------------------
+
+#------------------------- OSIRIS tests ---------------------------------------
 
 
 class OSIRISDiagnostics(ISISIndirectInelasticDiagnostics):
 
     def __init__(self):
         ISISIndirectInelasticDiagnostics.__init__(self)
-        self.tofRange = [59000, 61000]
+
+        self.peak = [59000, 61000]
         self.rawfiles = ['OSI97935.raw']
         self.spectra = [963, 1004]
-        self.suffix = 'graphite002'
+        self.suffix = '_graphite002_slice'
 
     def get_reference_files(self):
         return ["II.OSIRISDiagnostics.nxs"]
@@ -1159,7 +1154,7 @@ class OSIRISConvFit(ISISIndirectInelasticConvFit):
         self.spectra_max = 41
         self.ties = False
 
-        self.result_names = ['osi97935_graphite002_conv_1LFitL_0_to_41_Result']
+        self.result_names = ['osi97935_graphite002_conv_1LFitL_s0_to_41_Result']
 
     def get_reference_files(self):
         return ['II.OSIRISConvFitSeq.nxs']
@@ -1182,7 +1177,171 @@ class IRISConvFit(ISISIndirectInelasticConvFit):
         self.spectra_max = 50
         self.ties = False
 
-        self.result_names = ['irs53664_graphite002_conv_1LFitL_0_to_50_Result']
+        self.result_names = ['irs53664_graphite002_conv_1LFitL_s0_to_50_Result']
 
     def get_reference_files(self):
         return ['II.IRISConvFitSeq.nxs']
+
+#==============================================================================
+
+
+class ISISIndirectInelasticApplyCorrections(ISISIndirectInelasticBase):
+    '''A base class for the ISIS indirect inelastic Apply Corrections tests
+
+    The workflow is defined in the _run() method, simply
+    define an __init__ method and set the following properties
+    on the object
+    '''
+    # Mark as an abstract class
+    __metaclass__ = ABCMeta
+
+    def _run(self):
+        '''Defines the workflow for the test'''
+        self.tolerance = 1e-4
+
+        LoadNexus(self._sample_workspace + '.nxs', OutputWorkspace=self._sample_workspace)
+        if self._corrections_workspace != '':
+            LoadNexus(self._corrections_workspace + '.nxs', OutputWorkspace=self._corrections_workspace)
+        if self._can_workspace != '':
+            LoadNexus(self._can_workspace + '.nxs', OutputWorkspace=self._can_workspace)
+
+        output_workspaces = self._run_apply_corrections()
+        self.result_names = [output_workspaces['reduced_workspace']]
+
+    def _run_apply_corrections(self):
+        abscorFeeder(self._sample_workspace, self._can_workspace, self._can_geometry,
+                     self._using_corrections, self._corrections_workspace, **self._kwargs)
+        return self._get_output_workspace_names()
+
+    def _get_output_workspace_names(self):
+        """
+        abscorFeeder doesn't return anything, these names should exist in the ADS
+        apply corrections uses the following naming convention:
+        <instrument><sample number>_<analyser><reflection>_<mode>_<can number>
+        """
+
+        if self._can_workspace != '':
+            can_run = mtd[self._can_workspace].getRun()
+            can_run_number = can_run.getProperty('run_number').value
+
+        mode = ''
+        if self._corrections_workspace != '' and self._can_workspace != '':
+            mode = 'Correct_%s' % can_run_number
+        elif self._corrections_workspace != '':
+            mode = 'Corrected'
+        else:
+            mode = 'Subtract_%s' % can_run_number
+
+        workspace_name_stem = self._sample_workspace[:-3] + mode
+
+        output_workspaces = {
+            'reduced_workspace': workspace_name_stem + '_red',
+            'rqw_workspace': workspace_name_stem + '_rqw',
+        }
+
+        if self._can_workspace != '':
+            output_workspaces['result_workspace'] = workspace_name_stem + '_Result'
+
+        return output_workspaces
+
+    def _validate_properties(self):
+        '''Check the object properties are in an expected state to continue'''
+
+#------------------------- IRIS tests -----------------------------------------
+
+class IRISApplyCorrectionsWithCan(ISISIndirectInelasticApplyCorrections):
+    """ Test applying corrections with just a can workspace """
+
+    def __init__(self):
+        ISISIndirectInelasticApplyCorrections.__init__(self)
+
+        self._sample_workspace = 'irs26176_graphite002_red'
+        self._can_workspace = 'irs26173_graphite002_red'
+        self._corrections_workspace = ''
+        self._can_geometry = 'cyl'
+        self._using_corrections = False
+
+        self._kwargs = {'Verbose':True, 'RebinCan':False, 'ScaleOrNotToScale':False,
+                  'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
+
+    def get_reference_files(self):
+        return ['II.IRISApplyCorrectionsWithCan.nxs']
+
+
+class IRISApplyCorrectionsWithCorrectionsWS(ISISIndirectInelasticApplyCorrections):
+    """ Test applying corrections with a corrections workspace """
+
+    def __init__(self):
+        ISISIndirectInelasticApplyCorrections.__init__(self)
+
+        self._sample_workspace = 'irs26176_graphite002_red'
+        self._can_workspace = ''
+        self._corrections_workspace = 'irs26176_graphite002_cyl_Abs'
+        self._can_geometry = 'cyl'
+        self._using_corrections = True
+
+        self._kwargs = {'Verbose':True, 'RebinCan':False, 'ScaleOrNotToScale':False,
+                  'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
+
+    def get_reference_files(self):
+        return ['II.IRISApplyCorrectionsWithCorrectionsWS.nxs']
+
+class IRISApplyCorrectionsWithBoth(ISISIndirectInelasticApplyCorrections):
+    """ Test applying corrections with both a can and a corrections workspace """
+
+    def __init__(self):
+        ISISIndirectInelasticApplyCorrections.__init__(self)
+
+        self._sample_workspace = 'irs26176_graphite002_red'
+        self._can_workspace = 'irs26173_graphite002_red'
+        self._corrections_workspace = 'irs26176_graphite002_cyl_Abs'
+        self._can_geometry = 'cyl'
+        self._using_corrections = True
+
+        self._kwargs = {'Verbose':True, 'RebinCan':False, 'ScaleOrNotToScale':False,
+                  'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
+
+    def get_reference_files(self):
+        return ['II.IRISApplyCorrections.nxs']
+
+#==============================================================================
+# Transmission Monitor Test
+
+class ISISIndirectInelasticTransmissionMonitor(ISISIndirectInelasticBase):
+    '''
+    '''
+
+    # Mark as an abstract class
+    __metaclass__ = ABCMeta
+
+    def _run(self):
+        '''Defines the workflow for the test'''
+
+        self.tolerance = 1e-4
+        Load(self.sample, OutputWorkspace=self.sample)
+        Load(self.can, OutputWorkspace=self.can)
+
+        IndirectTransmissionMonitor(SampleWorkspace=self.sample, CanWorkspace=self.can,
+                                    OutputWorkspace='IRISTransmissionMonitorTest')
+
+    def _validate_properties(self):
+        '''Check the object properties are in an expected state to continue'''
+
+        if type(self.sample) != str:
+            raise RuntimeError("Sample should be a string.")
+        if type(self.can) != str:
+            raise RuntimeError("Can should be a string.")
+
+
+#------------------------- IRIS tests -----------------------------------------
+class IRISTransmissionMonitor(ISISIndirectInelasticTransmissionMonitor):
+
+    def __init__(self):
+        ISISIndirectInelasticTransmissionMonitor.__init__(self)
+        self.sample = 'IRS26176.RAW'
+        self.can = 'IRS26173.RAW'
+
+        self.result_names = ['IRISTransmissionMonitorTest']
+
+    def get_reference_files(self):
+        return ['II.IRISTransmissionMonitor.nxs']
