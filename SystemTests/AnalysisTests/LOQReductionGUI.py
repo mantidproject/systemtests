@@ -20,8 +20,5 @@ class LOQMinimalBatchReduction(stresstesting.MantidStressTest):
         fit_settings = batch.BatchReduce(BATCHFILE, '.nxs', combineDet='merged', saveAlgs={})
 
     def validate(self):
-    	# note increased tolerance to something which quite high
-    	# this is partly a temperary measure, but also justified by
-    	# when overlaying the two options they overlap very well
-        self.tolerance = 1.0e+1
+        self.tolerance = 1.0e-5
         return 'first_time_merged', 'LOQReductionMergedData.nxs'
