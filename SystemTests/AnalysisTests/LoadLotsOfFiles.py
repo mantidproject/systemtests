@@ -63,7 +63,9 @@ BANNED_FILES = ['992 Descriptions.txt',
                 'loq_batch_mode_reduction.csv',
                 'det_corrected7.nxs', # this file can be loaded by LoadDetectorInfo but I am not sure if generic loader should ever deal with it
                 'poldi2013n006903.hdf',
-                'poldi2013n006904.hdf'
+                'poldi2013n006904.hdf',
+                'poldi2014n019874.hdf',
+                'poldi2014n019881.hdf'
                 ]
 
 EXPECTED_EXT = '.expected'
