@@ -5,7 +5,7 @@ import numpy as np
 '''This test checks that the results of PoldiAutoCorrelation match the expected outcome.'''
 class POLDIAutoCorrelationTest(stresstesting.MantidStressTest):
   def runTest(self):
-    dataFiles = ["poldi2013n006903", "poldi2013n006904", "poldi2014n019874"]
+    dataFiles = ["poldi2013n006903", "poldi2013n006904", "poldi2014n019874", "poldi2014n019881"]
 
     self.loadReferenceData(dataFiles)
     self.runAutoCorrelation(dataFiles)
