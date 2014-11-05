@@ -159,7 +159,7 @@ class AbsRunFeederChemicalFormulaTest(stresstesting.MantidStressTest):
         beam_width = 4.0
         sampleFormula = 'H2-O'
         canFormula = 'V'
-        AbsRunFeeder(inputWS, canWS, geom, ncan, size, avar, density, beam_width=beam_width, sampleFormula=sampleFormula, canFormula=canFormula,  sigs=[0,0,0], siga=[0,0,0])
+        AbsRunFeeder(inputWS, canWS, geom, ncan, size, avar, density, beam_width=beam_width, sample_formula=sampleFormula, can_formula=canFormula,  sigs=[0,0,0], siga=[0,0,0])
 
     def validate(self):
         self.tolerance = 1e-3
