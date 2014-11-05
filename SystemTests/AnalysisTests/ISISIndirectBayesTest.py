@@ -296,6 +296,10 @@ class JumpCETest(stresstesting.MantidStressTest):
 
         filename = sname + '.nxs'  # path name for nxs file
         LoadNexusProcessed(Filename=filename, OutputWorkspace=sname)
+
+        # Data must be in HWHM
+        Scale(InputWorkspace=sname, Factor=0.5, OutputWorkspace=sname)
+
         JumpFit(InputWorkspace=sname,
                 Function='ChudleyElliot',
                 Width=2,
@@ -321,6 +325,10 @@ class JumpHallRossTest(stresstesting.MantidStressTest):
 
         path = sname+'.nxs'  # path name for nxs file
         LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
+
+        # Data must be in HWHM
+        Scale(InputWorkspace=sname, Factor=0.5, OutputWorkspace=sname)
+
         JumpFit(InputWorkspace=sname,
                 Function='HallRoss',
                 Width=2,
@@ -346,6 +354,10 @@ class JumpFickTest(stresstesting.MantidStressTest):
 
         path = sname+'.nxs'  # path name for nxs file
         LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
+
+        # Data must be in HWHM
+        Scale(InputWorkspace=sname, Factor=0.5, OutputWorkspace=sname)
+
         JumpFit(InputWorkspace=sname,
                 Function='FickDiffusion',
                 Width=2,
@@ -356,7 +368,7 @@ class JumpFickTest(stresstesting.MantidStressTest):
                 Save=saveOp)
 
     def validate(self):
-        self.tolerance = 1e-5
+        self.tolerance = 5e-4
         return 'irs26176_graphite002_QLr_FickDiffusion_fit_Workspace','ISISIndirectBayes_JumpFickTest.nxs'
 
 #=============================================================================
@@ -371,6 +383,10 @@ class JumpTeixeiraTest(stresstesting.MantidStressTest):
 
         path = sname+'.nxs'  # path name for nxs file
         LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
+
+        # Data must be in HWHM
+        Scale(InputWorkspace=sname, Factor=0.5, OutputWorkspace=sname)
+
         JumpFit(InputWorkspace=sname,
                 Function='TeixeiraWater',
                 Width=2,
