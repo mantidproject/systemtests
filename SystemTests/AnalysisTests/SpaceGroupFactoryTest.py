@@ -46,7 +46,7 @@ class SpaceGroupFactoryTest(stresstesting.MantidStressTest):
         currentGroup = int(matchedSeparator.group(1))
         spaceGroups[currentGroup] = set()
       else:
-        spaceGroups[currentGroup].add(currentLine.strip().replace(" ", ""))
+        spaceGroups[currentGroup].add(SymmetryOperationFactoryImpl.Instance().createSymOp(currentLine.strip().replace(" ", "")).identifier())
 
     return spaceGroups
 
