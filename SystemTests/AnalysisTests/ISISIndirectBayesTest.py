@@ -16,13 +16,13 @@ def _cleanup_files(dirname, filenames):
             pass
 
 class QLresTest(stresstesting.MantidStressTest):
-    
+
     def skipTests(self):
         if is_supported_f2py_platform():
             return False
         else:
             return True
-            
+
     def runTest(self):
         import IndirectBayes as Main
         nbins = ['1', '1']
@@ -44,7 +44,7 @@ class QLresTest(stresstesting.MantidStressTest):
         Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
 
     def validate(self):
-        self.tolerance = 1e-4 
+        self.tolerance = 1e-4
         return 'irs26176_graphite002_QLr_Workspace_0','ISISIndirectBayes_QlresTest.nxs'
 
     def cleanup(self):
@@ -52,16 +52,16 @@ class QLresTest(stresstesting.MantidStressTest):
                      'irs26176_graphite002_QLr.ql2','irs26176_graphite002_QLr.ql3',
                      'irs26176_graphite002_QLr_Parameters.nxs']
         _cleanup_files(config['defaultsave.directory'], filenames)
-        
+
 #========================================================================
 class ResNormTest(stresstesting.MantidStressTest):
-    
+
     def skipTests(self):
         if is_supported_f2py_platform():
             return False
         else:
             return True
-    
+
     def runTest(self):
         import IndirectBayes as Main
         nbin = '1'
@@ -89,13 +89,13 @@ class ResNormTest(stresstesting.MantidStressTest):
 
 #=========================================================================
 class QuestTest(stresstesting.MantidStressTest):
-    
+
     def skipTests(self):
         if is_supported_f2py_platform():
             return False
         else:
             return True
-    
+
     def runTest(self):
         import IndirectBayes as Main
         nbins = [1, 1]
@@ -116,7 +116,7 @@ class QuestTest(stresstesting.MantidStressTest):
         Main.QuestRun(sname,rname,nbs,erange,nbins,fitOp,loopOp,verbOp,plotOp,saveOp)
 
     def validate(self):
-        self.tolerance = 1e-1 
+        self.tolerance = 1e-1
         return 'irs26176_graphite002_Qst_Fit','ISISIndirectBayes_QuestTest.nxs'
 
     def cleanup(self):
@@ -126,13 +126,13 @@ class QuestTest(stresstesting.MantidStressTest):
 
 #=============================================================================
 class QSeTest(stresstesting.MantidStressTest):
-    
+
     def skipTests(self):
         if is_supported_f2py_platform():
             return False
         else:
             return True
-            
+
     def runTest(self):
         import IndirectBayes as Main
         nbins = ['1', '1']
@@ -154,23 +154,23 @@ class QSeTest(stresstesting.MantidStressTest):
         Main.QLRun('QSe',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
 
     def validate(self):
-        self.tolerance = 1e-1 
+        self.tolerance = 1e-1
         return 'irs26176_graphite002_QSe_Workspace_0','ISISIndirectBayes_QSeTest.nxs'
 
     def cleanup(self):
         filenames = ['irs26176_graphite002_QSe_Parameters.nxs', 'irs26176_graphite002_Qse.qse',
                      'irs26176_graphite002_Qse.lpt']
         _cleanup_files(config['defaultsave.directory'], filenames)
-        
+
 #=============================================================================
 class QLDataTest(stresstesting.MantidStressTest):
-    
+
     def skipTests(self):
         if is_supported_f2py_platform():
             return False
         else:
             return True
-    
+
     def runTest(self):
         import IndirectBayes as Main
         nbins = ['1', '1']
@@ -192,7 +192,7 @@ class QLDataTest(stresstesting.MantidStressTest):
         Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
 
     def validate(self):
-        self.tolerance = 1e-4 
+        self.tolerance = 1e-4
         return 'irs26176_graphite002_QLd_Workspace_0','ISISIndirectBayes_QLDataTest.nxs'
 
     def cleanup(self):
@@ -203,13 +203,13 @@ class QLDataTest(stresstesting.MantidStressTest):
 
 #=============================================================================
 class QLResNormTest(stresstesting.MantidStressTest):
-    
+
     def skipTests(self):
         if is_supported_f2py_platform():
             return False
         else:
             return True
-    
+
     def runTest(self):
         import IndirectBayes as Main
 
@@ -245,13 +245,13 @@ class QLResNormTest(stresstesting.MantidStressTest):
 
 #=============================================================================
 class QLWidthTest(stresstesting.MantidStressTest):
-    
+
     def skipTests(self):
         if is_supported_f2py_platform():
             return False
         else:
             return True
-    
+
     def runTest(self):
         import IndirectBayes as Main
 
@@ -296,6 +296,10 @@ class JumpCETest(stresstesting.MantidStressTest):
 
         filename = sname + '.nxs'  # path name for nxs file
         LoadNexusProcessed(Filename=filename, OutputWorkspace=sname)
+
+        # Data must be in HWHM
+        Scale(InputWorkspace=sname, Factor=0.5, OutputWorkspace=sname)
+
         JumpFit(InputWorkspace=sname,
                 Function='ChudleyElliot',
                 Width=2,
@@ -306,8 +310,8 @@ class JumpCETest(stresstesting.MantidStressTest):
                 Save=saveOp)
 
     def validate(self):
-        self.tolerance = 1e-5 
-        return 'irs26176_graphite002_QLr_ChudleyElliotfit_Workspace','ISISIndirectBayes_JumpCETest.nxs'
+        self.tolerance = 1e-5
+        return 'irs26176_graphite002_QLr_ChudleyElliot_fit_Workspace','ISISIndirectBayes_JumpCETest.nxs'
 
 #=============================================================================
 class JumpHallRossTest(stresstesting.MantidStressTest):
@@ -321,6 +325,10 @@ class JumpHallRossTest(stresstesting.MantidStressTest):
 
         path = sname+'.nxs'  # path name for nxs file
         LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
+
+        # Data must be in HWHM
+        Scale(InputWorkspace=sname, Factor=0.5, OutputWorkspace=sname)
+
         JumpFit(InputWorkspace=sname,
                 Function='HallRoss',
                 Width=2,
@@ -331,8 +339,8 @@ class JumpHallRossTest(stresstesting.MantidStressTest):
                 Save=saveOp)
 
     def validate(self):
-        self.tolerance = 1e-5 
-        return 'irs26176_graphite002_QLr_HallRossfit_Workspace','ISISIndirectBayes_JumpHallRossTest.nxs'
+        self.tolerance = 1e-5
+        return 'irs26176_graphite002_QLr_HallRoss_fit_Workspace','ISISIndirectBayes_JumpHallRossTest.nxs'
 
 #=============================================================================
 class JumpFickTest(stresstesting.MantidStressTest):
@@ -346,6 +354,10 @@ class JumpFickTest(stresstesting.MantidStressTest):
 
         path = sname+'.nxs'  # path name for nxs file
         LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
+
+        # Data must be in HWHM
+        Scale(InputWorkspace=sname, Factor=0.5, OutputWorkspace=sname)
+
         JumpFit(InputWorkspace=sname,
                 Function='FickDiffusion',
                 Width=2,
@@ -356,8 +368,8 @@ class JumpFickTest(stresstesting.MantidStressTest):
                 Save=saveOp)
 
     def validate(self):
-        self.tolerance = 1e-5 
-        return 'irs26176_graphite002_QLr_FickDiffusionfit_Workspace','ISISIndirectBayes_JumpFickTest.nxs'
+        self.tolerance = 5e-4
+        return 'irs26176_graphite002_QLr_FickDiffusion_fit_Workspace','ISISIndirectBayes_JumpFickTest.nxs'
 
 #=============================================================================
 class JumpTeixeiraTest(stresstesting.MantidStressTest):
@@ -371,6 +383,10 @@ class JumpTeixeiraTest(stresstesting.MantidStressTest):
 
         path = sname+'.nxs'  # path name for nxs file
         LoadNexusProcessed(Filename=path, OutputWorkspace=sname)
+
+        # Data must be in HWHM
+        Scale(InputWorkspace=sname, Factor=0.5, OutputWorkspace=sname)
+
         JumpFit(InputWorkspace=sname,
                 Function='TeixeiraWater',
                 Width=2,
@@ -382,6 +398,6 @@ class JumpTeixeiraTest(stresstesting.MantidStressTest):
 
     def validate(self):
         self.tolerance = 1e-2
-        return 'irs26176_graphite002_QLr_TeixeiraWaterfit_Workspace','ISISIndirectBayes_JumpTeixeiraTest.nxs'
+        return 'irs26176_graphite002_QLr_TeixeiraWater_fit_Workspace','ISISIndirectBayes_JumpTeixeiraTest.nxs'
 
 #=============================================================================
