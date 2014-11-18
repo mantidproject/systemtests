@@ -16,7 +16,8 @@ class IndirectEnergyConversionTest(stresstesting.MantidStressTest):
                                    DetectorRange=detector_range,
                                    Instrument=instrument,
                                    Analyser=analyser,
-                                   Reflection=reflection)
+                                   Reflection=reflection,
+                                   OutputWorkspace='__IndirectEnergyCOnversionTest_out_group')
 
 
     def validate(self):
