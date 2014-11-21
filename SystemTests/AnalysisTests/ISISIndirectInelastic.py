@@ -10,7 +10,7 @@ from mantid.api import FileFinder
 # Import our workflows.
 from inelastic_indirect_reducer import IndirectReducer
 from inelastic_indirect_reduction_steps import CreateCalibrationWorkspace
-from IndirectDataAnalysis import elwin, msdfit, fury, furyfitSeq, furyfitMult, confitSeq, abscorFeeder
+from IndirectDataAnalysis import msdfit, fury, furyfitSeq, furyfitMult, confitSeq, abscorFeeder
 
 '''
 - TOSCA only supported by "Reduction" (the Energy Transfer tab of C2E).
@@ -755,19 +755,19 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
     def _run(self):
         '''Defines the workflow for the test'''
         self.tolerance = 1e-7
-        elwin_results = elwin(self.files,
-                              self.eRange,
-                              Save=False,
-                              Verbose=False,
-                              Plot=False)
 
-        #Manually set the Elf file label
-        elf_ws = elwin_results[0][:-3] + "elf"
-        units = mtd[elf_ws].getAxis(0).setUnit("Label")
-        units.setLabel("Temperature", "K")
+        elwin_input = '__ElWinMult_in'
+        elwin_results = ['__ElWinMult_q', '__ElWinMult_q2', '__ElWinMult_elf']
 
-        #Append Elf file for saving
-        elwin_results = elwin_results + (elf_ws,)
+        # Load files and create workspace group
+        for filename in self.files:
+            Load(Filename=filename, OutputWorkspace=filename)
+        GroupWorkspaces(InputWorkspaces=self.files, OutputWorkspace=elwin_input)
+
+        ElasticWindowMultiple(InputWorkspaces=elwin_input, Plot=False,
+                              Range1Start=self.eRange[0], Range1End=self.eRange[1],
+                              OutputInQ=elwin_results[0], OutputInQSquared=elwin_results[1],
+                              OutputELF=elwin_results[2])
 
         int_files = [self.get_temp_dir_path(filename) + ".nxs"
                      for filename in elwin_results]
@@ -793,12 +793,6 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
         for ws, filename in zip(elwin_results, int_files):
             LoadNexusProcessed(Filename=filename,
                                OutputWorkspace=ws)
-
-            # check label properties were saved correctly
-            if(ws[-3:] == "elf"):
-                units = mtd[ws].getAxis(0).getUnit()
-                self.assertTrue(units.caption() == "Temperature")
-                self.assertTrue(units.label() == "K")
 
         # Clean up the intermediate files.
         for filename in int_files:
