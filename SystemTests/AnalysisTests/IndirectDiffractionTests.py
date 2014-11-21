@@ -24,7 +24,7 @@ class MSGDiffractionReductionTest(stresstesting.MantidStressTest):
         from mantid import mtd
 
         MSGDiffractionReduction(InputFiles=self.raw_file,
-                                OutputWorkspaceGroup=self.output_workspace_group,
+                                OutputWorkspace=self.output_workspace_group,
                                 Instrument=self.instrument,
                                 Mode=self.mode,
                                 DetectorRange=self.detector_range,

@@ -623,6 +623,7 @@ class ISISIndirectInelasticDiagnostics(ISISIndirectInelasticBase):
 
         TimeSlice(InputFiles=self.rawfiles,
                   OutputNameSuffix=self.suffix,
+                  OutputWorkspace='__IndirectInelasticDiagnostics_out_group',
                   PeakRange=self.peak,
                   SpectraRange=self.spectra,
                   Plot=False,
