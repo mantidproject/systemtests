@@ -1007,6 +1007,9 @@ class MantidFrameworkConfig:
         # Do not show paraview dialog
         config['paraview.ignore'] = "1"
 
+        # Do not update instrument definitions
+        config['UpdateInstrumentDefinitions.OnStartup'] = "0"
+
         # Case insensitive
         config['filefinder.casesensitive'] = 'Off'
         
