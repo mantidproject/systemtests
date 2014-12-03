@@ -24,7 +24,7 @@ class DOSPhononCrossSectionScaleTest(stresstesting.MantidStressTest):
       self.ouput_ws_name = 'squaricn'
       self.ref_result = 'II.DOSCrossSectionScaleTest.nxs'
 
-      DensityOfStates(File=file_name, ScaleByCrossSection=True, OutputWorkspace=self.ouput_ws_name)
+      DensityOfStates(File=file_name, ScaleByCrossSection='Incoherent', OutputWorkspace=self.ouput_ws_name)
 
     def validate(self):
       return self.ouput_ws_name, self.ref_result
@@ -121,7 +121,7 @@ class DOSPartialCrossSectionScaleTest(stresstesting.MantidStressTest):
       self.ouput_ws_name = 'squaricn'
       self.ref_result = 'II.DOSPartialCrossSectionScaleTest.nxs'
 
-      DensityOfStates(File=file_name, SpectrumType=spec_type, Ions="H,C,O", ScaleByCrossSection=True,
+      DensityOfStates(File=file_name, SpectrumType=spec_type, Ions="H,C,O", ScaleByCrossSection='Incoherent',
                       OutputWorkspace=self.ouput_ws_name)
 
     def validate(self):
@@ -145,7 +145,7 @@ class DOSPartialSummedContributionsCrossSectionScaleTest(stresstesting.MantidStr
       self.tolerance = 1e-10
 
       DensityOfStates(File=file_name, SpectrumType=spec_type, Ions="H,C,O", SumContributions=True,
-                      ScaleByCrossSection=True, OutputWorkspace=self.ouput_ws_name)
+                      ScaleByCrossSection='Incoherent', OutputWorkspace=self.ouput_ws_name)
 
     def validate(self):
       return self.ouput_ws_name, self.ref_result
