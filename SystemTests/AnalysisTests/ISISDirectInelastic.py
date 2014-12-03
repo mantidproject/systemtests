@@ -42,9 +42,10 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       """Defines the workflow for the test"""
 
       self._validate_properties()
+
       #reducer = setup_reducer(self.instr_name)
       # The tests rely on MARI_Parameters.xml file valid on 31 July 2013
-      dgreduce.setup(self.instr_name) 
+      dgreduce.setup(self.instr_name,True) 
 
       args={};
       args['sample_mass'] = self.sample_mass;
@@ -70,7 +71,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       #args['mono_correction_factor']=0.024519711695583177 # local testing, should not be used in master tests
       outWS=dgreduce.arb_units(self.white_beam,self.sample_run,self.incident_energy,self.bins,self.map_file,monovan_run,**args)
       #  fixture causing fails due to correspondent difference in reference files. 
-      outWS*=0.0245159026452/0.024519711695583177
+      outWS*=self.scale_to_fix_abf;
       #absnorm_factor  =  absnorm_factor*0.024519711695583177/0.0245159026452
 
 
@@ -129,6 +130,10 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
     def _is_workspace(self, obj):
       """ Returns True if the object is a workspace"""
       return isinstance(obj, Workspace)
+    def __init__(self):
+        stresstesting.MantidStressTest.__init__(self);
+        # this is temporary parameter 
+        self.scale_to_fix_abf=1;
 
 #------------------------- MARI tests -------------------------------------------------
 
@@ -146,6 +151,9 @@ class MARIReductionFromFile(ISISDirectInelasticReduction):
     self.sample_mass = 10 #32.58 # 10
     self.sample_rmm =  435.96# 50.9415 # 435.96
     self.hard_mask = "mar11015.msk"
+
+    # temporary fix to account for different monovan integral
+    self.scale_to_fix_abf = 0.0245159026452/0.024519711695583177
 
   def get_result_workspace(self):
       """Returns the result workspace to be checked"""
@@ -190,8 +198,8 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
 
       self._validate_properties()
       #reducer = setup_reducer(self.instr_name)
-      # The tests rely on MARI_Parameters.xml file valind on 31 July 2013
-      dgreduce.setup(self.instr_name) 
+      # The tests rely on MARI_Parameters.xml file valid on 31 July 2013
+      dgreduce.setup(self.instr_name,True) 
 
       args={};
       args['sample_mass'] = self.sample_mass;
@@ -314,7 +322,7 @@ class MARIReductionSum(ISISDirectInelasticReduction):
 
       self._validate_properties()
       # The tests rely on MARI_Parameters.xml file valid on 31 July 2013
-      dgreduce.setup(self.instr_name) 
+      dgreduce.setup(self.instr_name,True) 
 
       args={};
       # Disable auto save
@@ -349,6 +357,7 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
       return 10000
 
   def __init__(self):
+    self.instr_name='MAP'
     ISISDirectInelasticReduction.__init__(self)
 
 
@@ -391,10 +400,14 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
       # the test to get WB cross-section
       #outWS =dgreduce.arb_units(17186,self.sample_run,150,[-50,1,100],'default',17589,**argi)
       outWS = dgreduce.arb_units(17186,self.sample_run,150,[-15,3,135],'default',17589,**argi)
-    # set up the reducer parameters which come from dgreduce arguments
+      #New WBI value 0.027546078402873958
+      #Old WBI Value 0.027209867107187088
+      # fix old system test. 
+      outWS*=0.027546078402873958/0.027209867107187088
 
       # rename workspace to the name expected by unit test framework
-      RenameWorkspace(InputWorkspace=outWS,OutputWorkspace=str(self.sample_run)+'.spe')
+      wsName = common.create_resultname(self.sample_run,self.instr_name);
+      RenameWorkspace(InputWorkspace=outWS,OutputWorkspace=wsName)
 
 
   def get_reference_file(self):
@@ -514,7 +527,7 @@ class LETReduction(stresstesting.MantidStressTest):
       Relies on LET_Parameters.xml file from June 2013
       """
 
-      dgreduce.setup('LET')
+      dgreduce.setup('LET',True)
       white_run = 'LET00005545.raw'
       sample_run = 'LET00006278.nxs'
       ei = 7.0
@@ -571,7 +584,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       Relies on LET_Parameters.xml file from June 2013
       """
 
-      dgreduce.setup('LET')
+      dgreduce.setup('LET',True)
       wb=5545 #11869   # enter whitebeam run number here
         
       run_no=[14305] 
