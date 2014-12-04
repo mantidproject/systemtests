@@ -32,6 +32,7 @@ class POLDICalculateSpectrum2DTest(stresstesting.MantidStressTest):
       PoldiCalculateSpectrum2D(InputWorkspace=dataFile,
                                PoldiPeakWorkspace="%s_reference_Peaks" % (dataFile),
                                PeakProfileFunction="Gaussian",
+                               RefinedPoldiPeakWorkspace="%s_refined_Peaks" % (dataFile),
                                OutputWorkspace="%s_2d_calculated_Spectrum" % (dataFile))
 
   def analyseResults(self, filenames):
