@@ -556,6 +556,8 @@ class LETReduction(stresstesting.MantidStressTest):
       argi['detector_van_range']=[0.5,200]
       argi['bkgd_range']=[int(t_elastic),int(tbin[2])]
       argi['hard_mask_file']='LET_hard.msk'
+      #TODO: this has to be loaded from the workspace and work without this settings
+      argi['ei-mon1-spec']=40966
 
       reduced_ws = dgreduce.arb_units(white_ws, sample_ws, ei, ebinstring, map_file,**argi)
       pass
@@ -641,6 +643,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
                     
          #now loop around all energies for the run
           result =[];
+          mults =[41.032811389179471/41.178300987983413,71.28127860058153/72.231475173892022];
           for ind,energy in enumerate(ei):
                 print float(energy)
                 (energybin,tbin,t_elastic) = find_binning_range(energy,ebin);
@@ -674,11 +677,20 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
                 # ensure correct round-off procedure
                 argi['monovan_integr_range']=[round(ebin[0]*energy,4),round(ebin[2]*energy,4)]; # integration range of the vanadium 
                 #MonoVanWSName = None;
+                #TODO: The same issue again. ei-monitor spectra is taken from recent IDF and old files have it wrong! 
+                argi['ei-mon1-spec']=40966
+
 
                 # absolute unit reduction -- if you provided MonoVan run or relative units if monoVan is not present
                 out=dgreduce.arb_units("wb_wksp","w1",energy,energybin,mapping,MonoVanRun,**argi)
+                #New normalization for 3.4 meV: 41.032811389179471
+                #Old normalization for 3.4 meV: 41.178300987983413
+                #New normalization for 8 meV: 71.28127860058153
+                #Old normalization for 8 meV: 72.231475173892022
+                out *=mults[ind];
                 ws_name = 'LETreducedEi{0:2.1f}'.format(energy);
                 RenameWorkspace(InputWorkspace=out,OutputWorkspace=ws_name);
+    
                 #SaveNXSPE(InputWorkspace=ws_name,Filename=ws_name+'.nxspe');
 
 
