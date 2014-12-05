@@ -122,6 +122,17 @@ class VesuvioTests(unittest.TestCase):
         self.assertAlmostEqual(0.52109203357613976, evs_raw.readE(0)[0], places=DIFF_PLACES)
         self.assertAlmostEqual(0.10617318614513051, evs_raw.readE(0)[-1], places=DIFF_PLACES)
 
+    def test_sumspectra_with_multiple_groups_gives_number_output_spectra_as_input_groups(self):
+        self._run_load("14188", "135-148;152-165", "SingleDifference","IP0005.dat",sum=True)
+        
+        evs_raw = mtd[self.ws_name]
+
+        # Verify
+        self.assertEquals(2, evs_raw.getNumberHistograms())
+        self.assertAlmostEqual(-0.713877795283, evs_raw.readY(0)[0], places=DIFF_PLACES)
+        self.assertAlmostEqual(-3.00125465604, evs_raw.readY(1)[0], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.6219299465, evs_raw.readE(0)[0], places=DIFF_PLACES)
+        self.assertAlmostEqual(0.676913729914, evs_raw.readE(1)[0], places=DIFF_PLACES)
 
     def _run_load(self, runs, spectra, diff_opt, ip_file="", sum=False):
         LoadVesuvio(Filename=runs,OutputWorkspace=self.ws_name,
@@ -132,7 +143,10 @@ class VesuvioTests(unittest.TestCase):
 
         def expected_size():
             if sum:
-                return 1
+                if ";" in spectra:
+                    return 2
+                else:
+                    return 1
             elif "-" in spectra:
                 elements = spectra.split("-")
                 min,max=(int(elements[0]), int(elements[1]))
