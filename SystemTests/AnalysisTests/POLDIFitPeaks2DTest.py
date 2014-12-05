@@ -2,8 +2,9 @@ import stresstesting
 from mantid.simpleapi import *
 import numpy as np
 
-'''Checking results of POLDICalculateSpectrum2DTest.'''
-class POLDICalculateSpectrum2DTest(stresstesting.MantidStressTest):
+'''The system test currently checks that the calculation of 2D spectra
+works correctly.'''
+class POLDIFitPeaks2DTest(stresstesting.MantidStressTest):
   def runTest(self):
     dataFiles = ["poldi2013n006904"]
 
@@ -29,10 +30,12 @@ class POLDICalculateSpectrum2DTest(stresstesting.MantidStressTest):
 
   def runCalculateSpectrum2D(self, filenames):
     for dataFile in filenames:
-      PoldiCalculateSpectrum2D(InputWorkspace=dataFile,
+      PoldiFitPeaks2D(InputWorkspace=dataFile,
                                PoldiPeakWorkspace="%s_reference_Peaks" % (dataFile),
                                PeakProfileFunction="Gaussian",
-                               OutputWorkspace="%s_2d_calculated_Spectrum" % (dataFile))
+                               RefinedPoldiPeakWorkspace="%s_refined_Peaks" % (dataFile),
+                               OutputWorkspace="%s_2d_calculated_Spectrum" % (dataFile),
+                               MaximumIterations=0)
 
   def analyseResults(self, filenames):
     for dataFile in filenames:
@@ -42,8 +45,12 @@ class POLDICalculateSpectrum2DTest(stresstesting.MantidStressTest):
       self.assertEqual(calculatedSpectrum.getNumberHistograms(), referenceSpectrum.getNumberHistograms())
 
       for i in range(calculatedSpectrum.getNumberHistograms()):
-        refHisto = referenceSpectrum.readY(i)
         calHisto = calculatedSpectrum.readY(i)
 
-        absDiff = np.fabs(refHisto - calHisto)
-        self.assertTrue(np.all(absDiff < 7e-4))
+        if not referenceSpectrum.getDetector(i).isMasked():
+          refHisto = referenceSpectrum.readY(i)
+
+          absDiff = np.fabs(refHisto - calHisto)
+          self.assertTrue(np.all(absDiff < 7e-4))
+        else:
+          self.assertTrue(np.all(calHisto == 0.0))
