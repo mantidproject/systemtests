@@ -298,113 +298,24 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       
       Relies on LET_Parameters.xml file from June 2013
       """
+      from ISIS_LETReduction import ReduceLET_MultiRep2014
+      red = ReduceLET_MultiRep2014();
 
-      dgreduce.setup('LET',True)
-      wb=5545 #11869   # enter whitebeam run number here
-        
-      run_no=[14305] 
-      ei=[3.4,8.] # multiple energies provided in the data file
-      ebin=[-4,0.002,0.8]    #binning of the energy for the spe file. The numbers are as a fraction of ei [from ,step, to ]
-      mapping='rings_103.map'  # rings mapping file for powders, liquout=iliad("wb_wksp","w1reb",energy,ebinstring,mapping,bleed=False,norm_method='current',det_cal_file='det_corrected7.dat',detector_van_range=[0.5,200],bkgd_range=[int(t_elastic),int(tmax)])
-      mask_file = 'LET_hard.msk'
-      # currently done here on-
-      remove_background = True  #if true then will subtract a flat background in time from the time range given below otherwise put False
-      bg_range=[92000,98000] # range of times to take background in
+      red.def_advanced_properties();
+      red.def_main_properties();
 
 
+      out_ws_list=red.main();
 
-    # loads the whitebeam (or rather the long monovan ). Does it as a raw file to save time as the event mode is very large
-      if 'wb_wksp' in mtd:
-            wb_wksp=mtd['wb_wksp']
-      else:  #only load whitebeam if not already there
-          LoadRaw(Filename='LET0000'+str(wb)+'.raw',OutputWorkspace='wb_wksp')
-        #dgreduce.getReducer().det_cal_file = 'det_corrected7.nxs'
-        #wb_wksp = dgreduce.getReducer().load_data('LET0000'+str(wb)+'.raw','wb_wksp')
-        #dgreduce.getReducer().det_cal_file = wb_wksp;
-
-######################################################################
-
-############################################
-# Vanadium labelled Dec 2011 - flat plate of dimensions: 40.5x41x2.0# volume = 3404.025 mm**3 mass= 20.79
-      sampleMass=20.79 # 17.25  # mass of your sample (PrAl3)
-      sampleRMM= 50.9415 # 221.854  # molecular weight of your sample
-      MonoVanRun=14319 # vanadium run in the same configuration as your sample
-      monovan_mapfile='rings_103.map'  #
-
-######################################################################
-
-      MonoVanWB="wb_wksp"
-      for run in run_no:     #loop around runs
-          fname='LET0000'+str(run)+'.nxs'
-          print ' processing file ', fname
-          #w1 = dgreduce.getReducer().load_data(run,'w1')
-          Load(Filename=fname,OutputWorkspace='w1',LoadMonitors='1');
-
-    
-          if remove_background:
-                find_background('w1',bg_range);
-
-        #############################################################################################
-        # this section finds all the transmitted incident energies if you have not provided them
-        #if len(ei) == 0:  -- not tested here -- should be unit test for that. 
-           #ei = find_chopper_peaks('w1_monitors');       
-          print 'Energies transmitted are:'
-          print (ei)
-
-          RenameWorkspace(InputWorkspace = 'w1',OutputWorkspace='w1_storage');
-          RenameWorkspace(InputWorkspace = 'w1_monitors',OutputWorkspace='w1_mon_storage');
-                    
-         #now loop around all energies for the run
-          result =[];
-          mults =[41.032811389179471/41.178300987983413,71.28127860058153/72.231475173892022];
-          for ind,energy in enumerate(ei):
-                print float(energy)
-                (energybin,tbin,t_elastic) = find_binning_range(energy,ebin);
-                print " Rebinning will be performed in the range: ",energybin
-                # if we calculate more then one energy, initial workspace will be used more then once
-                if ind <len(ei)-1:
-                    CloneWorkspace(InputWorkspace = 'w1_storage',OutputWorkspace='w1')
-                    CloneWorkspace(InputWorkspace = 'w1_mon_storage',OutputWorkspace='w1_monitors')
-                else:
-                    RenameWorkspace(InputWorkspace = 'w1_storage',OutputWorkspace='w1');
-                    RenameWorkspace(InputWorkspace = 'w1_mon_storage',OutputWorkspace='w1_monitors');
-
-                if remove_background:
-                    w1=Rebin(InputWorkspace='w1',OutputWorkspace='w1',Params=tbin,PreserveEvents=False)            
-                    Minus(LHSWorkspace='w1',RHSWorkspace='bg',OutputWorkspace='w1')
-               
-
-                ######################################################################
-                argi={};
-                argi['norm_method']='current'
-                argi['det_cal_file']='det_corrected7.nxs'
-                argi['detector_van_range']=[2,7]
-                argi['bkgd_range']=[bg_range[0],bg_range[1]]
-                argi['hardmaskOnly']=mask_file   # diag does not work well on LET. At present only use a hard mask RIB has created
-                argi['check_background']=False;
-
-                # abs units
-                argi['sample_mass']=sampleMass;
-                argi['sample_rmm'] =sampleRMM;
-                argi['monovan_mapfile']=monovan_mapfile;
-                # ensure correct round-off procedure
-                argi['monovan_integr_range']=[round(ebin[0]*energy,4),round(ebin[2]*energy,4)]; # integration range of the vanadium 
-                #MonoVanWSName = None;
-                #TODO: The same issue again. ei-monitor spectra is taken from recent IDF and old files have it wrong! 
-                argi['ei-mon1-spec']=40966
+      mults =[41.032811389179471/41.178300987983413,71.28127860058153/72.231475173892022];
+      #New normalization for 3.4 meV: 41.032811389179471
+      #Old normalization for 3.4 meV: 41.178300987983413
+      #New normalization for 8 meV: 71.28127860058153
+      #Old normalization for 8 meV: 72.231475173892022
+      for ind,ws in enumerate(out_ws_list):
+        ws *=mults[ind];
 
 
-                # absolute unit reduction -- if you provided MonoVan run or relative units if monoVan is not present
-                out=dgreduce.arb_units("wb_wksp","w1",energy,energybin,mapping,MonoVanRun,**argi)
-                #New normalization for 3.4 meV: 41.032811389179471
-                #Old normalization for 3.4 meV: 41.178300987983413
-                #New normalization for 8 meV: 71.28127860058153
-                #Old normalization for 8 meV: 72.231475173892022
-                out *=mults[ind];
-                ws_name = 'LETreducedEi{0:2.1f}'.format(energy);
-                RenameWorkspace(InputWorkspace=out,OutputWorkspace=ws_name);
-    
-                #SaveNXSPE(InputWorkspace=ws_name,Filename=ws_name+'.nxspe');
 
 
 
