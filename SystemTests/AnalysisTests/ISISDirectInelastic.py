@@ -78,7 +78,7 @@ class MARIReductionFromFile(ISISDirectInelasticReduction):
   def __init__(self):
     ISISDirectInelasticReduction.__init__(self)
 
-    from MariReduction import ReduceMARIFromFile
+    from ISIS_MariReduction import ReduceMARIFromFile
 
     self.red = ReduceMARIFromFile()
     self.red.def_advanced_properties();
@@ -103,7 +103,7 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
   def __init__(self):
     ISISDirectInelasticReduction.__init__(self)
 
-    from MariReduction import ReduceMARIFromWorkspace
+    from ISIS_MariReduction import ReduceMARIFromWorkspace
 
     self.red = ReduceMARIFromWorkspace()
     self.red.def_advanced_properties();
@@ -132,7 +132,7 @@ class MARIReductionMon2Norm(ISISDirectInelasticReduction):
   def __init__(self):
     ISISDirectInelasticReduction.__init__(self)
 
-    from MariReduction import ReduceMARIMon2Norm
+    from ISIS_MariReduction import ReduceMARIMon2Norm
 
     self.red = ReduceMARIMon2Norm()
     self.red.def_advanced_properties();
@@ -158,7 +158,7 @@ class MARIReductionSum(ISISDirectInelasticReduction):
   def __init__(self):
 
     ISISDirectInelasticReduction.__init__(self)
-    from MariReduction import MARIReductionSum
+    from ISIS_MariReduction import MARIReductionSum
 
     self.red = MARIReductionSum()
     self.red.def_advanced_properties();
@@ -188,7 +188,7 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
   def __init__(self):
     ISISDirectInelasticReduction.__init__(self)
 
-    from MAPS_DGSReduction import ReduceMAPS
+    from ISIS_MAPS_DGSReduction import ReduceMAPS
 
     self.red = ReduceMAPS()
     self.red.def_advanced_properties();
@@ -227,16 +227,15 @@ class MERLINReduction(ISISDirectInelasticReduction):
     ''' Test relies on MERLIN_Parameters.xml file introduced in July 2014
     ''' 
     ISISDirectInelasticReduction.__init__(self)
-    self.instr_name = 'MERLIN'
-    self.sample_run = 6398
-    self.incident_energy = 18
-    self.bins = [-10, 0.2, 15]
-    self.white_beam = 6399
-    self.map_file = "rings_113.map"
-    self.mono_van = None
-    self.sample_mass = None
-    self.sample_rmm = None
-    self.hard_mask = None
+
+    from ISIS_MERLINReduction import ReduceMERLIN
+
+    self.red = ReduceMERLIN()
+    self.red.def_advanced_properties();
+    self.red.def_main_properties();
+
+  def runTest(self):
+       outWS = self.red.main();
     
   def get_reference_file(self):
     return "MERLINReduction.nxs"
