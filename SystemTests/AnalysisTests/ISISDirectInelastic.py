@@ -37,48 +37,10 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
     def get_result_workspace(self):
         """Returns the result workspace to be checked"""
         return common.create_resultname(self.sample_run,self.instr_name) 
-  
+
+    @abstractmethod
     def runTest(self):
       """Defines the workflow for the test"""
-
-      self._validate_properties()
-
-      #reducer = setup_reducer(self.instr_name)
-      # The tests rely on MARI_Parameters.xml file valid on 31 July 2013
-      dgreduce.setup(self.instr_name,True) 
-
-      args={};
-      args['sample_mass'] = self.sample_mass;
-      args['sample_rmm']  = self.sample_rmm;
-      # Disable auto save
-      args['save_format'] = []
-      args['hard_mask_file'] = self.hard_mask
-      #args['use_hard_mask_only'] = True #  local testing, should not be used in master tests
-      args['monovan_mapfile'] = self.map_file
-      args['det_cal_file']=self.white_beam #"11060"
-
-
-      #prepare the workspace name expected by the framework
-      if isinstance(self.sample_run, Workspace ):
-        # reduction from workspace currently needs detector_calibration file
-        # MARI calibration uses one of data files defined on instrument. Here vanadium run is used for calibration
-        args['det_cal_file']=self.white_beam
-
-
-      monovan_run=self.mono_van
-      # Do the reduction -- when monovan run is not None, it does absolute units 
-      #monovan_run=None # local testing, should not be used in master tests
-      #args['mono_correction_factor']=0.024519711695583177 # local testing, should not be used in master tests
-      outWS=dgreduce.arb_units(self.white_beam,self.sample_run,self.incident_energy,self.bins,self.map_file,monovan_run,**args)
-      #  fixture causing fails due to correspondent difference in reference files. 
-      outWS*=self.scale_to_fix_abf;
-      #absnorm_factor  =  absnorm_factor*0.024519711695583177/0.0245159026452
-
-
-      #SaveNexus(outWS,'MAR_reductionWrong.nxs')
-      #SaveNXSPE(outWS,'MAR_reduction2.nxspe')
- 
-
      # rename workspace to the name expected by unit test framework
 
 
@@ -94,32 +56,6 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       reference = self.get_reference_file()
       return result, reference
 
-    def _validate_properties(self):
-      """Check the object properties are
-      in an expected state to continue
-      """
-      if type(self.instr_name) != str:
-        raise RuntimeError("instr_name property should be a string")
-      if type(self.sample_run) != int and not self._is_workspace(self.sample_run):
-        raise RuntimeError("sample_run property should be an integer or a workspace.")
-      if not self._is_numeric(self.incident_energy):
-        raise RuntimeError("incident_energy property should be a numerical quantity")
-      if type(self.bins) != list and len(self.bins) < 3:
-        raise RuntimeError("bins property should be a list of atleast 3 values")
-      if type(self.white_beam) != int and not self._is_workspace(self.white_beam):
-        raise RuntimeError("white_beam property should be an integer or a workspace")
-      if self.mono_van is not None and type(self.mono_van) != int and \
-              not self._is_workspace(self.mono_van) :
-        raise RuntimeError("mono_van property should be an integer or a workspace")
-      if self.map_file is not None and type(self.map_file) != str:
-        raise RuntimeError("map_file property should be a string")
-      if self.sample_mass is not None and not self._is_numeric(self.sample_mass):
-        raise RuntimeError("sample_mass property should be a numerical quantity")
-      if self.sample_rmm is not None and not self._is_numeric(self.sample_rmm):
-        raise RuntimeError("sample_rmm property should be a numerical quantity")
-      if self.hard_mask is not None and type(self.hard_mask) != str:
-        raise RuntimeError("hard_mask property should be a string")
-      
     def _is_numeric(self, obj):
       """Returns true if the object is an int or float, false otherwise"""
       if type(obj) != float or type(obj) != int:
@@ -141,19 +77,20 @@ class MARIReductionFromFile(ISISDirectInelasticReduction):
 
   def __init__(self):
     ISISDirectInelasticReduction.__init__(self)
-    self.instr_name = 'MARI'
-    self.sample_run = 11001 #11001
-    self.incident_energy = 12
-    self.bins = [-11,0.05,11]
-    self.white_beam = 11060
-    self.map_file = "mari_res.map"
-    self.mono_van = 11015
-    self.sample_mass = 10 #32.58 # 10
-    self.sample_rmm =  435.96# 50.9415 # 435.96
-    self.hard_mask = "mar11015.msk"
 
+    from MariReduction import ReduceMARIFromFile
+
+    self.red = ReduceMARIFromFile()
+    self.red.def_advanced_properties();
+    self.red.def_main_properties();
     # temporary fix to account for different monovan integral
     self.scale_to_fix_abf = 0.0245159026452/0.024519711695583177
+
+  def runTest(self):
+       outWS = self.red.main();
+       outWS*=self.scale_to_fix_abf;
+
+
 
   def get_result_workspace(self):
       """Returns the result workspace to be checked"""
@@ -166,61 +103,21 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
   def __init__(self):
     ISISDirectInelasticReduction.__init__(self)
 
-    mono_run = Load(Filename='MAR11001.RAW',OutputWorkspace='MAR11001.RAW')
-    last_alg = mono_run.getHistory().lastAlgorithm()
-    print last_alg
-    mono_ws = mono_run
-    AddSampleLog(Workspace=mono_ws, LogName='Filename', 
-                 LogText=last_alg.getPropertyValue('Filename'))
+    from MariReduction import ReduceMARIFromWorkspace
 
-    white_ws = Load(Filename='MAR11060.RAW',OutputWorkspace='MAR11060.RAW')
+    self.red = ReduceMARIFromWorkspace()
+    self.red.def_advanced_properties();
+    self.red.def_main_properties();
 
-    van_run = Load(Filename='MAR11015.RAW',OutputWorkspace='MAR11015.RAW')
-    last_alg = van_run.getHistory().lastAlgorithm()
-    van_ws = van_run
-    AddSampleLog(Workspace=van_ws, LogName='Filename', 
-                 LogText=last_alg.getPropertyValue('Filename'))
+    self.scale_to_fix_abf = 0.0245159026452/0.024519711695583177
 
-    self.instr_name = 'MARI'
-    self.sample_run = mono_ws
-    self.incident_energy = 12
-    self.bins = [-11,0.05,11]
-    self.white_beam = white_ws
-    #self.white_beam = 
-    self.map_file = "mari_res.map"
-    self.mono_van = van_ws
-    self.sample_mass = 10
-    self.sample_rmm = 435.96
-    self.hard_mask = "mar11015.msk"
 
   def runTest(self):
       """Defines the workflow for the test"""
 
-      self._validate_properties()
-      #reducer = setup_reducer(self.instr_name)
-      # The tests rely on MARI_Parameters.xml file valid on 31 July 2013
-      dgreduce.setup(self.instr_name,True) 
-
-      args={};
-      args['sample_mass'] = self.sample_mass;
-      args['sample_rmm']  = self.sample_rmm;
-      # Disable auto save
-      args['save_format'] = []
-      args['hard_mask_file'] = self.hard_mask
-      args['monovan_mapfile'] = self.map_file
-      args['det_cal_file']=self.white_beam #"11060"
-
-
-     # reduction from workspace currently needs detector_calibration file
-     # MARI calibration uses one of data files defined on instrument. Here vanadium run is used for calibration
-      args['det_cal_file']="11060"
-
-
-      monovan_run=self.mono_van
-      # Do the reduction -- when monovan run is not None, it does absolute units 
-      outWS=dgreduce.arb_units(self.white_beam,self.sample_run,self.incident_energy,self.bins,self.map_file,monovan_run,**args)
-      #  fixture causing fails due to correspondent difference in reference files. 
-      outWS*=0.0245159026452/0.024519711695583177
+      outWS=self.red.main();
+      # temporary fix to account for different monovan integral
+      outWS*=self.scale_to_fix_abf
 
     
   def get_result_workspace(self):
@@ -235,62 +132,19 @@ class MARIReductionMon2Norm(ISISDirectInelasticReduction):
   def __init__(self):
     ISISDirectInelasticReduction.__init__(self)
 
-    mono_run = Load(Filename='MAR11001.RAW',OutputWorkspace='MAR11001.RAW')
-    last_alg = mono_run.getHistory().lastAlgorithm()
-    print last_alg
-    mono_ws = mono_run
-    AddSampleLog(Workspace=mono_ws, LogName='Filename', 
-                 LogText=last_alg.getPropertyValue('Filename'))
+    from MariReduction import ReduceMARIMon2Norm
 
-    white_ws = Load(Filename='MAR11060.RAW',OutputWorkspace='MAR11060.RAW')
-
-    van_run = Load(Filename='MAR11015.RAW',OutputWorkspace='MAR11015.RAW')
-    last_alg = van_run.getHistory().lastAlgorithm()
-    van_ws = van_run
-    AddSampleLog(Workspace=van_ws, LogName='Filename', 
-                 LogText=last_alg.getPropertyValue('Filename'))
-
-    self.instr_name = 'MARI'
-    self.sample_run = mono_ws
-    self.incident_energy = 12
-    self.bins = [-11,0.05,11]
-    self.white_beam = white_ws
-    #self.white_beam = 
-    self.map_file = "mari_res.map"
-    self.mono_van = van_ws
-    self.sample_mass = 10
-    self.sample_rmm = 435.96
-    self.hard_mask = "mar11015.msk"
+    self.red = ReduceMARIMon2Norm()
+    self.red.def_advanced_properties();
+    self.red.def_main_properties();
 
   def runTest(self):
       """Defines the workflow for the test"""
 
-      self._validate_properties()
-      #reducer = setup_reducer(self.instr_name)
-      # The tests rely on MARI_Parameters.xml file valid on 31 July 2013
-      dgreduce.setup(self.instr_name) 
-
-      args={};
-      args['sample_mass'] = self.sample_mass;
-      args['sample_rmm']  = self.sample_rmm;
-      # Disable auto save
-      args['save_format'] = []
-      args['hard_mask_file'] = self.hard_mask
-      args['monovan_mapfile'] = self.map_file
-      args['normalise_method']='monitor-2'
-      args['det_cal_file']=self.white_beam #"11060"
-
-
-     # reduction from workspace currently needs detector_calibration file
-     # MARI calibration uses one of data files defined on instrument. Here vanadium run is used for calibration
-      args['det_cal_file']="11060"
-
-
-      monovan_run=self.mono_van
-      # Do the reduction -- when monovan run is not None, it does absolute units 
-      #args['mono_correction_factor']=2.11563628862 # local testing, should not be used in master tests
-      outWS=dgreduce.arb_units(self.white_beam,self.sample_run,self.incident_energy,self.bins,self.map_file,monovan_run,**args)
+      outWS=self.red.main();
+      # temporary fix to account for different monovan integral
       outWS*=2.11507984881/2.11563628862
+
 
   def get_result_workspace(self):
       """Returns the result workspace to be checked"""
@@ -304,40 +158,17 @@ class MARIReductionSum(ISISDirectInelasticReduction):
   def __init__(self):
 
     ISISDirectInelasticReduction.__init__(self)
-    self.instr_name = 'MARI'
-    self.sample_run = 11001 #11001
-    self.incident_energy = 11
-    self.bins = [-11,0.05,11]
-    self.white_beam = 11060
-    self.map_file = "mari_res.map"
-    self.mono_van = 11015
-    self.sample_mass = 32.58 # 10
-    self.sample_rmm =  50.9415 # 435.96
-    self.hard_mask = "mar11015.msk"
+    from MariReduction import MARIReductionSum
+
+    self.red = MARIReductionSum()
+    self.red.def_advanced_properties();
+    self.red.def_main_properties();
 
   def runTest(self):
       """Defines the workflow for the test
       It verifies operation on summing two files on demand. No absolute units
       """
-
-      self._validate_properties()
-      # The tests rely on MARI_Parameters.xml file valid on 31 July 2013
-      dgreduce.setup(self.instr_name,True) 
-
-      args={};
-      # Disable auto save
-      args['save_format'] = []
-      args['hard_mask_file'] = self.hard_mask
-      args['sum_runs']    = True
-      # this is default setting in MARI_Parameters.xml
-      #args['monovan_mapfile'] = self.map_file
-
-      run_nums=[self.sample_run,self.mono_van]
-
-      # Do the reduction
-      outWS=dgreduce.arb_units(self.white_beam,run_nums,self.incident_energy,self.bins,self.map_file,**args)
-      #SaveNexus(outWS,'MAR_reduction2.nxs')
-      #SaveNXSPE(outWS,'MAR_reduction2.nxspe')
+      outWS=self.red.main();
     
   def get_result_workspace(self):
       """Returns the result workspace to be checked"""
