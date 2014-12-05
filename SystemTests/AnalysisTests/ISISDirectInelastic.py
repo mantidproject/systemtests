@@ -34,9 +34,9 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
       raise NotImplementedError("Implement get_reference_file to return "
                                 "the name of the file to compare against.")
 
+    @abstractmethod
     def get_result_workspace(self):
         """Returns the result workspace to be checked"""
-        return common.create_resultname(self.sample_run,self.instr_name) 
 
     @abstractmethod
     def runTest(self):
@@ -179,8 +179,6 @@ class MARIReductionSum(ISISDirectInelasticReduction):
 
 #------------------------- MAPS tests -------------------------------------------------
 
-
-
 class MAPSDgreduceReduction(ISISDirectInelasticReduction):
 
   def requiredMemoryMB(self):
@@ -188,61 +186,34 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
       return 10000
 
   def __init__(self):
-    self.instr_name='MAP'
     ISISDirectInelasticReduction.__init__(self)
 
+    from MAPS_DGSReduction import ReduceMAPS
 
+    self.red = ReduceMAPS()
+    self.red.def_advanced_properties();
+    self.red.def_main_properties();
 
   def runTest(self):
-      # The tests rely on MAPS_Parameters.xml file valind on 31 July 2013
-      # All other reducer parameters are defaults taken this file
-      dgreduce.setup('MAP')   
-      argi = dict();
-      argi['save_format'] = None; # disable saving
-      argi['abs_units_van_range']=[-40,40]
 
-      #argi['hardmaskPlus']=maskfile 
-      #argi['hardmaskOnly']=maskfile 
-      argi['hard_mask_file']=None
-      argi['diag_remove_zero']=False
-      argi['sample_mass'] = 10/(94.4/13) # -- this number allows to get approximately the same system test intensities for MAPS as the old test
-      argi['sample_rmm']  = 435.96 #
-      #argi['monovan_mapfile']='4to1_mid_lowang.map' # default
-      # The mass and rmm for Vanadium to get correct cross-section
-      #argi['sample_mass'] =  30.1
-      #argi['sample_rmm']  =  50.9415
-
-      # this are the parameterw which were used in old MAPS_Parameters.xml test. 
-      argi['wb-integr-max'] =300
-      argi['bkgd-range-min']=12000
-      argi['bkgd-range-max']=18000
-      argi['diag_samp_hi']=1.5
-      argi['diag_samp_sig']=3.3
-      argi['diag_van_hi']=2.0
-
-
-
-      # This file is the essential part of this test
-
-      # this is for testing only as the test talks to these parameters
-      self.sample_run = 17269
-      #self.sample_run = 17589 # mono-run to estimate known Vanadium x-section
-
-      # the test to get WB cross-section
-      #outWS =dgreduce.arb_units(17186,self.sample_run,150,[-50,1,100],'default',17589,**argi)
-      outWS = dgreduce.arb_units(17186,self.sample_run,150,[-15,3,135],'default',17589,**argi)
+      outWS=self.red.main();
       #New WBI value 0.027546078402873958
       #Old WBI Value 0.027209867107187088
       # fix old system test. 
       outWS*=0.027546078402873958/0.027209867107187088
 
       # rename workspace to the name expected by unit test framework
-      wsName = common.create_resultname(self.sample_run,self.instr_name);
+      wsName = common.create_resultname(self.red.iliad_prop.sample_run,self.red.iliad_prop.instr_name);
       RenameWorkspace(InputWorkspace=outWS,OutputWorkspace=wsName)
+      self.ws_name = wsName;
 
 
   def get_reference_file(self):
     return "MAPSDgreduceReduction.nxs"
+  def get_result_workspace(self):
+        """Returns the result workspace to be checked"""
+        return self.ws_name 
+
 
 #------------------------- MERLIN tests -------------------------------------------------
 
