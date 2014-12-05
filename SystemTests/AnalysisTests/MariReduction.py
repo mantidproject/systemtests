@@ -191,9 +191,9 @@ class MARIReductionSum(ReductionWrapper):
        prop['sum_runs']    = True
 
       # Absolute units reduction properties.
-       prop['monovan_run'] = 11015
-       prop['sample_mass'] = 32.58
-       prop['sample_rmm'] = 50.9415# 435.96
+       #prop['monovan_run'] = 11015
+       #prop['sample_mass'] = 32.58
+       #prop['sample_rmm'] = 50.9415# 435.96
        return prop
 
    @AdvancedProperties
@@ -206,7 +206,7 @@ class MARIReductionSum(ReductionWrapper):
       prop['map_file'] = "mari_res.map"
       prop['monovan_mapfile'] = "mari_res.map"
       prop['hard_mask_file'] ="mar11015.msk"
-      prop['det_cal_file'] =11060
+      #prop['det_cal_file'] =11060
       prop['save_format']=''
       return prop;
       #
