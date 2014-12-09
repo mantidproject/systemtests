@@ -1010,6 +1010,9 @@ class MantidFrameworkConfig:
         # Do not update instrument definitions
         config['UpdateInstrumentDefinitions.OnStartup'] = "0"
 
+        # Disable usage reports
+        config['usagereports.enabled'] = "0"
+
         # Case insensitive
         config['filefinder.casesensitive'] = 'Off'
         
