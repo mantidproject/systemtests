@@ -40,14 +40,19 @@ class ReduceMAPS(ReductionWrapper):
       prop['diag_remove_zero']=False
 
       # this are the parameters which were used in old MAPS_Parameters.xml test. 
-      prop['wb-integr-max'] =300
-      prop['bkgd-range-min']=12000
-      prop['bkgd-range-max']=18000
+      #prop['wb-integr-max'] =300
+      prop['wb_integr_range']=[20,300]
+      #prop['bkgd-range-min']=12000
+      #prop['bkgd-range-max']=18000
+      #prop['bkgd-range-min']=12000
+      prop['bkgd_range']=[12000,18000]
+
       prop['diag_samp_hi']=1.5
       prop['diag_samp_sig']=3.3
       prop['diag_van_hi']=2.0
       
-      prop['abs_units_van_range']=[-40,40]     
+      prop['abs_units_van_range']=[-40,40]    
+      
       return prop;
       #
    @iliad

@@ -196,6 +196,7 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
 
   def runTest(self):
 
+      wsName = common.create_resultname(self.red.iliad_prop.sample_run,self.red.iliad_prop.instr_name);
       outWS=self.red.main();
       #New WBI value 0.027546078402873958
       #Old WBI Value 0.027209867107187088
@@ -203,7 +204,6 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
       outWS*=0.027546078402873958/0.027209867107187088
 
       # rename workspace to the name expected by unit test framework
-      wsName = common.create_resultname(self.red.iliad_prop.sample_run,self.red.iliad_prop.instr_name);
       RenameWorkspace(InputWorkspace=outWS,OutputWorkspace=wsName)
       self.ws_name = wsName;
 
