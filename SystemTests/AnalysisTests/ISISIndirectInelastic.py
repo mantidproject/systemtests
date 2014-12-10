@@ -10,7 +10,7 @@ from mantid.api import FileFinder
 # Import our workflows.
 from inelastic_indirect_reducer import IndirectReducer
 from inelastic_indirect_reduction_steps import CreateCalibrationWorkspace
-from IndirectDataAnalysis import msdfit, fury, furyfitSeq, furyfitMult, confitSeq, abscorFeeder
+from IndirectDataAnalysis import msdfit, furyfitSeq, furyfitMult, confitSeq, abscorFeeder
 
 '''
 - TOSCA only supported by "Reduction" (the Energy Transfer tab of C2E).
@@ -871,22 +871,23 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
         self.tolerance = 1e-7
         self.samples = [sample[:-4] for sample in self.samples]
 
-        #load files into mantid
+        # Load files into Mantid
         for sample in self.samples:
             LoadNexus(sample, OutputWorkspace=sample)
         LoadNexus(self.resolution, OutputWorkspace=self.resolution)
 
-        fury_ws = fury(self.samples,
-                       self.resolution,
-                       self.rebin,
-                       Save=False,
-                       Verbose=False,
-                       Plot=False)
-
-        """TODO: Move Fury code to Python so that we can call it here."""
+        fury_props, fury_ws = Fury(Sample=self.samples[0],
+                                   Resolution=self.resolution,
+                                   EnergyMin=self.e_min,
+                                   EnergyMax=self.e_max,
+                                   NumBins=self.num_bins,
+                                   DryRun=False,
+                                   Save=False,
+                                   Plot=False,
+                                   Verbose=True)
 
         # Test FuryFit Sequential
-        furyfitSeq_ws = furyfitSeq(fury_ws[0],
+        furyfitSeq_ws = furyfitSeq(fury_ws.getName(),
                                    self.func,
                                    self.ftype,
                                    self.startx,
@@ -895,10 +896,10 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
                                    Plot='None',
                                    Verbose=False)
 
-        self.result_names = [fury_ws[0],
+        self.result_names = [fury_ws.getName(),
                              furyfitSeq_ws]
 
-        #remove workspaces from mantid
+        # Remove workspaces from Mantid
         for sample in self.samples:
             DeleteWorkspace(sample)
 
@@ -911,8 +912,12 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
             raise RuntimeError("Samples should be a list of strings.")
         if type(self.resolution) != str:
             raise RuntimeError("Resolution should be a string.")
-        if type(self.rebin) != str:
-            raise RuntimeError("Rebin should be a string.")
+        if type(self.e_min) != float:
+            raise RuntimeError("e_min should be a float")
+        if type(self.e_max) != float:
+            raise RuntimeError("e_max should be a float")
+        if type(self.num_bins) != int:
+            raise RuntimeError("num_bins should be an int")
         if type(self.func) != str:
             raise RuntimeError("Function should be a string.")
         if type(self.ftype) != str:
@@ -929,10 +934,14 @@ class OSIRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
 
     def __init__(self):
         ISISIndirectInelasticFuryAndFuryFit.__init__(self)
+
         # Fury
         self.samples = ['osi97935_graphite002_red.nxs']
         self.resolution = 'osi97935_graphite002_res.nxs'
-        self.rebin = '-0.400000,0.002000,0.400000'
+        self.e_min = -0.4
+        self.e_max = 0.4
+        self.num_bins = 4
+
         # Fury Seq Fit
         self.func = r'name=LinearBackground,A0=0,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp(-(x/Tau)),Intensity=0.304185,Tau=100;ties=(f1.Intensity=1-f0.A0)'
         self.ftype = '1E_s'
@@ -950,10 +959,14 @@ class IRISFuryAndFuryFit(ISISIndirectInelasticFuryAndFuryFit):
 
     def __init__(self):
         ISISIndirectInelasticFuryAndFuryFit.__init__(self)
+
         # Fury
         self.samples = ['irs53664_graphite002_red.nxs']
         self.resolution = 'irs53664_graphite002_res.nxs'
-        self.rebin = '-0.400000,0.002000,0.400000'
+        self.e_min = -0.4
+        self.e_max = 0.4
+        self.num_bins = 4
+
         # Fury Seq Fit
         self.func = r'name=LinearBackground,A0=0,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp(-(x/Tau)),Intensity=0.355286,Tau=100;ties=(f1.Intensity=1-f0.A0)'
         self.ftype = '1E_s'
@@ -986,17 +999,18 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
             LoadNexus(sample, OutputWorkspace=sample)
         LoadNexus(self.resolution, OutputWorkspace=self.resolution)
 
-        fury_ws = fury(self.samples,
-                       self.resolution,
-                       self.rebin,
-                       Save=False,
-                       Verbose=False,
-                       Plot=False)
-
-        """TODO: Move Fury code to Python so that we can call it here."""
+        fury_props, fury_ws = Fury(Sample=self.samples[0],
+                                   Resolution=self.resolution,
+                                   EnergyMin=self.e_min,
+                                   EnergyMax=self.e_max,
+                                   NumBins=self.num_bins,
+                                   DryRun=False,
+                                   Save=False,
+                                   Plot=False,
+                                   Verbose=True)
 
         # Test FuryFit Sequential
-        furyfitSeq_ws = furyfitMult(fury_ws[0],
+        furyfitSeq_ws = furyfitMult(fury_ws.getName(),
                                     self.func,
                                     self.ftype,
                                     self.startx,
@@ -1005,7 +1019,7 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
                                     Plot='None',
                                     Verbose=False)
 
-        self.result_names = [fury_ws[0],
+        self.result_names = [fury_ws.getName(),
                              furyfitSeq_ws]
 
         #remove workspaces from mantid
@@ -1020,8 +1034,12 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
             raise RuntimeError("Samples should be a list of strings.")
         if type(self.resolution) != str:
             raise RuntimeError("Resolution should be a string.")
-        if type(self.rebin) != str:
-            raise RuntimeError("Rebin should be a string.")
+        if type(self.e_min) != float:
+            raise RuntimeError("e_min should be a float")
+        if type(self.e_max) != float:
+            raise RuntimeError("e_max should be a float")
+        if type(self.num_bins) != int:
+            raise RuntimeError("num_bins should be an int")
         if type(self.func) != str:
             raise RuntimeError("Function should be a string.")
         if type(self.ftype) != str:
@@ -1038,10 +1056,14 @@ class OSIRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
 
     def __init__(self):
         ISISIndirectInelasticFuryAndFuryFitMulti.__init__(self)
+
         # Fury
         self.samples = ['osi97935_graphite002_red.nxs']
         self.resolution = 'osi97935_graphite002_res.nxs'
-        self.rebin = '-0.400000,0.002000,0.400000'
+        self.e_min = -0.4
+        self.e_max = 0.4
+        self.num_bins = 4
+
         # Fury Seq Fit
         self.func = r'name=LinearBackground,A0=0.510595,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp( -(x/Tau)^Beta),Intensity=0.489405,Tau=0.105559,Beta=1.61112e-14;ties=(f1.Intensity=1-f0.A0)'
         self.ftype = '1E_s'
@@ -1059,10 +1081,14 @@ class IRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
 
     def __init__(self):
         ISISIndirectInelasticFuryAndFuryFitMulti.__init__(self)
+
         # Fury
         self.samples = ['irs53664_graphite002_red.nxs']
         self.resolution = 'irs53664_graphite002_res.nxs'
-        self.rebin = '-0.400000,0.002000,0.400000'
+        self.e_min = -0.4
+        self.e_max = 0.4
+        self.num_bins = 4
+
         # Fury Seq Fit
         self.func = r'name=LinearBackground,A0=0.584488,A1=0,ties=(A1=0);name=UserFunction,Formula=Intensity*exp( -(x/Tau)^Beta),Intensity=0.415512,Tau=4.848013e-14,Beta=0.022653;ties=(f1.Intensity=1-f0.A0)'
         self.ftype = '1S_s'
