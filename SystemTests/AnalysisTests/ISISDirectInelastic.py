@@ -198,10 +198,10 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
 
       wsName = common.create_resultname(self.red.iliad_prop.sample_run,self.red.iliad_prop.instr_name);
       outWS=self.red.main();
-      #New WBI value 0.027546078402873958
+      #New WBI value 0.02720959162181584
       #Old WBI Value 0.027209867107187088
       # fix old system test. 
-      outWS*=0.027546078402873958/0.027209867107187088
+      outWS*=0.02720959162181584/0.027209867107187088
 
       # rename workspace to the name expected by unit test framework
       RenameWorkspace(InputWorkspace=outWS,OutputWorkspace=wsName)
@@ -307,10 +307,10 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
 
       out_ws_list=red.main();
 
-      mults =[41.032811389179471/41.178300987983413,71.28127860058153/72.231475173892022];
-      #New normalization for 3.4 meV: 41.032811389179471
+      mults =[41.178539329370217/41.178300987983413,72.235863046309746/72.231475173892022];
+      #New normalization for 3.4 meV: 41.178539329370217
       #Old normalization for 3.4 meV: 41.178300987983413
-      #New normalization for 8 meV: 71.28127860058153
+      #New normalization for 8 meV: 72.235863046309746
       #Old normalization for 8 meV: 72.231475173892022
       for ind,ws in enumerate(out_ws_list):
         ws *=mults[ind];
