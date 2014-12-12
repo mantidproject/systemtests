@@ -105,8 +105,9 @@ class ReduceLET_OneRep(ReductionWrapper):
       prop['bleed'] = False
       prop['norm_method']='current'
       prop['detector_van_range']=[0.5,200]
+      prop['load_monitors_with_workspace']=True;
       #TODO: this has to be loaded from the workspace and work without this 
-      prop['ei-mon1-spec']=40966
+      #prop['ei-mon1-spec']=40966
      
       
       return prop;
@@ -203,7 +204,7 @@ class ReduceLET_MultiRep2014(ReductionWrapper):
       prop['monovan_mapfile'] = 'rings_103.map'
 
       #TODO: Correct monitor, depending on workspace. This has to be loaded from the workspace and work without this settings 
-      prop['ei-mon1-spec']=40966
+      #prop['ei-mon1-spec']=40966
 
 
 
