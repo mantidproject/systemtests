@@ -2,10 +2,6 @@ import stresstesting
 from mantid.simpleapi import *
 from mantid.api import Workspace
 
-from DirectEnergyConversion import setup_reducer
-import dgreduce
-import CommonFunctions as common
-
 from abc import ABCMeta, abstractmethod
 
 #----------------------------------------------------------------------
