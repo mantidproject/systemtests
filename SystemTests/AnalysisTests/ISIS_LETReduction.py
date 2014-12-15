@@ -146,7 +146,7 @@ class ReduceLET_OneRep(ReductionWrapper):
       red = DirectEnergyConversion();
 
       red.initialise(prop);
-      outWS = red.convert_to_energy_transfer(white_ws,sample_ws);
+      outWS = red.convert_to_energy(white_ws,sample_ws);
       #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
 
       #when run from web service, return additional path for web server to copy data to";
@@ -284,7 +284,7 @@ class ReduceLET_MultiRep2014(ReductionWrapper):
                 #MonoVanWSName = None;
        
                 # absolute unit reduction -- if you provided MonoVan run or relative units if monoVan is not present
-                out=red.convert_to_energy_transfer("wb_wksp","w1",energy,energybin,**argi)
+                out=red.convert_to_energy("wb_wksp","w1",energy,energybin,**argi)
 
                 ws_name = 'LETreducedEi{0:2.1f}'.format(energy);
                 RenameWorkspace(InputWorkspace=out,OutputWorkspace=ws_name);

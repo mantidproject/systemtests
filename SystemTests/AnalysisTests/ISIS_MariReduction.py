@@ -43,7 +43,7 @@ class ReduceMARIFromFile(ReductionWrapper):
 
        red = DirectEnergyConversion();
        red.initialise(self.iliad_prop);
-       outWS = red.convert_to_energy_transfer();
+       outWS = red.convert_to_energy();
        #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
 
        #when run from web service, return additional path for web server to copy data to";
@@ -105,7 +105,7 @@ class ReduceMARIFromWorkspace(ReductionWrapper):
 
        red = DirectEnergyConversion();
        red.initialise(self.iliad_prop);
-       outWS = red.convert_to_energy_transfer();
+       outWS = red.convert_to_energy();
        #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
 
        #when run from web service, return additional path for web server to copy data to";
@@ -168,7 +168,7 @@ class ReduceMARIMon2Norm(ReductionWrapper):
 
        red = DirectEnergyConversion();
        red.initialise(self.iliad_prop);
-       outWS = red.convert_to_energy_transfer();
+       outWS = red.convert_to_energy();
        #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
        #SaveNXSPE(outWS,'MAR_reduction2.nxspe')
 
@@ -216,7 +216,7 @@ class MARIReductionSum(ReductionWrapper):
 
        red = DirectEnergyConversion();
        red.initialise(self.iliad_prop);
-       outWS = red.convert_to_energy_transfer();
+       outWS = red.convert_to_energy();
        #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
 
        #when run from web service, return additional path for web server to copy data to";
