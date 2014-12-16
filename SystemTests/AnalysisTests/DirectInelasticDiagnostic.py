@@ -1,6 +1,6 @@
 from stresstesting import MantidStressTest
 from mantid.simpleapi import MaskDetectors, mtd, config
-import DirectEnergyConversion as reduction
+import Direct.DirectEnergyConversion as reduction
 import os
 
 class DirectInelasticDiagnostic(MantidStressTest):

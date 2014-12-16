@@ -4,6 +4,8 @@ from mantid.api import Workspace
 
 from abc import ABCMeta, abstractmethod
 
+import Direct.CommonFunctions as common
+
 #----------------------------------------------------------------------
 class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
     """A base class for the ISIS direct inelastic tests
