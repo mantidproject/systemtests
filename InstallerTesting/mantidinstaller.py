@@ -200,10 +200,10 @@ class RPMInstaller(MantidInstaller):
             self.mantidPlotPath = '/opt/Mantid/bin/MantidPlot'
         
     def do_install(self):
-        """Uses rpm to run the install
+        """Uses yum to run the install. Current user must be in sudoers
         """
         try:
-            run('sudo rpm --upgrade ' + self.mantidInstaller)
+            run('sudo yum -y install ' + self.mantidInstaller)
         except Exception, exc:
             # This reports an error if the same package is already installed
             if 'is already installed' in str(exc):
@@ -213,10 +213,10 @@ class RPMInstaller(MantidInstaller):
                 raise
 
     def do_uninstall(self):
-        """Removes the debian package
+        """Removes the rpm package
         """
         package_name = os.path.basename(self.mantidInstaller).split("-")[0]
-        run('sudo rpm --erase %s' % package_name)
+        run('sudo yum -y erase %s' % package_name)
 
 
 class DMGInstaller(MantidInstaller):
