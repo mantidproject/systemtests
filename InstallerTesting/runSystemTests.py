@@ -45,6 +45,7 @@ parser.set_defaults(frameworkLoc=DEFAULT_FRAMEWORK_LOC, mantidpath=None, makepro
 # import the stress testing framework
 import sys
 import os
+import platform
 sys.path.append(options.frameworkLoc)
 import stresstesting
 
@@ -63,6 +64,22 @@ else:
 # Ensure that this is the one that is picked
 sys.path.insert(0, mantid_module_path)
 
+# On Windows & OSX we need to ensure the mantid libraries in bin/Contents/MacOS can be found.
+# Must be done before first import of mantid. This is the same as what a user would have to do to
+# import mantid in a vanilla python session
+# Unfortunately Python seems to know the path separator on each platform but
+# not the dynamic library path variable name
+if platform.system() == 'Windows':
+  path_var = "PATH"
+elif platform.system() == 'Darwin':
+  path_var = "DYLD_LIBRARY_PATH"
+else:
+  path_var = None
+# Set the path
+if path_var:
+  os.environ[path_var] = mantid_module_path + os.pathsep + os.environ.get(path_var, "")
+
+# Configure mantid
 mtdconf = stresstesting.MantidFrameworkConfig(mantid_module_path, loglevel=options.loglevel,
                                               archivesearch=options.archivesearch)
 if options.makeprop:
