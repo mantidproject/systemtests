@@ -2,9 +2,9 @@ from abc import ABCMeta, abstractmethod
 import stresstesting
 
 
-class MSGDiffractionReductionTest(stresstesting.MantidStressTest):
+class ISISIndirectDiffractionReductionTest(stresstesting.MantidStressTest):
     """
-    Base class for tests that use the MSGDiffractionReduction algorithm.
+    Base class for tests that use the ISISIndirectDiffractionReduction algorithm.
     """
 
     __metaclass__ = ABCMeta
@@ -18,17 +18,17 @@ class MSGDiffractionReductionTest(stresstesting.MantidStressTest):
 
     def runTest(self):
         """
-        Runs an MSGDiffractionReduction with the configured parameters.
+        Runs an ISISIndirectDiffractionReduction with the configured parameters.
         """
-        from mantid.simpleapi import MSGDiffractionReduction
+        from mantid.simpleapi import ISISIndirectDiffractionReduction
         from mantid import mtd
 
-        MSGDiffractionReduction(InputFiles=self.raw_file,
-                                OutputWorkspace=self.output_workspace_group,
-                                Instrument=self.instrument,
-                                Mode=self.mode,
-                                DetectorRange=self.detector_range,
-                                RebinParam=self.rebinning)
+        ISISIndirectDiffractionReduction(InputFiles=self.raw_file,
+                                         OutputWorkspace=self.output_workspace_group,
+                                         Instrument=self.instrument,
+                                         Mode=self.mode,
+                                         SpectraRange=self.spectra_range,
+                                         RebinParam=self.rebinning)
 
         self._output_workspace = mtd[self.output_workspace_group].getNames()[0]
 
@@ -41,15 +41,15 @@ class MSGDiffractionReductionTest(stresstesting.MantidStressTest):
 
 
 #-------------------------------------------------------------------------------
-class IRISDiffspecDiffractionTest(MSGDiffractionReductionTest):
+class IRISDiffspecDiffractionTest(ISISIndirectDiffractionReductionTest):
 
     def __init__(self):
-        MSGDiffractionReductionTest.__init__(self)
+        ISISIndirectDiffractionReductionTest.__init__(self)
 
         self.instrument = 'IRIS'
         self.mode = 'diffspec'
         self.raw_file = 'IRS21360.raw'
-        self.detector_range = [105, 112]
+        self.spectra_range = [105, 112]
         self.rebinning = '3.0,0.001,4.0'
         self.output_workspace_group = 'IRIS_Diffraction_DiffSpec_Test'
 
@@ -58,15 +58,15 @@ class IRISDiffspecDiffractionTest(MSGDiffractionReductionTest):
 
 
 #-------------------------------------------------------------------------------
-class TOSCADiffractionTest(MSGDiffractionReductionTest):
+class TOSCADiffractionTest(ISISIndirectDiffractionReductionTest):
 
     def __init__(self):
-        MSGDiffractionReductionTest.__init__(self)
+        ISISIndirectDiffractionReductionTest.__init__(self)
 
         self.instrument = 'TOSCA'
         self.mode = 'diffspec'
         self.raw_file = 'TSC11453.raw'
-        self.detector_range = [146, 149]
+        self.spectra_range = [146, 149]
         self.rebinning = '0.5,0.001,2.1'
         self.output_workspace_group = 'TOSCA_Diffraction_DiffSpec_Test'
 
@@ -75,15 +75,15 @@ class TOSCADiffractionTest(MSGDiffractionReductionTest):
 
 
 #-------------------------------------------------------------------------------
-class OSIRISDiffspecDiffractionTest(MSGDiffractionReductionTest):
+class OSIRISDiffspecDiffractionTest(ISISIndirectDiffractionReductionTest):
 
     def __init__(self):
-        MSGDiffractionReductionTest.__init__(self)
+        ISISIndirectDiffractionReductionTest.__init__(self)
 
         self.instrument = 'OSIRIS'
         self.mode = 'diffspec'
         self.raw_file = 'osiris00101300.raw'
-        self.detector_range = [3, 962]
+        self.spectra_range = [3, 962]
         self.rebinning = '2.0,0.001,3.0'
         self.output_workspace_group = 'OSIRIS_Diffraction_DiffSpec_Test'
 
