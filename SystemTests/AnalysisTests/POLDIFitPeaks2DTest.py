@@ -27,6 +27,10 @@ class POLDIFitPeaks2DTest(stresstesting.MantidStressTest):
   def loadReferenceSpectrum(self, filenames):
     for dataFile in filenames:
       Load(Filename="%s_2d_reference_Spectrum.nxs" % (dataFile), OutputWorkspace="%s_2d_reference_Spectrum" % (dataFile))
+      Load(Filename="%s_1d_reference_Spectrum.nxs" % (dataFile), OutputWorkspace="%s_1d_reference_Spectrum" % (dataFile))
+      Load(Filename="%s_1d_reference_Spectrum_bg_linear.nxs" % (dataFile), OutputWorkspace="%s_1d_reference_Spectrum_bg_linear" % (dataFile))
+      Load(Filename="%s_1d_reference_Spectrum_bg_const.nxs" % (dataFile), OutputWorkspace="%s_1d_reference_Spectrum_bg_const" % (dataFile))
+
 
   def runCalculateSpectrum2D(self, filenames):
     for dataFile in filenames:
@@ -35,6 +39,25 @@ class POLDIFitPeaks2DTest(stresstesting.MantidStressTest):
                                PeakProfileFunction="Gaussian",
                                RefinedPoldiPeakWorkspace="%s_refined_Peaks" % (dataFile),
                                OutputWorkspace="%s_2d_calculated_Spectrum" % (dataFile),
+                               Calculated1DSpectrum="%s_1d_calculated_Spectrum" % (dataFile),
+                               MaximumIterations=0)
+
+      PoldiFitPeaks2D(InputWorkspace=dataFile,
+                               PoldiPeakWorkspace="%s_reference_Peaks" % (dataFile),
+                               PeakProfileFunction="Gaussian",
+                               RefinedPoldiPeakWorkspace="%s_refined_Peaks" % (dataFile),
+                               OutputWorkspace="%s_2d_calculated_Spectrum_bg_linear" % (dataFile),
+                               LinearBackgroundParameter="0.005",
+                               Calculated1DSpectrum="%s_1d_calculated_Spectrum_bg_linear" % (dataFile),
+                               MaximumIterations=0)
+
+      PoldiFitPeaks2D(InputWorkspace=dataFile,
+                               PoldiPeakWorkspace="%s_reference_Peaks" % (dataFile),
+                               PeakProfileFunction="Gaussian",
+                               RefinedPoldiPeakWorkspace="%s_refined_Peaks" % (dataFile),
+                               OutputWorkspace="%s_2d_calculated_Spectrum_bg_const" % (dataFile),
+                               ConstantBackgroundParameter="2.5",
+                               Calculated1DSpectrum="%s_1d_calculated_Spectrum_bg_const" % (dataFile),
                                MaximumIterations=0)
 
   def analyseResults(self, filenames):
@@ -54,3 +77,20 @@ class POLDIFitPeaks2DTest(stresstesting.MantidStressTest):
           self.assertTrue(np.all(absDiff < 7e-4))
         else:
           self.assertTrue(np.all(calHisto == 0.0))
+
+      spectra1D = ["%s_1d_%s_Spectrum_bg_const", "%s_1d_%s_Spectrum_bg_linear", "%s_1d_%s_Spectrum"]
+
+      for wsName in spectra1D:
+        calculatedSpectrum1D = mtd[wsName % (dataFile, "calculated")]
+        referenceSpectrum1D = mtd[wsName % (dataFile, "reference")]
+
+        xDataCalc = calculatedSpectrum1D.readX(0)
+        yDataCalc = calculatedSpectrum1D.readY(0)
+
+        xDataRef = referenceSpectrum1D.readX(0)
+        yDataRef = referenceSpectrum1D.readY(0)
+
+        maxDifference = np.abs(np.max(yDataCalc - yDataRef))
+
+        self.assertTrue(np.all(xDataCalc == xDataRef))
+        self.assertLessThan(maxDifference, 5e-14)
