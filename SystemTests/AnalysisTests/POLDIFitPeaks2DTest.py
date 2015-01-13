@@ -42,24 +42,6 @@ class POLDIFitPeaks2DTest(stresstesting.MantidStressTest):
                                Calculated1DSpectrum="%s_1d_calculated_Spectrum" % (dataFile),
                                MaximumIterations=0)
 
-      PoldiFitPeaks2D(InputWorkspace=dataFile,
-                               PoldiPeakWorkspace="%s_reference_Peaks" % (dataFile),
-                               PeakProfileFunction="Gaussian",
-                               RefinedPoldiPeakWorkspace="%s_refined_Peaks" % (dataFile),
-                               OutputWorkspace="%s_2d_calculated_Spectrum_bg_linear" % (dataFile),
-                               LinearBackgroundParameter="0.005",
-                               Calculated1DSpectrum="%s_1d_calculated_Spectrum_bg_linear" % (dataFile),
-                               MaximumIterations=0)
-
-      PoldiFitPeaks2D(InputWorkspace=dataFile,
-                               PoldiPeakWorkspace="%s_reference_Peaks" % (dataFile),
-                               PeakProfileFunction="Gaussian",
-                               RefinedPoldiPeakWorkspace="%s_refined_Peaks" % (dataFile),
-                               OutputWorkspace="%s_2d_calculated_Spectrum_bg_const" % (dataFile),
-                               ConstantBackgroundParameter="2.5",
-                               Calculated1DSpectrum="%s_1d_calculated_Spectrum_bg_const" % (dataFile),
-                               MaximumIterations=0)
-
   def analyseResults(self, filenames):
     for dataFile in filenames:
       calculatedSpectrum = mtd["%s_2d_calculated_Spectrum" % (dataFile)]
@@ -78,7 +60,7 @@ class POLDIFitPeaks2DTest(stresstesting.MantidStressTest):
         else:
           self.assertTrue(np.all(calHisto == 0.0))
 
-      spectra1D = ["%s_1d_%s_Spectrum_bg_const", "%s_1d_%s_Spectrum_bg_linear", "%s_1d_%s_Spectrum"]
+      spectra1D = ["%s_1d_%s_Spectrum"]
 
       for wsName in spectra1D:
         calculatedSpectrum1D = mtd[wsName % (dataFile, "calculated")]
@@ -90,7 +72,8 @@ class POLDIFitPeaks2DTest(stresstesting.MantidStressTest):
         xDataRef = referenceSpectrum1D.readX(0)
         yDataRef = referenceSpectrum1D.readY(0)
 
-        maxDifference = np.abs(np.max(yDataCalc - yDataRef))
+        indices = np.nonzero(yDataRef)
+        maxDifference = np.abs(np.max((yDataCalc[indices] - yDataRef[indices]) / yDataCalc[indices]))
 
         self.assertTrue(np.all(xDataCalc == xDataRef))
-        self.assertLessThan(maxDifference, 5e-14)
+        self.assertLessThan(maxDifference, 0.0031)
