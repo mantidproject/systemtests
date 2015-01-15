@@ -36,9 +36,8 @@ class POLDIFitPeaks1DTest(stresstesting.MantidStressTest):
                           FwhmMultiples=5,
                           PoldiPeakTable="%s_Peaks" % (dataFile),
                           OutputWorkspace="%s_Peaks_Refined" % (dataFile),
-                          ResultTableWorkspace="%s_Results" % (dataFile),
-                          FitCharacteristicsWorkspace="%s_FitData" % (dataFile),
-                          FitPlotsWorkspace="%s_FitPlots" % (dataFile))
+                          FitPlotsWorkspace="%s_FitPlots" % (dataFile),
+                          Version=1)
 
   # This test makes sure that:
   #  - standard deviations of position and relative fwhm are acceptably small (indicates reasonable fit)
