@@ -1,5 +1,6 @@
 """ Sample MAPS reduction scrip """ 
-
+import os
+os.environ["PATH"] = r"c:/Mantid/Code/builds/br_10803/bin/Release;"+os.environ["PATH"]
 from Direct.ReductionWrapper import *
 try:
     import reduce_vars as rv
@@ -58,9 +59,9 @@ class ReduceMAPS(ReductionWrapper):
    def main(self,input_file=None,output_directory=None):
      # run reduction, write auxiliary script to add something here.
 
-       red = DirectEnergyConversion();
-       red.initialise(self.iliad_prop);
-       outWS = red.convert_to_energy();
+       red = DirectEnergyConversion()
+       red.initialise(self.iliad_prop)
+       outWS = red.convert_to_energy()
        #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
 
        #when run from web service, return additional path for web server to copy data to";
@@ -75,22 +76,22 @@ class ReduceMAPS(ReductionWrapper):
 
 if __name__=="__main__":
      maps_dir = 'd:/Data/MantidSystemTests/Data'
-     data_dir ='d:/Data/Mantid_Testing/14_11_27'
+     data_dir ='d:/Data/Mantid_Testing/14_12_15'
      ref_data_dir = 'd:/Data/MantidSystemTests/SystemTests/AnalysisTests/ReferenceResults' 
      config.setDataSearchDirs('{0};{1};{2}'.format(data_dir,maps_dir,ref_data_dir))
      #config.appendDataSearchDir('d:/Data/Mantid_GIT/Test/AutoTestData')
      config['defaultsave.directory'] = data_dir # folder to save resulting spe/nxspe files. Defaults are in
 
      # execute stuff from Mantid
-     rd = ReduceMAPS();
+     rd = ReduceMAPS()
      rd.def_advanced_properties();
      rd.def_main_properties();
 
 
-     using_web_data = False;
-     if not using_web_data:
-        run_dir=os.path.dirname(os.path.realpath(__file__))
-        file = os.path.join(run_dir,'reduce_vars.py');
-        rd.export_changed_values(file);
+     #using_web_data = False;
+     #if not using_web_data:
+     #   run_dir=os.path.dirname(os.path.realpath(__file__))
+     #   file = os.path.join(run_dir,'reduce_vars.py')
+     #   rd.export_changed_values(file)
 
      rd.main(); 

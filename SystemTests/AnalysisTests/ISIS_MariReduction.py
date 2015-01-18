@@ -1,5 +1,7 @@
-""" Sample MARI reduction scrip used in testing ReductionWrapper """ 
+import os
+os.environ["PATH"] = r"c:/Mantid/Code/builds/br_10803/bin/Release;"+os.environ["PATH"]
 
+""" Sample MARI reduction scrip used in testing ReductionWrapper """ 
 from Direct.ReductionWrapper import *
 try:
     import reduce_vars as rv
@@ -41,9 +43,9 @@ class ReduceMARIFromFile(ReductionWrapper):
    def main(self,input_file=None,output_directory=None):
      # run reduction, write auxiliary script to add something here.
 
-       red = DirectEnergyConversion();
-       red.initialise(self.iliad_prop);
-       outWS = red.convert_to_energy();
+       red = DirectEnergyConversion()
+       red.initialise(self.iliad_prop)
+       outWS = red.convert_to_energy()
        #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
 
        #when run from web service, return additional path for web server to copy data to";
@@ -230,6 +232,7 @@ class MARIReductionSum(ReductionWrapper):
 
 
 if __name__=="__main__":
+
      maps_dir = 'd:/Data/MantidSystemTests/Data'
      data_dir ='d:/Data/Mantid_Testing/14_11_27'
      ref_data_dir = 'd:/Data/MantidSystemTests/SystemTests/AnalysisTests/ReferenceResults' 
@@ -249,5 +252,5 @@ if __name__=="__main__":
         file = os.path.join(run_dir,'reduce_vars.py');
         rd.export_changed_values(file);
 
-     rd.main(); 
+     rd.main()
 

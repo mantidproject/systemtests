@@ -4,7 +4,6 @@ from mantid.api import Workspace
 
 from abc import ABCMeta, abstractmethod
 
-import Direct.CommonFunctions as common
 
 #----------------------------------------------------------------------
 class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
@@ -194,16 +193,15 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
 
   def runTest(self):
 
-      wsName = common.create_resultname(self.red.iliad_prop.sample_run,self.red.iliad_prop.instr_name);
-      outWS=self.red.main();
+      outWS=self.red.main()
       #New WBI value 0.02720959162181584
       #Old WBI Value 0.027209867107187088
       # fix old system test. 
       outWS*=0.02720959162181584/0.027209867107187088
 
       # rename workspace to the name expected by unit test framework
-      RenameWorkspace(InputWorkspace=outWS,OutputWorkspace=wsName)
-      self.ws_name = wsName;
+      #RenameWorkspace(InputWorkspace=outWS,OutputWorkspace=wsName)
+      self.ws_name = 'outWS'
 
 
   def get_reference_file(self):
