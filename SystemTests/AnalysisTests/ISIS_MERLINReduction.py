@@ -1,4 +1,6 @@
 """ Sample MERLIN reduction scrip """ 
+import os
+os.environ["PATH"] = r"c:/Mantid/Code/builds/br_10803/bin/Release;"+os.environ["PATH"]
 
 from Direct.ReductionWrapper import *
 try:
@@ -45,9 +47,9 @@ class ReduceMERLIN(ReductionWrapper):
    def main(self,input_file=None,output_directory=None):
      # run reduction, write auxiliary script to add something here.
 
-       red = DirectEnergyConversion();
-       red.initialise(self.iliad_prop);
-       outWS = red.convert_to_energy();
+       red = DirectEnergyConversion()
+       red.initialise(self.iliad_prop)
+       outWS = red.convert_to_energy()
        #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
 
        #when run from web service, return additional path for web server to copy data to";
@@ -69,15 +71,15 @@ if __name__=="__main__":
      config['defaultsave.directory'] = data_dir # folder to save resulting spe/nxspe files. Defaults are in
 
      # execute stuff from Mantid
-     rd = ReduceMERLIN();
-     rd.def_advanced_properties();
-     rd.def_main_properties();
+     rd = ReduceMERLIN()
+     rd.def_advanced_properties()
+     rd.def_main_properties()
 
 
-     using_web_data = False;
-     if not using_web_data:
-        run_dir=os.path.dirname(os.path.realpath(__file__))
-        file = os.path.join(run_dir,'reduce_vars.py');
-        rd.export_changed_values(file);
+     #using_web_data = False
+     #if not using_web_data:
+     #   run_dir=os.path.dirname(os.path.realpath(__file__))
+     #   file = os.path.join(run_dir,'reduce_vars.py')
+     #   rd.export_changed_values(file)
 
-     rd.main(); 
+     rd.main()

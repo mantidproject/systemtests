@@ -1,6 +1,6 @@
 """ Sample MAPS reduction scrip """ 
-import os
-os.environ["PATH"] = r"c:/Mantid/Code/builds/br_10803/bin/Release;"+os.environ["PATH"]
+#import os
+#os.environ["PATH"] = r"c:/Mantid/Code/builds/br_10803/bin/Release;"+os.environ["PATH"]
 from Direct.ReductionWrapper import *
 try:
     import reduce_vars as rv
