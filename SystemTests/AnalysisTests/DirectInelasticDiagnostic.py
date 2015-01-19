@@ -38,8 +38,9 @@ class DirectInelasticDiagnostic(MantidStressTest):
                                      van_out_lo=v_out_lo, van_out_hi=v_out_hi,
                                      van_lo=vv_lo, van_hi=vv_hi, van_sig=vv_sig,
                                      samp_lo=sv_lo, samp_hi=sv_hi, samp_sig=sv_sig, samp_zero=s_zero,hard_mask_file=None)
- 
-        sample_ws = mtd[sample]	
+
+        sample = reducer.get_run_descriptor(sample) 
+        sample_ws = sample.get_workspace()
         MaskDetectors(Workspace=sample_ws, MaskedWorkspace=diag_mask)
 
         # Save the masked spectra nmubers to a simple ASCII file for comparison
