@@ -782,7 +782,6 @@ class ISISIndirectInelasticElwinAndMSDFit(ISISIndirectInelasticBase):
                                startX=self.startX,
                                endX=self.endX,
                                Save=False,
-                               Verbose=True,
                                Plot=False)
 
         # @TODO: MSDFit has some other, as yet unfinalised, workspaces as its
@@ -892,8 +891,7 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
                                    self.startx,
                                    self.endx,
                                    Save=False,
-                                   Plot='None',
-                                   Verbose=False)
+                                   Plot='None')
 
         self.result_names = [fury_ws.getName(),
                              furyfitSeq_ws]
@@ -1014,8 +1012,7 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
                                     self.startx,
                                     self.endx,
                                     Save=False,
-                                    Plot='None',
-                                    Verbose=False)
+                                    Plot='None')
 
         self.result_names = [fury_ws.getName(),
                              furyfitSeq_ws]
@@ -1124,7 +1121,6 @@ class ISISIndirectInelasticConvFit(ISISIndirectInelasticBase):
             self.bg,
             specMin=self.spectra_min,
             specMax=self.spectra_max,
-            Verbose=False,
             Plot='None',
             Save=False)
 
@@ -1280,8 +1276,8 @@ class IRISApplyCorrectionsWithCan(ISISIndirectInelasticApplyCorrections):
         self._can_geometry = 'cyl'
         self._using_corrections = False
 
-        self._kwargs = {'Verbose':True, 'RebinCan':False, 'ScaleOrNotToScale':False,
-                  'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
+        self._kwargs = {'RebinCan':False, 'ScaleOrNotToScale':False,
+                        'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
 
     def get_reference_files(self):
         return ['II.IRISApplyCorrectionsWithCan.nxs']
@@ -1299,8 +1295,8 @@ class IRISApplyCorrectionsWithCorrectionsWS(ISISIndirectInelasticApplyCorrection
         self._can_geometry = 'cyl'
         self._using_corrections = True
 
-        self._kwargs = {'Verbose':True, 'RebinCan':False, 'ScaleOrNotToScale':False,
-                  'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
+        self._kwargs = {'RebinCan':False, 'ScaleOrNotToScale':False,
+                        'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
 
     def get_reference_files(self):
         return ['II.IRISApplyCorrectionsWithCorrectionsWS.nxs']
@@ -1317,8 +1313,8 @@ class IRISApplyCorrectionsWithBoth(ISISIndirectInelasticApplyCorrections):
         self._can_geometry = 'cyl'
         self._using_corrections = True
 
-        self._kwargs = {'Verbose':True, 'RebinCan':False, 'ScaleOrNotToScale':False,
-                  'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
+        self._kwargs = {'RebinCan':False, 'ScaleOrNotToScale':False,
+                        'factor':1, 'Save':False, 'PlotResult':'None', 'PlotContrib':False}
 
     def get_reference_files(self):
         return ['II.IRISApplyCorrections.nxs']
