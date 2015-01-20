@@ -697,7 +697,7 @@ class ISISIndirectInelasticMoments(ISISIndirectInelasticBase):
 
         SofQWMoments(Sample=self.input_workspace, EnergyMin=self.e_min,
                      EnergyMax=self.e_max, Scale=self.scale,
-                     Verbose=False, Plot=False, Save=False, OutputWorkspace=self.input_workspace + '_Moments')
+                     Plot=False, Save=False, OutputWorkspace=self.input_workspace + '_Moments')
 
         self.result_names = [self.input_workspace + '_Moments']
 
@@ -883,8 +883,7 @@ class ISISIndirectInelasticFuryAndFuryFit(ISISIndirectInelasticBase):
                                    NumBins=self.num_bins,
                                    DryRun=False,
                                    Save=False,
-                                   Plot=False,
-                                   Verbose=True)
+                                   Plot=False)
 
         # Test FuryFit Sequential
         furyfitSeq_ws = furyfitSeq(fury_ws.getName(),
@@ -1006,8 +1005,7 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
                                    NumBins=self.num_bins,
                                    DryRun=False,
                                    Save=False,
-                                   Plot=False,
-                                   Verbose=True)
+                                   Plot=False)
 
         # Test FuryFit Sequential
         furyfitSeq_ws = furyfitMult(fury_ws.getName(),
