@@ -179,8 +179,7 @@ class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
                                                   SpectraRange=self.detector_range,
                                                   SumFiles=self.sum_files,
                                                   RebinString=self.rebin_string,
-                                                  FoldMultipleFrames=True,
-                                                  UnitX='DeltaE_inWavenumber')
+                                                  FoldMultipleFrames=True)
 
         self.result_names = list(result_group.getNames())
 
