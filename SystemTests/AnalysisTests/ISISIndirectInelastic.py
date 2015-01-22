@@ -183,7 +183,6 @@ class ISISIndirectInelasticReduction(ISISIndirectInelasticBase):
                                                   GroupingMethod='IPF')
 
         self.result_names = list(result_group.getNames())
-        SaveNexusProcessed(Filename='/home/dan/indirect_et_out.nxs', InputWorkspace=result_group)
 
     def _validate_properties(self):
         '''Check the object properties are in an expected state to continue'''
@@ -209,7 +208,6 @@ class TOSCAReduction(ISISIndirectInelasticReduction):
 
     def __init__(self):
         ISISIndirectInelasticReduction.__init__(self)
-        self.tolerance = 10
         self.instrument = 'TOSCA'
         self.detector_range = [1, 140]
         self.data_files = ['TSC15352.raw']
@@ -222,7 +220,6 @@ class TOSCAMultiFileReduction(ISISIndirectInelasticReduction):
 
     def __init__(self):
         ISISIndirectInelasticReduction.__init__(self)
-        self.tolerance = 10
         self.instrument = 'TOSCA'
         self.detector_range = [1, 140]
         self.data_files = ['TSC15352.raw', 'TSC15353.raw','TSC15354.raw']
@@ -237,7 +234,6 @@ class TOSCAMultiFileSummedReduction(ISISIndirectInelasticReduction):
 
     def __init__(self):
         ISISIndirectInelasticReduction.__init__(self)
-        self.tolerance = 10
         self.instrument = 'TOSCA'
         self.detector_range = [1, 140]
         self.data_files = ['TSC15352.raw', 'TSC15353.raw','TSC15354.raw']
