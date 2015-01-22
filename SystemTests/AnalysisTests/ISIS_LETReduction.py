@@ -1,4 +1,7 @@
 """ Sample LET reduction scrip """ 
+import os
+#os.environ["PATH"] = r"c:/Mantid/Code/builds/br_10803/bin/Release;"+os.environ["PATH"]
+ 
 
 from Direct.ReductionWrapper import *
 try:
@@ -117,19 +120,18 @@ class ReduceLET_OneRep(ReductionWrapper):
      # run reduction, write auxiliary script to add something here.
 
       prop = self.iliad_prop;
-      # 
-      sample_run    = prop.sample_run
-      white_run     = prop.wb_run
+      # Ignore input properties for the time being
       white_ws = 'wb_wksp'
-      LoadRaw(Filename=white_run,OutputWorkspace=white_ws)
-      #prop.wb_run = mtd[white_ws]
+      LoadRaw(Filename='LET00005545.raw',OutputWorkspace=white_ws)
+      #prop.wb_run = white_ws
 
       sample_ws = 'w1'
       monitors_ws = sample_ws + '_monitors'
-      LoadEventNexus(Filename=sample_run,OutputWorkspace=sample_ws,
+      LoadEventNexus(Filename='LET00006278.nxs',OutputWorkspace=sample_ws,
                      SingleBankPixelsOnly='0',LoadMonitors='1',
                      MonitorsAsEvents='1')
       ConjoinWorkspaces(InputWorkspace1=sample_ws, InputWorkspace2=monitors_ws)
+      #prop.sample_run = sample_ws
 
 
       ebin = prop.energy_bins
@@ -143,10 +145,10 @@ class ReduceLET_OneRep(ReductionWrapper):
       ebinstring = str(energybin[0])+','+str(energybin[1])+','+str(energybin[2])
       self.iliad_prop.energy_bins = ebinstring;
 
-      red = DirectEnergyConversion();
+      red = DirectEnergyConversion()
 
-      red.initialise(prop);
-      outWS = red.convert_to_energy(white_ws,sample_ws);
+      red.initialise(prop)
+      outWS = red.convert_to_energy(white_ws,sample_ws)
       #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
 
       #when run from web service, return additional path for web server to copy data to";
@@ -312,15 +314,16 @@ if __name__=="__main__":
      config['defaultsave.directory'] = data_dir # folder to save resulting spe/nxspe files. Defaults are in
 
      # execute stuff from Mantid
-     rd = ReduceLET_OneRep();
-     rd.def_advanced_properties();
-     rd.def_main_properties();
+     rd =ReduceLET_MultiRep2014()
+     #rd = ReduceLET_OneRep()
+     rd.def_advanced_properties()
+     rd.def_main_properties()
 
 
-     using_web_data = False;
-     if not using_web_data:
-        run_dir=os.path.dirname(os.path.realpath(__file__))
-        file = os.path.join(run_dir,'reduce_vars.py');
-        rd.export_changed_values(file);
+     #using_web_data = False;
+     #if not using_web_data:
+     #   run_dir=os.path.dirname(os.path.realpath(__file__))
+     #   file = os.path.join(run_dir,'reduce_vars.py');
+     #   rd.export_changed_values(file);
 
-     rd.main(); 
+     rd.main()
