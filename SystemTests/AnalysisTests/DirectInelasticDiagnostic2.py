@@ -22,9 +22,15 @@ class DirectInelasticDiagnostic2(MantidStressTest):
         red_man = PropertyManager()
         red_man_name = "__dgs_reduction_properties"
         pmds[red_man_name] = red_man
-              
-        detvan = Load('MAP17186.raw')
-        sample = Load('MAP17269.raw')
+        
+        if 'detvan' in mtd:
+            detvan = mtd['detvan']
+        else:
+            detvan = Load('MAP17186.raw')        
+        if 'sample' in mtd:
+            sample = mtd['sample']
+        else:
+            sample = Load('MAP17269.raw')        
         
         # Libisis values to check against
         # All PropertyManager properties need to be set
