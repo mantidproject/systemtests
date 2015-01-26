@@ -128,7 +128,19 @@ class MergeMDTest(stresstesting.MantidStressTest):
     
     _saved_filenames = []
 
+    def make_files_to_merge_string(self):
+        filenames_string = ''        
+
+        for filename in self._saved_filenames:
+            filenames_string += filename + ','
+
+        filenames_string = filenames_string[:-1] # Remove trailing comma
+
+        return filenames_string
+
     def runTest(self):
+        config = ConfigService.Instance()
+
         LoadEventNexus(Filename='CNCS_7860_event.nxs',
         OutputWorkspace='CNCS_7860_event_NXS',CompressTolerance=0.1)
         
@@ -145,14 +157,14 @@ class MergeMDTest(stresstesting.MantidStressTest):
             SetGoniometer(Workspace='CNCS_7860_event_NXS',Axis0='omega,0,0,1,1',Axis1='chi,1,0,0,1',Axis2='phi,0,1,0,1')
 
             ConvertToDiffractionMDWorkspace(InputWorkspace='CNCS_7860_event_NXS',OutputWorkspace='CNCS_7860_event_MD',OutputDimensions='Q (sample frame)',LorentzCorrection='1', Append=True)            
-        
-            filename = "CNCS_7860_event_rotated_%03d.nxs" % omega
+
+            barefilename = "CNCS_7860_event_rotated_%03d.nxs" % omega
+            filename = os.path.join(config["defaultsave.directory"], barefilename)
             alg = SaveMD("CNCS_7860_event_MD", Filename=filename)
             self._saved_filenames.append(filename)
         # End for loop
-        filename = r'merged.nxs'
-        alg = MergeMDFiles(Filenames='CNCS_7860_event_rotated_000.nxs,CNCS_7860_event_rotated_001.nxs,CNCS_7860_event_rotated_002.nxs,CNCS_7860_event_rotated_003.nxs,CNCS_7860_event_rotated_004.nxs',
-                           OutputFilename=filename,OutputWorkspace='merged')
+        filename = os.path.join(config["defaultsave.directory"], r'merged.nxs')
+        alg = MergeMDFiles(Filenames=self.make_files_to_merge_string(), OutputFilename=filename, OutputWorkspace='merged')
         self._saved_filenames.append(filename)
 
         # 5 times the number of events in the output workspace.
