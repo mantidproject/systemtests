@@ -4,9 +4,9 @@ os.environ["PATH"] = r"c:/Mantid/Code/builds/br_10803/bin/Release;"+os.environ["
 
 from Direct.ReductionWrapper import *
 try:
-    import reduce_vars as rv
+    import reduce_vars as web_var
 except:
-    rv = None
+    web_var = None
 
 
 class ReduceMERLIN(ReductionWrapper):
@@ -57,7 +57,7 @@ class ReduceMERLIN(ReductionWrapper):
 
    def __init__(self):
        """ sets properties defaults for the instrument with Name"""
-       ReductionWrapper.__init__(self,'MER',rv)
+       ReductionWrapper.__init__(self,'MER',web_var)
 #----------------------------------------------------------------------------------------------------------------------
 
 
