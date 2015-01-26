@@ -12,6 +12,7 @@ class ISIS_ReductionWebLike(stresstesting.MantidStressTest):
     def __init__(self):
        stresstesting.MantidStressTest.__init__(self)
 
+       # prepare reduction variable
        self.rd = mr.ReduceMARIFromFile()
        self.rd.def_main_properties()
        self.rd.def_advanced_properties()
@@ -22,18 +23,18 @@ class ISIS_ReductionWebLike(stresstesting.MantidStressTest):
        
 
     def runTest(self):
+        # run reduction using saved variables like web variables
         web_var_folder = config['defaultsave.directory']
         sys.path.insert(0,web_var_folder)
-
-        #import reduce_vars as web_vars
         reload(mr)
 
-
+        # change these variables to save result as nxs workspace
         mr.web_var.advanced_vars['save_format']='nxs'
-        # web services currently need input file to be defined
+        # web services currently needs input file to be defined
         input_file = 'MAR11001.RAW'
         rez = mr.main(input_file,web_var_folder)
 
+        #  verify if result was indeed written
         self.rd.reducer.sample_run = input_file 
         saveFileName = self.rd.reducer.save_file_name
         oputputFile = os.path.join(web_var_folder,saveFileName+'.nxs')
@@ -51,9 +52,22 @@ class ISIS_ReductionWebLike(stresstesting.MantidStressTest):
        """Returns the result workspace to be checked"""
        saveFileName = self.rd.reducer.save_file_name
        outWS = Load(Filename=saveFileName+'.nxs')
+       outWS *=  0.0245159026452/0.024519711695583177
        return "outWS"   
     def get_reference_file(self):
         return "MARIReduction.nxs"
+
+    def validate(self):
+      """Returns the name of the workspace & file to compare"""
+      self.tolerance = 1e-6
+      self.tolerance_is_reller=True
+      self.disableChecking.append('SpectraMap')
+      self.disableChecking.append('Instrument')
+      self.disableChecking.append('Sample')
+      result = self.get_result_workspace()
+      reference = self.get_reference_file()
+      return result, reference
+
 
 #----------------------------------------------------------------------
 class ISISLoadFilesRAW(stresstesting.MantidStressTest):

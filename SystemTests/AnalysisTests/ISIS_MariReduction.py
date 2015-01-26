@@ -1,6 +1,6 @@
 import os
-#os.environ["PATH"] =
-#r"c:/Mantid/Code/builds/br_master/bin/Release;"+os.environ["PATH"]
+os.environ["PATH"] =\
+r"c:/Mantid/Code/builds/br_master/bin/Release;"+os.environ["PATH"]
 """ Sample MARI reduction scrip used in testing ReductionWrapper """ 
 from Direct.ReductionWrapper import *
 try:
@@ -112,9 +112,9 @@ class ReduceMARIFromWorkspace(ReductionWrapper):
      """ Method executes reduction over single file
          Overload only if custom reduction is needed
      """
-     outWS = ReductionWrapper.reduce(input_file,output_directory)
+     ws = ReductionWrapper.reduce(self,input_file,output_directory)
      #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
-     return outWS
+     return ws
 
    def __init__(self,web_var=None):
        """ sets properties defaults for the instrument with Name"""
@@ -164,7 +164,7 @@ class ReduceMARIMon2Norm(ReductionWrapper):
      """ Method executes reduction over single file
          Overload only if custom reduction is needed
      """
-     outWS = ReductionWrapper.reduce(input_file,output_directory)
+     outWS = ReductionWrapper.reduce(self,input_file,output_directory)
      #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
      return outWS
 
@@ -204,17 +204,13 @@ class MARIReductionSum(ReductionWrapper):
       return prop
       #
    @iliad
-   def main(self,input_file=None,output_directory=None):
-     # run reduction, write auxiliary script to add something here.
-
-       red = DirectEnergyConversion()
-       red.initialise(self.iliad_prop)
-       outWS = red.convert_to_energy()
-       #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
-
-       #when run from web service, return additional path for web server to
-       #copy data to"
-       return outWS
+   def reduce(self,input_file=None,output_directory=None):
+     """ Method executes reduction over single file
+         Overload only if custom reduction is needed
+     """
+     ws = ReductionWrapper.reduce(self,input_file,output_directory)
+     #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
+     return ws
 
    def __init__(self,web_var=None):
        """ sets properties defaults for the instrument with Name"""
@@ -262,9 +258,8 @@ class ReduceMARIMonitorsSeparate(ReductionWrapper):
      """ Method executes reduction over single file
          Overload only if custom reduction is needed
      """
-
-     outWS = ReductionWrapper.reduce(input_file,output_directory)
-     #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
+     outWS = ReductionWrapper.reduce(self,input_file,output_directory)
+     #SaveNexus(outWS,Filename = 'MARNewReduction.nxs')
      return outWS
 
    def __init__(self,web_var=None):
@@ -289,9 +284,9 @@ if __name__ == "__main__":
      rd.def_main_properties()
 
 
-     run_dir = os.path.dirname(os.path.realpath(__file__))
-     file = os.path.join(run_dir,'reduce_vars.py')
-     rd.save_web_variables(file)
+     #run_dir = os.path.dirname(os.path.realpath(__file__))
+     #file = os.path.join(run_dir,'reduce_vars.py')
+     #rd.save_web_variables(file)
 
-     rd.reduce()
+     ws = rd.reduce()
 
