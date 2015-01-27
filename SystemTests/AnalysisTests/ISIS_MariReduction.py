@@ -61,7 +61,10 @@ def main(input_file=None,output_directory=None):
             and should not be touched except changing the name of the
             particular ReductionWrapper class (e.g. ReduceMARI here)
 
-            exception to change the output folder to save data to
+            You can also change the output folder to save data to
+            where web services will copy data
+
+            This method will go when web service implements proper factory 
         """
         # note web variables initialization
         rd = ReduceMARIFromFile(web_var)
