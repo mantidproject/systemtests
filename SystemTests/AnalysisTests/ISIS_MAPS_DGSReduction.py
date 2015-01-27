@@ -3,19 +3,19 @@
 #os.environ["PATH"] = r"c:/Mantid/Code/builds/br_10803/bin/Release;"+os.environ["PATH"]
 from Direct.ReductionWrapper import *
 try:
-    import reduce_vars as rv
+    import reduce_vars as web_var
 except:
-    rv = None
+    web_var = None
 
 
 class ReduceMAPS(ReductionWrapper):
    @MainProperties
    def def_main_properties(self):
        """ Define main properties used in reduction """ 
-       prop = {};
-       prop['sample_run'] = 17269;
+       prop = {}
+       prop['sample_run'] = 17269
        prop['wb_run'] = 17186
-       prop['incident_energy'] = 150;
+       prop['incident_energy'] = 150
        prop['energy_bins'] = [-15,3,135]
 
        
@@ -31,7 +31,7 @@ class ReduceMAPS(ReductionWrapper):
            on scientist, experiment and user.
            main properties override advanced properties.      
       """
-      prop = {};
+      prop = {}
       prop['map_file'] = 'default'
       #prop['monovan_mapfile'] = 'default' #'4to1_mid_lowang.map' # default
       prop['hard_mask_file'] =None
@@ -53,23 +53,20 @@ class ReduceMAPS(ReductionWrapper):
       
       prop['abs_units_van_range']=[-40,40]    
       
-      return prop;
+      return prop
       #
    @iliad
-   def main(self,input_file=None,output_directory=None):
-     # run reduction, write auxiliary script to add something here.
+   def reduce(self,input_file=None,output_directory=None):
+     """ Method executes reduction over single file
+         Overload only if custom reduction is needed
+     """
+     outWS = ReductionWrapper.reduce(self,input_file,output_directory)
+     #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
+     return outWS
 
-       red = DirectEnergyConversion()
-       red.initialise(self.iliad_prop)
-       outWS = red.convert_to_energy()
-       #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
-
-       #when run from web service, return additional path for web server to copy data to";
-       return outWS
-
-   def __init__(self):
+   def __init__(self,web_var=None):
        """ sets properties defaults for the instrument with Name"""
-       ReductionWrapper.__init__(self,'MAP',rv)
+       ReductionWrapper.__init__(self,'MAP',web_var)
 #----------------------------------------------------------------------------------------------------------------------
 
 
@@ -84,14 +81,14 @@ if __name__=="__main__":
 
      # execute stuff from Mantid
      rd = ReduceMAPS()
-     rd.def_advanced_properties();
-     rd.def_main_properties();
+     rd.def_advanced_properties()
+     rd.def_main_properties()
 
 
-     #using_web_data = False;
+     #using_web_data = False
      #if not using_web_data:
      #   run_dir=os.path.dirname(os.path.realpath(__file__))
      #   file = os.path.join(run_dir,'reduce_vars.py')
-     #   rd.export_changed_values(file)
+     #   rd.save_web_vars(file)
 
-     rd.main(); 
+     rd.reduce()

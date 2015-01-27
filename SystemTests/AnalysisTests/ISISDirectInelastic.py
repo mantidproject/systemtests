@@ -84,7 +84,7 @@ class MARIReductionFromFile(ISISDirectInelasticReduction):
     self.scale_to_fix_abf = 0.0245159026452/0.024519711695583177
 
   def runTest(self):
-       outWS = self.red.main()
+       outWS = self.red.reduce()
        outWS*=self.scale_to_fix_abf
 
 
@@ -112,7 +112,7 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
   def runTest(self):
       """Defines the workflow for the test"""
 
-      outWS=self.red.main()
+      outWS=self.red.reduce()
       # temporary fix to account for different monovan integral
       outWS*=self.scale_to_fix_abf
 
@@ -138,7 +138,7 @@ class MARIReductionMon2Norm(ISISDirectInelasticReduction):
   def runTest(self):
       """Defines the workflow for the test"""
 
-      outWS=self.red.main()
+      outWS=self.red.reduce()
       # temporary fix to account for different monovan integral
       outWS*=1.00401624448885
       
@@ -173,7 +173,7 @@ class MARIReductionMonSeparate(ISISDirectInelasticReduction):
   def runTest(self):
       """Defines the workflow for the test"""
 
-      outWS=self.red.main()
+      outWS=self.red.reduce()
       # temporary fix to account for different monovan integral
       #outWS*=2.11507984881/2.11563628862
 
@@ -200,7 +200,7 @@ class MARIReductionSum(ISISDirectInelasticReduction):
       """Defines the workflow for the test
       It verifies operation on summing two files on demand. No absolute units
       """
-      outWS=self.red.main()
+      outWS=self.red.reduce()
     
   def get_result_workspace(self):
       """Returns the result workspace to be checked"""
@@ -228,7 +228,7 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
 
   def runTest(self):
 
-      outWS=self.red.main()
+      outWS=self.red.reduce()
       #New WBI value 0.02720959162181584
       #Old WBI Value 0.027209867107187088
       # fix old system test. 
@@ -266,7 +266,7 @@ class MERLINReduction(ISISDirectInelasticReduction):
     self.red.def_main_properties()
 
   def runTest(self):
-       outWS = self.red.main()
+       outWS = self.red.reduce()
     
   def get_reference_file(self):
     return "MERLINReduction.nxs"
@@ -303,7 +303,7 @@ class LETReduction(stresstesting.MantidStressTest):
       red.def_main_properties()
       red.def_advanced_properties()
 
-      outWS=red.main()
+      outWS=red.reduce()
 
 
   def validate(self):
@@ -336,7 +336,7 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
       red.def_main_properties()
 
 
-      out_ws_list=red.main()
+      out_ws_list=red.reduce()
 
       mults =[41.178539329370217/41.178300987983413,72.235863046309746/72.231475173892022]
       #New normalization for 3.4 meV: 41.178539329370217
