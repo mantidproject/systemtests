@@ -45,7 +45,7 @@ class ReduceMARIFromFile(ReductionWrapper):
          Overload only if custom reduction is needed
      """
      outWS = ReductionWrapper.reduce(self,input_file,output_directory)
-     #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
+     #SaveNexus(outWS,Filename = 'MARNewReduction.nxs')
      return outWS
    #
    def get_validation_file_name(self):

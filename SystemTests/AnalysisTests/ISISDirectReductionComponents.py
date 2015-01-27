@@ -68,6 +68,28 @@ class ISIS_ReductionWebLike(stresstesting.MantidStressTest):
       reference = self.get_reference_file()
       return result, reference
 
+class ISIS_ReductionWrapperValidate(stresstesting.MantidStressTest):
+    def __init__(self):
+       stresstesting.MantidStressTest.__init__(self)
+       self.result = False
+     
+
+    def runTest(self):
+       # prepare reduction variable
+       rd = mr.ReduceMARIFromFile()
+       rd.def_main_properties()
+       rd.def_advanced_properties()
+
+       self.result,message = rd.validate_result()
+       if not self.result:
+          print "*** Validation failed: {0}".format(message)
+ 
+
+ 
+    def validate(self):
+      """Returns the name of the workspace & file to compare"""
+      return self.result
+
 
 #----------------------------------------------------------------------
 class ISISLoadFilesRAW(stresstesting.MantidStressTest):
