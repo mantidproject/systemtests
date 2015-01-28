@@ -220,7 +220,6 @@ class ISISLoadFilesLET(stresstesting.MantidStressTest):
         propman.sample_run = 6278 #event nexus file
         propman.load_monitors_with_workspace = False
 
-
         # Here we have known problem of propman loading new IDF, and
         # workspace is written using old IDF. New IDF has mon1_norm_spec =73729
         # (on January 2015)
