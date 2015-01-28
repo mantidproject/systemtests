@@ -48,9 +48,14 @@ class ReduceMARIFromFile(ReductionWrapper):
      #SaveNexus(outWS,Filename = 'MARNewReduction.nxs')
      return outWS
    #
-   def get_validation_file_name(self):
+   def validate_result(self,build_vaidatrion=False):
        """ overloaded function provides filename for validation""" 
-       return "MARIReduction.nxs"
+       return 
+   def validate_result(self,build_validation=False):
+      """ Change this method to verify different results     """
+      # build_validation -- if true, build and save new workspace rather then validating the old one
+      rez,message = ReductionWrapper.build_or_validate_result(self,11001,"MARIReduction.nxs",build_validation)
+      return rez,message
 
    def __init__(self,web_var=None):
        """ sets properties defaults for the instrument with Name"""
