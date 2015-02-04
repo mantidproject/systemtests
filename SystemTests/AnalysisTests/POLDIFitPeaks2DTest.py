@@ -28,9 +28,6 @@ class POLDIFitPeaks2DTest(stresstesting.MantidStressTest):
     for dataFile in filenames:
       Load(Filename="%s_2d_reference_Spectrum.nxs" % (dataFile), OutputWorkspace="%s_2d_reference_Spectrum" % (dataFile))
       Load(Filename="%s_1d_reference_Spectrum.nxs" % (dataFile), OutputWorkspace="%s_1d_reference_Spectrum" % (dataFile))
-      Load(Filename="%s_1d_reference_Spectrum_bg_linear.nxs" % (dataFile), OutputWorkspace="%s_1d_reference_Spectrum_bg_linear" % (dataFile))
-      Load(Filename="%s_1d_reference_Spectrum_bg_const.nxs" % (dataFile), OutputWorkspace="%s_1d_reference_Spectrum_bg_const" % (dataFile))
-
 
   def runCalculateSpectrum2D(self, filenames):
     for dataFile in filenames:
