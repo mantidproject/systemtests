@@ -1,12 +1,12 @@
 """ Sample MERLIN reduction scrip """ 
 import os
-os.environ["PATH"] = r"c:/Mantid/Code/builds/br_10803/bin/Release;"+os.environ["PATH"]
+#os.environ["PATH"] = r"c:/Mantid/Code/builds/br_master/bin/Release;"+os.environ["PATH"]
 
 from Direct.ReductionWrapper import *
 try:
-    import reduce_vars as rv
+    import reduce_vars as web_var
 except:
-    rv = None
+    web_var = None
 
 
 class ReduceMERLIN(ReductionWrapper):
@@ -44,20 +44,17 @@ class ReduceMERLIN(ReductionWrapper):
       return prop;
       #
    @iliad
-   def main(self,input_file=None,output_directory=None):
-     # run reduction, write auxiliary script to add something here.
-
-       red = DirectEnergyConversion()
-       red.initialise(self.iliad_prop)
-       outWS = red.convert_to_energy()
-       #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
-
-       #when run from web service, return additional path for web server to copy data to";
-       return outWS
+   def reduce(self,input_file=None,output_directory=None):
+     """ Method executes reduction over single file
+         Overload only if custom reduction is needed
+     """
+     outWS = ReductionWrapper.reduce(self,input_file,output_directory)
+     #SaveNexus(ws,Filename = 'MARNewReduction.nxs')
+     return outWS
 
    def __init__(self):
        """ sets properties defaults for the instrument with Name"""
-       ReductionWrapper.__init__(self,'MER',rv)
+       ReductionWrapper.__init__(self,'MER',web_var)
 #----------------------------------------------------------------------------------------------------------------------
 
 
@@ -82,4 +79,4 @@ if __name__=="__main__":
      #   file = os.path.join(run_dir,'reduce_vars.py')
      #   rd.export_changed_values(file)
 
-     rd.main()
+     rd.reduce()

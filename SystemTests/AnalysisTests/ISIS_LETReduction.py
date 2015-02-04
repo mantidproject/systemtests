@@ -116,10 +116,10 @@ class ReduceLET_OneRep(ReductionWrapper):
       return prop
       #
    @iliad
-   def main(self,input_file=None,output_directory=None):
+   def reduce(self,input_file=None,output_directory=None):
      # run reduction, write auxiliary script to add something here.
 
-      prop = self.iliad_prop
+      prop = self.reducer.prop_man
       # Ignore input properties for the time being
       white_ws = 'wb_wksp'
       LoadRaw(Filename='LET00005545.raw',OutputWorkspace=white_ws)
@@ -143,7 +143,7 @@ class ReduceLET_OneRep(ReductionWrapper):
       prop.bkgd_range=[int(t_elastic),int(tbin[2])]
 
       ebinstring = str(energybin[0])+','+str(energybin[1])+','+str(energybin[2])
-      self.iliad_prop.energy_bins = ebinstring
+      self.reducer.prop_man.energy_bins = ebinstring
 
       red = DirectEnergyConversion()
 
@@ -154,9 +154,9 @@ class ReduceLET_OneRep(ReductionWrapper):
       #when run from web service, return additional path for web server to copy data to"
       return outWS
 
-   def __init__(self):
-       """ sets properties defaults for the instrument with Name"""
-       ReductionWrapper.__init__(self,'LET',rv)
+   def __init__(self,rv=None):
+     """ sets properties defaults for the instrument with Name"""
+     ReductionWrapper.__init__(self,'LET',rv)
 #----------------------------------------------------------------------------------------------------------------------
 
 class ReduceLET_MultiRep2014(ReductionWrapper):
@@ -213,10 +213,10 @@ class ReduceLET_MultiRep2014(ReductionWrapper):
       return prop
       #
    @iliad
-   def main(self,input_file=None,output_directory=None):
+   def reduce(self,input_file=None,output_directory=None):
      # run reduction, write auxiliary script to add something here.
 
-      red_properties = self.iliad_prop
+      red_properties = self.reducer.prop_man
       #######
       wb= red_properties.wb_run
       run_no = red_properties.sample_run
@@ -303,7 +303,7 @@ class ReduceLET_MultiRep2014(ReductionWrapper):
       #when run from web service, return additional path for web server to copy data to"
       return result
 
-   def __init__(self):
+   def __init__(self,rv=None):
        """ sets properties defaults for the instrument with Name"""
        ReductionWrapper.__init__(self,'LET',rv)
 #----------------------------------------------------------------------------------------------------------------------
@@ -331,4 +331,4 @@ if __name__=="__main__":
      #   file = os.path.join(run_dir,'reduce_vars.py')
      #   rd.export_changed_values(file)
 
-     rd.main()
+     rd.reduce()
