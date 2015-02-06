@@ -9,41 +9,60 @@ DIFF_PLACES = 12
 
 class ILLIN5Tests(unittest.TestCase):
     
-    ws_name = "in5_ws"
+    wsData_name = "in5_ws_data"
+    wsVana_name = "in5_ws_vana"
     dataDispersionFile = "ILL/ILLIN5_Sample_096003.nxs"
     vanadiumFile = "ILL/ILLIN5_Vana_095893.nxs"
 
 
     def tearDown(self):
-        if self.ws_name in mtd:
-            mtd.remove(self.ws_name)
+        if self.wsData_name in mtd:
+            mtd.remove(self.wsData_name)
+        if self.wsVana_name in mtd:
+            mtd.remove(self.wsVana_name)
 
     #================== Success cases ================================
     def test_load_single_file(self):
         self._run_load(self.dataDispersionFile)
         
         # Check some data
-        wsOut = mtd[self.ws_name]
+        wsOut = mtd[self.wsData_name]
         self.assertEqual(wsOut.getNumberHistograms(), 98305)
     
-    def test_load_dispersion_file_and_vanadium(self):
+    def test_load_dispersion_file_and_vanadium_file(self):
         self._run_load(self.dataDispersionFile,self.vanadiumFile)
         
         # Check some data
-        wsOut = mtd[self.ws_name]
+        wsOut = mtd[self.wsData_name]
         self.assertEqual(wsOut.getNumberHistograms(), 98305)
+
+    def test_load_dispersion_file_and_vanadium_workspace(self):
+
+        self._run_load(self.vanadiumFile,outWSName=self.wsVana_name)
+        # Check some data
+        wsVana = mtd[self.wsVana_name]
+        self.assertEqual(wsVana.getNumberHistograms(), 98305)
+
+
+        self._run_load(self.dataDispersionFile,vanaFile=None,vanaWS=self.wsVana_name,outWSName=self.wsData_name)
+        
+        # Check some data
+        wsData = mtd[self.wsData_name]
+        self.assertEqual(wsData.getNumberHistograms(), 98305)
             
     #================== Failure cases ================================
 
     # TODO
 
+    #================== Private methods ================================
+
     
-    def _run_load(self, dataFile, vanaFile=""):
+    def _run_load(self, dataFile, vanaFile=None,vanaWS=None,outWSName=wsData_name):
         """
         ILL Loader
         """
-        LoadILL(Filename=dataFile,FilenameVanadium=vanaFile,OutputWorkspace=self.ws_name)
-        self._do_ads_check(self.ws_name)
+        LoadILL(Filename=dataFile,FilenameVanadium=None,WorkspaceVanadium=None,OutputWorkspace=outWSName)
+        self._do_ads_check(outWSName)
 
     def _do_ads_check(self, name):
         self.assertTrue(name in mtd)
