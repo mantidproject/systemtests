@@ -182,6 +182,8 @@ class MARIReductionMonSeparate(ISISDirectInelasticReduction):
       return "outWS"
 
   def get_reference_file(self):
+      # monitor separate for MARI needs new maps and masks so, it is easier to redefine
+      # reference file for the time being
     return "MARIReductionMonSeparate.nxs"
 
 class MARIReductionSum(ISISDirectInelasticReduction):
