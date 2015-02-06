@@ -81,7 +81,7 @@ class MARIReductionFromFile(ISISDirectInelasticReduction):
     self.red.def_advanced_properties()
     self.red.def_main_properties()
     # temporary fix to account for different monovan integral
-    self.scale_to_fix_abf = 0.99984465
+    self.scale_to_fix_abf = 1# 0.99984465
 
   def runTest(self):
        outWS = self.red.reduce()
@@ -106,7 +106,7 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
     self.red.def_advanced_properties()
     self.red.def_main_properties()
 
-    self.scale_to_fix_abf = 0.999844653
+    self.scale_to_fix_abf = 1 #0.999844653
 
 
   def runTest(self):
