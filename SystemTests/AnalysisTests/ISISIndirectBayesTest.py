@@ -290,7 +290,6 @@ class JumpCETest(stresstesting.MantidStressTest):
     def runTest(self):
         sname = 'irs26176_graphite002_QLr_Workspace'
         qrange = [0.6, 1.705600]
-        verbOp = False
         plotOp = False
         saveOp = False
 
@@ -305,7 +304,6 @@ class JumpCETest(stresstesting.MantidStressTest):
                 Width=2,
                 QMin=qrange[0],
                 QMax=qrange[1],
-                Verbose=verbOp,
                 Plot=plotOp,
                 Save=saveOp)
 
@@ -319,7 +317,6 @@ class JumpHallRossTest(stresstesting.MantidStressTest):
     def runTest(self):
         sname = 'irs26176_graphite002_QLr_Workspace'
         qrange = [0.6, 1.705600]
-        verbOp = False
         plotOp = False
         saveOp = False
 
@@ -334,7 +331,6 @@ class JumpHallRossTest(stresstesting.MantidStressTest):
                 Width=2,
                 QMin=qrange[0],
                 QMax=qrange[1],
-                Verbose=verbOp,
                 Plot=plotOp,
                 Save=saveOp)
 
@@ -348,7 +344,6 @@ class JumpFickTest(stresstesting.MantidStressTest):
     def runTest(self):
         sname = 'irs26176_graphite002_QLr_Workspace'
         qrange = [0.6, 1.705600]
-        verbOp = False
         plotOp = False
         saveOp = False
 
@@ -363,7 +358,6 @@ class JumpFickTest(stresstesting.MantidStressTest):
                 Width=2,
                 QMin=qrange[0],
                 QMax=qrange[1],
-                Verbose=verbOp,
                 Plot=plotOp,
                 Save=saveOp)
 
@@ -377,7 +371,6 @@ class JumpTeixeiraTest(stresstesting.MantidStressTest):
     def runTest(self):
         sname = 'irs26176_graphite002_QLr_Workspace'
         qrange = [0.6, 1.705600]
-        verbOp = False
         plotOp = False
         saveOp = False
 
@@ -392,7 +385,6 @@ class JumpTeixeiraTest(stresstesting.MantidStressTest):
                 Width=2,
                 QMin=qrange[0],
                 QMax=qrange[1],
-                Verbose=verbOp,
                 Plot=plotOp,
                 Save=saveOp)
 

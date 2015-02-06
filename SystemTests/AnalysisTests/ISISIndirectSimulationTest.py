@@ -10,7 +10,6 @@ class MolDynCdlTest(stresstesting.MantidStressTest):
 
         MolDyn(Filename='DISF_NaF.cdl',
                Functions=['Fqt-total', 'Sqw-total'],
-               Verbose=True,
                Plot='None',
                Save=False,
                OutputWorkspace='ISISIndirectSimulationTest_MolDynCdl')
@@ -64,7 +63,6 @@ class MolDynDatTest(stresstesting.MantidStressTest):
         from mantid.simpleapi import MolDyn
 
         MolDyn(Filename='WSH_test.dat',
-               Verbose=True,
                Plot='None',
                Save=False,
                OutputWorkspace='WSH_test_iqt')
