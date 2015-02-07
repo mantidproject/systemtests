@@ -1,6 +1,6 @@
 import os
-#os.environ["PATH"] =\
-#r"c:/Mantid/Code/builds/br_master/bin/Release;"+os.environ["PATH"]
+os.environ["PATH"] =\
+r"c:/Mantid/Code/builds/br_master/bin/Release;"+os.environ["PATH"]
 """ Sample MARI reduction scrip used in testing ReductionWrapper """ 
 from Direct.ReductionWrapper import *
 try:
@@ -285,9 +285,11 @@ if __name__ == "__main__":
      config['defaultsave.directory'] = data_dir # folder to save resulting spe/nxspe files.  Defaults are in
 
      # execute stuff from Mantid
-     rd = ReduceMARIFromFile()
+     #rd = ReduceMARIFromFile()
      #rd= ReduceMARIMon2Norm()
      #rd = ReduceMARIMonitorsSeparate()
+     rd = MARIReductionSum()
+
      rd.def_advanced_properties()
      rd.def_main_properties()
 
