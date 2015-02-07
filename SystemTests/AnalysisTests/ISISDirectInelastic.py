@@ -233,7 +233,7 @@ class MAPSDgreduceReduction(ISISDirectInelasticReduction):
       #New WBI value 0.02720959162181584
       #Old WBI Value 0.027209867107187088
       # fix old system test. 
-      outWS*=0.02720959162181584/0.027209867107187088
+      #outWS*=0.02720959162181584/0.027209867107187088
 
       # rename workspace to the name expected by unit test framework
       #RenameWorkspace(InputWorkspace=outWS,OutputWorkspace=wsName)
