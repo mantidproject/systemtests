@@ -223,6 +223,7 @@ class ReduceLET_MultiRep2014(ReductionWrapper):
       bg_range =  red_properties.background_range
       ei = red_properties.incident_energy
       ebin = red_properties.energy_bins
+      ebin = (ebin[0]/ei[0],ebin[1]/ei[0],ebin[2]/ei[0])
 
       remove_background = True  #if true then will subtract a flat background in time from the time range given below otherwise put False
 

@@ -339,13 +339,13 @@ class LETReductionEvent2014Multirep(stresstesting.MantidStressTest):
 
       out_ws_list=red.reduce()
 
-      mults =[41.178539329370217/41.178300987983413,72.235863046309746/72.231475173892022]
+      #mults =[41.178539329370217/41.178300987983413,72.235863046309746/72.231475173892022]
       #New normalization for 3.4 meV: 41.178539329370217
       #Old normalization for 3.4 meV: 41.178300987983413
       #New normalization for 8 meV: 72.235863046309746
       #Old normalization for 8 meV: 72.231475173892022
-      for ind,ws in enumerate(out_ws_list):
-        ws *=mults[ind]
+      #for ind,ws in enumerate(out_ws_list):
+      #  ws *=mults[ind]
 
 
 
