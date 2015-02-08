@@ -66,7 +66,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
     def __init__(self):
         stresstesting.MantidStressTest.__init__(self)
         # this is temporary parameter 
-        self.scale_to_fix_abf=1
+        self.scale_to_fix_abf=0.997932247
 
 #------------------------- MARI tests -------------------------------------------------
 
@@ -81,7 +81,7 @@ class MARIReductionFromFile(ISISDirectInelasticReduction):
     self.red.def_advanced_properties()
     self.red.def_main_properties()
     # temporary fix to account for different monovan integral
-    self.scale_to_fix_abf = 1# 0.99984465
+    self.scale_to_fix_abf = 0.997932247
 
   def runTest(self):
        outWS = self.red.reduce()
@@ -106,7 +106,7 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
     self.red.def_advanced_properties()
     self.red.def_main_properties()
 
-    self.scale_to_fix_abf = 1 #0.999844653
+    self.scale_to_fix_abf = 0.997932247
 
 
   def runTest(self):
@@ -140,7 +140,7 @@ class MARIReductionMon2Norm(ISISDirectInelasticReduction):
 
       outWS=self.red.reduce()
       # temporary fix to account for different monovan integral
-      outWS*=0.991732      
+      outWS*=0.989834962505304   
 
   def get_result_workspace(self):
       """Returns the result workspace to be checked"""
@@ -174,7 +174,7 @@ class MARIReductionMonSeparate(ISISDirectInelasticReduction):
 
       outWS=self.red.reduce()
       # temporary fix to account for different monovan integral
-      #outWS*=2.11507984881/2.11563628862
+      outWS*=0.99791671176508
 
 
   def get_result_workspace(self):
@@ -202,6 +202,7 @@ class MARIReductionSum(ISISDirectInelasticReduction):
       It verifies operation on summing two files on demand. No absolute units
       """
       outWS=self.red.reduce()
+      #outWS*=1.00001556766686
     
   def get_result_workspace(self):
       """Returns the result workspace to be checked"""
