@@ -33,7 +33,6 @@ class QLresTest(stresstesting.MantidStressTest):
         erange = [-0.5, 0.5]
         fitOp = [True, 'Sloping', False, False] #elastic, background, width, resnorm
         loopOp = False
-        verbOp = False
         plotOp = False
         saveOp = False
 
@@ -41,7 +40,7 @@ class QLresTest(stresstesting.MantidStressTest):
         LoadNexusProcessed(Filename=spath, OutputWorkspace=sname)
         rpath = rname+'.nxs'    # path name for res nxs file
         LoadNexusProcessed(Filename=rpath, OutputWorkspace=rname)
-        Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
+        Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-4
@@ -68,7 +67,6 @@ class ResNormTest(stresstesting.MantidStressTest):
         vname = 'irs26173_graphite002_red'
         rname = 'irs26173_graphite002_res'
         erange = [-0.2, 0.2]
-        verbOp = False
         plotOp = False
         saveOp = False
 
@@ -76,7 +74,7 @@ class ResNormTest(stresstesting.MantidStressTest):
         LoadNexusProcessed(Filename=vpath, OutputWorkspace=vname)
         rpath = rname+'.nxs'    # path name for res nxs file
         LoadNexusProcessed(Filename=rpath, OutputWorkspace=rname)
-        Main.ResNormRun(vname,rname,erange,nbin,verbOp,plotOp,saveOp)
+        Main.ResNormRun(vname,rname,erange,nbin,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-4
@@ -105,7 +103,6 @@ class QuestTest(stresstesting.MantidStressTest):
         erange = [-0.5, 0.5]
         fitOp = [True, 'Sloping', False, False] #elastic, background, width, resnorm
         loopOp = False
-        verbOp = False
         plotOp = 'None'
         saveOp = False
 
@@ -113,7 +110,7 @@ class QuestTest(stresstesting.MantidStressTest):
         LoadNexusProcessed(Filename=spath, OutputWorkspace=sname)
         rpath = rname+'.nxs'    # path name for res nxs file
         LoadNexusProcessed(Filename=rpath, OutputWorkspace=rname)
-        Main.QuestRun(sname,rname,nbs,erange,nbins,fitOp,loopOp,verbOp,plotOp,saveOp)
+        Main.QuestRun(sname,rname,nbs,erange,nbins,fitOp,loopOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-1
@@ -143,7 +140,6 @@ class QSeTest(stresstesting.MantidStressTest):
         erange = [-0.5, 0.5]
         fitOp = [True, 'Sloping', False, False] #elastic, background, width, resnorm
         loopOp = False
-        verbOp = False
         plotOp = False
         saveOp = False
 
@@ -151,7 +147,7 @@ class QSeTest(stresstesting.MantidStressTest):
         LoadNexusProcessed(Filename=spath, OutputWorkspace=sname)
         rpath = rname+'.nxs'    # path name for res nxs file
         LoadNexusProcessed(Filename=rpath, OutputWorkspace=rname)
-        Main.QLRun('QSe',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
+        Main.QLRun('QSe',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-1
@@ -181,7 +177,6 @@ class QLDataTest(stresstesting.MantidStressTest):
         erange = [-0.5, 0.5]
         fitOp = [True, 'Sloping', False, False] #elastic, background, width, resnorm
         loopOp = False
-        verbOp = False
         plotOp = False
         saveOp = False
 
@@ -189,7 +184,7 @@ class QLDataTest(stresstesting.MantidStressTest):
         LoadNexusProcessed(Filename=spath, OutputWorkspace=sname)
         rpath = rname+'.nxs'    # path name for res nxs file
         LoadNexusProcessed(Filename=rpath, OutputWorkspace=rname)
-        Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
+        Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-4
@@ -221,7 +216,6 @@ class QLResNormTest(stresstesting.MantidStressTest):
         erange = [-0.5, 0.5]
         fitOp = [True, 'Sloping', False, True] #elastic, background, width, resnorm
         loopOp = True
-        verbOp = True
         plotOp = False
         saveOp = False
 
@@ -231,7 +225,7 @@ class QLResNormTest(stresstesting.MantidStressTest):
         LoadNexusProcessed(Filename=rpath, OutputWorkspace=rname)
         rspath = rsname+'_Paras.nxs'    # path name for resNorm nxs file
         LoadNexusProcessed(Filename=rspath, OutputWorkspace=rsname)
-        Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
+        Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-1
@@ -263,7 +257,6 @@ class QLWidthTest(stresstesting.MantidStressTest):
         erange = [-0.5, 0.5]
         fitOp = [True, 'Sloping', True, False] #elastic, background, width, resnorm
         loopOp = False
-        verbOp = True
         plotOp = False
         saveOp = False
 
@@ -271,7 +264,7 @@ class QLWidthTest(stresstesting.MantidStressTest):
         LoadNexusProcessed(Filename=spath, OutputWorkspace=sname)
         rpath = rname+'.nxs'    # path name for res nxs file
         LoadNexusProcessed(Filename=rpath, OutputWorkspace=rname)
-        Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,verbOp,plotOp,saveOp)
+        Main.QLRun('QL',sname,rname,rsname,erange,nbins,fitOp,wfile,loopOp,plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-1
