@@ -1,6 +1,6 @@
 """ Sample LET reduction scrip """ 
 import os
-#os.environ["PATH"] = r"c:/Mantid/Code/builds/br_10803/bin/Release;"+os.environ["PATH"]
+os.environ["PATH"] = r"c:/Mantid/Code/builds/br_master/bin/Release;"+os.environ["PATH"]
  
 
 from Direct.ReductionWrapper import *
@@ -230,6 +230,8 @@ class ReduceLET_MultiRep2014(ReductionWrapper):
 
       red.initialise(red_properties)
 
+      energybin,tbin,t_elastic = find_binning_range(ei[0],ebin)
+      energybin,tbin,t_elastic = find_binning_range(ei[1],ebin)
 
     # loads the white-beam (or rather the long monovan ). Does it as a raw file to save time as the event mode is very large
       if 'wb_wksp' in mtd:
@@ -306,6 +308,87 @@ class ReduceLET_MultiRep2014(ReductionWrapper):
    def __init__(self,rv=None):
        """ sets properties defaults for the instrument with Name"""
        ReductionWrapper.__init__(self,'LET',rv)
+
+class ReduceLET_MultiRep2015(ReductionWrapper):
+   @MainProperties
+   def def_main_properties(self):
+       """ Define main properties used in reduction """ 
+
+
+       prop = {}
+       ei=[3.4,8.] # multiple energies provided in the data file
+       ebin=[-4,0.002,0.8]    #binning of the energy for the spe file. The numbers are as a fraction of ei [from ,step, to ]
+ 
+       prop['sample_run'] = [14305]
+       prop['wb_run'] = 5545
+       prop['incident_energy'] = ei
+       prop['energy_bins'] = ebin
+
+       
+      # Absolute units reduction properties.
+       # Vanadium labelled Dec 2011 - flat plate of dimensions: 40.5x41x2.0# volume = 3404.025 mm**3 mass= 20.79
+       prop['monovan_run'] = 14319 # vanadium run in the same configuration as your sample
+       prop['sample_mass'] = 20.79 # 17.25  # mass of your sample (PrAl3)
+       prop['sample_rmm'] = 50.9415 # 221.854  # molecular weight of your sample
+
+       return prop
+
+   @AdvancedProperties
+   def def_advanced_properties(self):
+      """  separation between simple and advanced properties depends
+           on scientist, experiment and user.
+           main properties override advanced properties.      
+      """
+
+      prop = {}
+      prop['map_file'] = 'rings_103.map'
+      prop['det_cal_file'] = 'det_corrected7.nxs'
+      prop['bleed'] = False
+      prop['norm_method']='current'
+      prop['detector_van_range']=[2,7]
+      prop['background_range'] = [92000,98000] # TOF range for the calculating flat background
+      prop['hardmaskOnly']='LET_hard.msk' # diag does not work well on LET. At present only use a hard mask RIB has created
+
+      prop['check_background']=True
+
+      prop['monovan_mapfile'] = 'rings_103.map'
+      prop['save_format'] = ''
+       # if two input files with the same name and  different extension found, what to prefer. 
+      prop['data_file_ext']='.nxs' # for LET it may be choice between event and histo mode if 
+      # raw file is written in histo, and nxs -- in event mode
+                                    
+      prop['monovan_mapfile'] = 'rings_103.map'
+
+
+      #TODO: Correct monitor, depending on workspace. This has to be loaded from the workspace and work without this settings 
+      #prop['ei-mon1-spec']=40966
+
+
+
+      return prop
+      #
+   @iliad
+   def reduce(self,input_file=None,output_directory=None):
+      """ Method executes reduction over single file
+
+          Overload only if custom reduction is needed or 
+          special features are requested
+      """
+      res = ReductionWrapper.reduce(self,input_file,output_directory)
+      #
+      en = self.reducer.prop_man.incident_energy
+      for ind,energy in enumerate(en):
+          ws_name = 'LETreducedEi{0:2.1f}'.format(energy)
+          RenameWorkspace(InputWorkspace=res[ind],OutputWorkspace=ws_name)
+          res[ind]= mtd[ws_name]
+
+      #SaveNexus(ws,Filename = 'LETNewReduction.nxs')
+      return res
+
+   def __init__(self,rv=None):
+       """ sets properties defaults for the instrument with Name"""
+       ReductionWrapper.__init__(self,'LET',rv)
+
 #----------------------------------------------------------------------------------------------------------------------
 
 
@@ -319,7 +402,8 @@ if __name__=="__main__":
      config['defaultsave.directory'] = data_dir # folder to save resulting spe/nxspe files. Defaults are in
 
      # execute stuff from Mantid
-     rd =ReduceLET_MultiRep2014()
+     rd =ReduceLET_MultiRep2015()
+     #rd =ReduceLET_MultiRep2014()
      #rd = ReduceLET_OneRep()
      rd.def_advanced_properties()
      rd.def_main_properties()
