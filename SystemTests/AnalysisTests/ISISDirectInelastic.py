@@ -3,6 +3,7 @@ from mantid.simpleapi import *
 from mantid.api import Workspace
 
 from abc import ABCMeta, abstractmethod
+from Direct.PropertyManager  import PropertyManager
 
 
 #----------------------------------------------------------------------
@@ -66,7 +67,7 @@ class ISISDirectInelasticReduction(stresstesting.MantidStressTest):
     def __init__(self):
         stresstesting.MantidStressTest.__init__(self)
         # this is temporary parameter 
-        self.scale_to_fix_abf=0.997932247
+        self.scale_to_fix_abf=1 
 
 #------------------------- MARI tests -------------------------------------------------
 
@@ -81,7 +82,7 @@ class MARIReductionFromFile(ISISDirectInelasticReduction):
     self.red.def_advanced_properties()
     self.red.def_main_properties()
     # temporary fix to account for different monovan integral
-    self.scale_to_fix_abf = 0.997932247
+    self.scale_to_fix_abf = 0.997979227566217 
 
   def runTest(self):
        outWS = self.red.reduce()
@@ -106,7 +107,7 @@ class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
     self.red.def_advanced_properties()
     self.red.def_main_properties()
 
-    self.scale_to_fix_abf = 0.997932247
+    self.scale_to_fix_abf = 0.997979227566217
 
 
   def runTest(self):
@@ -171,10 +172,11 @@ class MARIReductionMonSeparate(ISISDirectInelasticReduction):
 
   def runTest(self):
       """Defines the workflow for the test"""
-
+      # BAAD ! cross-influence of tests for MARI
+      PropertyManager.mono_correction_factor.set_cash_mono_run_number(None)
       outWS=self.red.reduce()
       # temporary fix to account for different monovan integral
-      outWS*=0.99791671176508
+      outWS*=0.997966051169129
 
 
   def get_result_workspace(self):

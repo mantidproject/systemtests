@@ -52,7 +52,7 @@ class ISIS_ReductionWebLike(stresstesting.MantidStressTest):
        """Returns the result workspace to be checked"""
        saveFileName = self.rd.reducer.save_file_name
        outWS = Load(Filename=saveFileName+'.nxs')
-       outWS *= 0.997932247
+       outWS *= 0.997979227566217
        return "outWS"   
     def get_reference_file(self):
         return "MARIReduction.nxs"
