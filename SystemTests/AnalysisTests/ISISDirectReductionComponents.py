@@ -222,14 +222,15 @@ class ISISLoadFilesLET(stresstesting.MantidStressTest):
 
         # Here we have known problem of propman loading new IDF, and
         # workspace is written using old IDF. New IDF has mon1_norm_spec =73729
-        # (on January 2015)
-        # and old IDF -- mon1_norm_spec =40961 (forever)
-        # Normalized by monitor-1. 
+        # and ei_mon1_spec=73734   (on January 2015) and old 
+        # IDF -- mon1_norm_spec =40961 and 40966 (forever) 
+        # Normalized by monitor-1. -- need monitor1 and ei needs ei_mon1_spec
         # This problem is hopefully fixed in reduction now, but here 
         # we have to specify these values manually to guard against 
         # changes in a future
         propman.normalise_method='monitor-1'
         propman.mon1_norm_spec=40961
+        propman.ei_mon1_spec  =40966
 
         mon_ws = PropertyManager.sample_run.get_monitors_ws()
         self.assertTrue(not(mon_ws is None))
