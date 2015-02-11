@@ -14,10 +14,9 @@ class IN10SiliconTest(stresstesting.MantidStressTest):
         run = 'P3OT_350K'
         rejectZ = False
         useM = False
-        verbOp = True
         saveOp = False
         plotOp = False
-        Main.InxStart(instr,run,ana,refl,rejectZ,useM,'',verbOp,plotOp,saveOp)
+        Main.InxStart(instr,run,ana,refl,rejectZ,useM,'',plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-2
@@ -36,10 +35,9 @@ class IN13CaFTest(stresstesting.MantidStressTest):
         run = '16347'
         rejectZ = False
         useM = False
-        verbOp = True
         saveOp = False
         plotOp = False
-        Main.IN13Start(instr,run,ana,refl,rejectZ,useM,'',verbOp,plotOp,saveOp)
+        Main.IN13Start(instr,run,ana,refl,rejectZ,useM,'',plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-2
@@ -88,10 +86,9 @@ class IN16SiliconTest(stresstesting.MantidStressTest):
         run = '65722'
         rejectZ = True
         useM = False
-        verbOp = True
         saveOp = False
         plotOp = False
-        Main.IbackStart(instr,run,ana,refl,rejectZ,useM,'',verbOp,plotOp,saveOp)
+        Main.IbackStart(instr,run,ana,refl,rejectZ,useM,'',plotOp,saveOp)
 
     def validate(self):
         self.tolerance = 1e-2
