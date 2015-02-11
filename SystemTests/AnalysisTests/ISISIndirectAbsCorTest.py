@@ -23,10 +23,9 @@ class CylAbsTest(stresstesting.MantidStressTest):
         sigs = [5.0, 0.1, 0.1]
         siga = [0.0, 5.0, 5.0]
         avar = 0.002
-        verbOp = True
         saveOp = False
         Main.AbsRun(sname, 'cyl', beam, 2, size, density,
-                    sigs, siga, avar, verbOp, saveOp)
+                    sigs, siga, avar, saveOp)
 
     def validate(self):
         self.tolerance = 1e-3
@@ -52,10 +51,9 @@ class FltAbsTest(stresstesting.MantidStressTest):
         sigs = [5.0, 0.1, 0.1]
         siga = [0.0, 5.0, 5.0]
         avar = 45.0
-        verbOp = True
         saveOp = False
         Main.AbsRun(sname, 'flt', beam, 2, size, density,
-                    sigs, siga, avar, verbOp, saveOp)
+                    sigs, siga, avar, saveOp)
 
     def validate(self):
         self.tolerance = 1e-3
@@ -82,10 +80,9 @@ class FltAbsTSecCloseTo90Test(stresstesting.MantidStressTest):
         sigs = [5.0, 0.1, 0.1]
         siga = [0.0, 5.0, 5.0]
         avar = 45.0
-        verbOp = True
         saveOp = False
         Main.AbsRun(sname, 'flt', beam, 2, size, density,
-                    sigs, siga, avar, verbOp, saveOp)
+                    sigs, siga, avar, saveOp)
 
     def validate(self):
         self.tolerance = 1e-3
