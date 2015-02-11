@@ -1,6 +1,6 @@
 import os
-os.environ["PATH"] =\
-r"c:/Mantid/Code/builds/br_master/bin/Release;"+os.environ["PATH"]
+#os.environ["PATH"] =\
+#r"c:/Mantid/Code/builds/br_master/bin/Release;"+os.environ["PATH"]
 """ Sample MARI reduction scrip used in testing ReductionWrapper """ 
 from Direct.ReductionWrapper import *
 try:
@@ -53,10 +53,8 @@ class ReduceMARIFromFile(ReductionWrapper):
        return 
    def validate_result(self,build_validation=False):
       """ Change this method to verify different results     """
-      sample = Load("MARIReduction.nxs")
-      sample *= 1./0.997932247
       # build_validation -- if true, build and save new workspace rather then validating the old one
-      rez,message = ReductionWrapper.build_or_validate_result(self,11001,sample,build_validation)
+      rez,message = ReductionWrapper.build_or_validate_result(self,11001,"MARIReduction.nxs",build_validation)
       return rez,message
 
    def __init__(self,web_var=None):
@@ -287,11 +285,9 @@ if __name__ == "__main__":
      config['defaultsave.directory'] = data_dir # folder to save resulting spe/nxspe files.  Defaults are in
 
      # execute stuff from Mantid
-     #rd = ReduceMARIFromFile()
+     rd = ReduceMARIFromFile()
      #rd= ReduceMARIMon2Norm()
      #rd = ReduceMARIMonitorsSeparate()
-     rd = MARIReductionSum()
-
      rd.def_advanced_properties()
      rd.def_main_properties()
 
@@ -300,5 +296,11 @@ if __name__ == "__main__":
      #file = os.path.join(run_dir,'reduce_vars.py')
      #rd.save_web_variables(file)
 
-     ws = rd.reduce()
+     if rd.reducer.sum_runs:
+       red_ws=rd.reduce() 
+     else:
+       runs = PropertyManager.sample_run.get_run_list()
+       for run in runs:
+         red_ws=rd.reduce(run)
+       #end
 
