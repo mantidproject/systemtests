@@ -54,7 +54,7 @@ class ReduceMARIFromFile(ReductionWrapper):
    def validate_result(self,build_validation=False):
       """ Change this method to verify different results     """
       # build_validation -- if true, build and save new workspace rather then validating the old one
-      rez,message = ReductionWrapper.build_or_validate_result(self,11001,"MARIReduction.nxs",build_validation)
+      rez,message = ReductionWrapper.build_or_validate_result(self,11001,"MARIReduction.nxs",build_validation,1.e-2)
       return rez,message
 
    def __init__(self,web_var=None):
