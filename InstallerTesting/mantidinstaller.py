@@ -226,7 +226,7 @@ class DMGInstaller(MantidInstaller):
         MantidInstaller.__init__(self, do_install, 'mantid-*.dmg')
         self.mantidPlotPath = '/Applications/MantidPlot.app/Contents/MacOS/MantidPlot'
         # only necessary on 10.8 build
-        if platform.release().split('.')[0] < 13:
+        if int(platform.release().split('.')[0]) < 13:
             os.environ['DYLD_LIBRARY_PATH'] = '/Applications/MantidPlot.app/Contents/MacOS'
         
     def do_install(self):
