@@ -60,7 +60,9 @@ class ReduceMARIFromFile(ReductionWrapper):
    def __init__(self,web_var=None):
        """ sets properties defaults for the instrument with Name"""
        ReductionWrapper.__init__(self,'MAR',web_var)
-#----------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------#
 def main(input_file=None,output_directory=None):
         """ This method is used to run code from web service
             and should not be touched except changing the name of the
@@ -285,9 +287,10 @@ if __name__ == "__main__":
      config['defaultsave.directory'] = data_dir # folder to save resulting spe/nxspe files.  Defaults are in
 
      # execute stuff from Mantid
-     rd = ReduceMARIFromFile()
+     #rd = ReduceMARIFromFile()
      #rd= ReduceMARIMon2Norm()
      #rd = ReduceMARIMonitorsSeparate()
+     rd = ReduceMARIFromWorkspace()
      rd.def_advanced_properties()
      rd.def_main_properties()
 

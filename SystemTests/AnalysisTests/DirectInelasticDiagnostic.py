@@ -34,7 +34,7 @@ class DirectInelasticDiagnostic(MantidStressTest):
         #
         reducer.prop_man.wb_integr_range = [20,300]
         reducer.prop_man.bkgd_range=[12000,18000]
-        diag_mask = reducer.diagnose(white, sample, tiny=tiny, huge=huge, 
+        diag_mask,n_masked = reducer.diagnose(white, sample, tiny=tiny, huge=huge, 
                                      van_out_lo=v_out_lo, van_out_hi=v_out_hi,
                                      van_lo=vv_lo, van_hi=vv_hi, van_sig=vv_sig,
                                      samp_lo=sv_lo, samp_hi=sv_hi, samp_sig=sv_sig, samp_zero=s_zero,hard_mask_file=None)

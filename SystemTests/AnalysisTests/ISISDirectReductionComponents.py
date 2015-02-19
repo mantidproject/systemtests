@@ -120,8 +120,6 @@ class ISISLoadFilesRAW(stresstesting.MantidStressTest):
 
         self.assertEqual(ws.getNumberHistograms(),919)
         self.assertEqual(mon_ws.getNumberHistograms(),3)
-        wsName = ws.name()
-        self.assertEqual(wsName,PropertyManager.sample_run.get_ws_name())
 
         #
         propman = PropertyManager('MAPS')
