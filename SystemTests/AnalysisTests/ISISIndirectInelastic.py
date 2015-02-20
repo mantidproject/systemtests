@@ -1050,12 +1050,11 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
 
 class OSIRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
 
+    def skipTests(self):
+        return (platform.system() == "Darwin")
+
     def __init__(self):
         ISISIndirectInelasticFuryAndFuryFitMulti.__init__(self)
-
-        # There is an issue on Mac with the Tau spectrum (#11150)
-        if platform.system() == "Darwin":
-            self.tolerance = 1.0
 
         # Fury
         self.samples = ['osi97935_graphite002_red.nxs']
