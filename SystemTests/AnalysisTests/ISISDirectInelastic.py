@@ -95,6 +95,40 @@ class MARIReductionFromFile(ISISDirectInelasticReduction):
       return "outWS"   
   def get_reference_file(self):
     return "MARIReduction.nxs"
+
+class MARIReductionFromFileCache(ISISDirectInelasticReduction):
+
+  def __init__(self):
+    ISISDirectInelasticReduction.__init__(self)
+    self.tolerance = 1e-9
+    from ISIS_MariReduction import ReduceMARIFromFile
+
+    self.red = ReduceMARIFromFile()
+    self.red.def_advanced_properties()
+    self.red.def_main_properties()
+
+  def runTest(self):
+       MARreducedFromFile = self.red.reduce()
+       self.red.reducer.sample_run = None # clear sample runs cashes from memory 
+       # as if we are loading and reducing different run
+       MARreducedWithCach = self.red.reducer.convert_to_energy(None,11001)
+
+  def validate(self):
+      """Returns the name of the workspace & file to compare"""
+      super(MARIReductionFromFileCache,self).validate()
+      self.tolerance = 1e-9
+      return 'MARreducedFromFile', 'MARreducedWithCach'
+
+  def validateMethod(self):
+      return "validateWorkspaceToWorkspace"
+
+
+  def get_result_workspace(self):
+      """Returns the result workspace to be checked"""
+      return "outWS"   
+  def get_reference_file(self):
+    return "MARIReduction.nxs"
+
     
 class MARIReductionFromWorkspace(ISISDirectInelasticReduction):
 
