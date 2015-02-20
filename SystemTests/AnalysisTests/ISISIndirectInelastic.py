@@ -1,5 +1,6 @@
 import stresstesting
 import os
+import platform
 from abc import ABCMeta, abstractmethod
 
 from mantid.simpleapi import *
@@ -1048,6 +1049,9 @@ class ISISIndirectInelasticFuryAndFuryFitMulti(ISISIndirectInelasticBase):
 
 
 class OSIRISFuryAndFuryFitMulti(ISISIndirectInelasticFuryAndFuryFitMulti):
+
+    def skipTests(self):
+        return (platform.system() == "Darwin")
 
     def __init__(self):
         ISISIndirectInelasticFuryAndFuryFitMulti.__init__(self)
