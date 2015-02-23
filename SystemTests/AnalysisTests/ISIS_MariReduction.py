@@ -302,7 +302,9 @@ if __name__ == "__main__":
      #  if this value >0 the reduction wait until file appears on the data 
      #  search path checking after time specified below.
      rd.wait_for_file = 0  # waiting time interval
-###### Run reduction on all files provided as parameters ######
+
+###### Run reduction over all run numbers or files assigned to                   ######
+     # sample_run  variable 
      red_ws = rd.run_reduction()
 
 
