@@ -50,7 +50,7 @@ class POLDIFitPeaks2DTest(stresstesting.MantidStressTest):
 
       self.assertEqual(calculatedSpectrum.getNumberHistograms(), referenceSpectrum.getNumberHistograms())
 
-      columns = ["d", "FWHM (rel.)", "Intensity"]
+      columns = ["d", "Intensity"]
 
       for i in range(referencePeaks.rowCount()):
           referenceRow = referencePeaks.row(i)
@@ -60,10 +60,6 @@ class POLDIFitPeaks2DTest(stresstesting.MantidStressTest):
               value, error = (float(fittedStr[0]), float(fittedStr[-1]))
               reference = float(referenceRow[c])
 
-              if c == "FWHM (rel.)":
-                error *= 3.0
-
-              #print i,c,np.fabs(value - reference)/error, reference
               self.assertLessThan(np.fabs(value - reference), error)
 
 
