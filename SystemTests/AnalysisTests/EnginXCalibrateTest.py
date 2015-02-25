@@ -22,8 +22,9 @@ class EnginXCalibrateTest(stresstesting.MantidStressTest):
           if int(platform.release().split('.')[0]) < 13:
               self.assertDelta(self.zero, 3.53, 0.01)
           else:
-              self.assertDelta(self.zero, 3.51142, 0.01)
+              self.assertDelta(self.zero, 3.51, 0.01)
       else:
+          self.assertDelta(self.difc, 18404.522, 0.001)
           self.assertDelta(self.zero, 4.426, 0.001)
 
     def cleanup(self):
